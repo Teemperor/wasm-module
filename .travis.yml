@@ -1,14 +1,21 @@
 language: cpp
+sudo: false
 compiler:
   - gcc
 
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+
+addons:
+  apt:
+    packages:
+    - g++-4.9
+    - valgrind
+
 before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo apt-get update -qq
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-  - sudo pip install cpp-coveralls pyyaml
-  - sudo apt-get install valgrind
 
 script:
   - cmake .
