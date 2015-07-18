@@ -11,12 +11,7 @@ addons:
 addons:
   apt:
     packages:
-    - g++
     - valgrind
-
-before_install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-
 script:
   - cmake .
   - make -j4
