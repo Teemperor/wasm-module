@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(wasmint)
+project(wasm-module)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories (src)
 
-add_library(core
+add_library(wasm-module
     src/ExceptionWithMessage.cpp
     src/instructions/InstructionSet.cpp
     src/Module.cpp
@@ -17,7 +17,6 @@ add_library(core
     src/FunctionContext.cpp
     src/FunctionSignature.cpp
     src/FunctionTable.cpp
-    src/instructions/Instruction.cpp
     src/OpcodeTable.cpp
     src/Variable.cpp
     src/Global.cpp
@@ -50,6 +49,7 @@ add_library(core
     src/instructions/SetGlobal.cpp
     src/instructions/FunctionCall.cpp
     src/instructions/Literal.cpp
+    src/instructions/Instruction.cpp
 
     src/types/Int8.cpp
     src/types/Int32.cpp
@@ -78,6 +78,6 @@ file(GLOB TEST_FILES "tests/*Test.cpp")
 foreach(TEST_FILE ${TEST_FILES})
   get_filename_component(BASENAME ${TEST_FILE} NAME_WE)
   add_executable(${BASENAME} ${TEST_FILE})
-  target_link_libraries(${BASENAME} core)
+  target_link_libraries(${BASENAME} wasm-module)
   add_test(${BASENAME} ${BASENAME})
 endforeach()
