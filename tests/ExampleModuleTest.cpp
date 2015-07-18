@@ -121,7 +121,5 @@ int main() {
     assert(m->typeTable().getType(0x0) == Void::instance());
     assert(m->typeTable().getType(0x1) == Int32::instance());
 
-
     assert(m->sections().size() == 1);
-
 }
