@@ -5,6 +5,7 @@
 
 
 #include <instructions/Instruction.h>
+#include <types/Void.h>
 
 class CalledContinue {};
 
@@ -19,10 +20,6 @@ public:
 
     virtual Type* returnType() {
         return Void::instance();
-    }
-
-    virtual StepResult execute(Thread &thread) {
-        return StepResult(Signal::Continue);
     }
 };
 

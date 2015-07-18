@@ -30,10 +30,6 @@ public:
     virtual Type* returnType() {
         return returnType_;
     }
-
-    virtual StepResult execute(Thread &thread) {
-        return thread.variable(localIndex);
-    }
 };
 
 

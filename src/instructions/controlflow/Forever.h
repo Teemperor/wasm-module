@@ -5,6 +5,7 @@
 
 
 #include <instructions/Instruction.h>
+#include <types/Void.h>
 #include "Break.h"
 #include "Continue.h"
 
@@ -20,23 +21,6 @@ public:
 
     virtual Type* returnType() {
         return Void::instance();
-    }
-
-    virtual bool handleSignal(InstructionState& currentState, Signal signal) {
-        if (signal == Signal::Break) {
-            currentState.state(10);
-            return true;
-        }
-        return signal == Signal::Continue;
-    }
-
-    virtual StepResult execute(Thread &thread) {
-        if (thread.getInstructionState().state() >= 10) {
-            return StepResult();
-        }
-        thread.getInstructionState().clearResults();
-        thread.getInstructionState().state(0);
-        return StepResult(children().front());
     }
 };
 

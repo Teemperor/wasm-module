@@ -5,6 +5,8 @@
 
 #include <string>
 #include <FunctionContext.h>
+#include <ExceptionWithMessage.h>
+#include <ModuleContext.h>
 #include "Instruction.h"
 
 ExceptionMessage(UnknownInstructionName)

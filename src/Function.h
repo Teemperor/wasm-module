@@ -11,8 +11,6 @@
 #include "FunctionSignature.h"
 #include "FunctionContext.h"
 #include <memory>
-#include <interpreter/RuntimeEnvironment.h>
-#include <interpreter/Thread.h>
 #include <instructions/Instruction.h>
 
 class Instruction;

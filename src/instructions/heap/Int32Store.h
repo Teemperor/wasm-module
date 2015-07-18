@@ -21,24 +21,6 @@ public:
     virtual std::string name() {
         return "int32.store";
     }
-
-    virtual StepResult execute(Thread &thread) {
-
-        InstructionState& state = thread.getInstructionState();
-        switch(state.state()) {
-            case 0:
-                return StepResult(children().at(0));
-            case 1:
-                return StepResult(children().at(1));
-            default:
-
-                uint32_t offset = static_cast<uint32_t>(Int32::getValue(state.results().at(0)));
-
-                Variable value = state.results().at(1);
-                thread.runtimeEnvironment().heap().setBytes(offset, value.data());
-                return StepResult(value);
-        }
-    }
 };
 
 

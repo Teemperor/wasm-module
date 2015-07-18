@@ -6,6 +6,7 @@
 
 #include <instructions/Instruction.h>
 #include <parsing/ByteStream.h>
+#include <types/Void.h>
 
 class Block : public Instruction {
 
@@ -30,15 +31,6 @@ public:
 
     virtual Type* returnType() {
         return Void::instance();
-    }
-
-    virtual StepResult execute(Thread &thread) {
-        InstructionState& state = thread.getInstructionState();
-        if (state.state() < children().size()) {
-            return StepResult(children().at(state.state()));
-        } else {
-            return StepResult();
-        }
     }
 };
 

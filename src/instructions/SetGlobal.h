@@ -6,6 +6,7 @@
 #define WASMINT_SETGLOBAL_H
 
 
+#include <ModuleContext.h>
 #include "Instruction.h"
 
 class SetGlobal : public Instruction {
@@ -30,18 +31,6 @@ public:
 
     virtual Type* returnType() {
         return expectedType;
-    }
-
-    virtual StepResult execute(Thread &thread) {
-        InstructionState& state = thread.getInstructionState();
-        switch(state.state()) {
-            case 0:
-                return children().at(0);
-            default:
-                Variable result = thread.runtimeEnvironment().global(globalName) = state.results().at(0);
-                return result;
-
-        }
     }
 };
 

@@ -27,21 +27,6 @@ public:
     virtual Type* returnType() {
         return functionSignature.returnType();
     }
-
-    virtual StepResult execute(Thread &thread) {
-        InstructionState& state = thread.getInstructionState();
-        if (state.state() < children().size()) {
-            return StepResult(children().at(0));
-        } else if (state.state() == children().size()) {
-            std::vector<Variable> parameters;
-            for(uint32_t i = 0; i < parameters.size(); i++) {
-                parameters[i] = state.results().at(i);
-            }
-            return StepResult(thread.callFunction(functionSignature.name()));
-        } else {
-            return state.results().back();
-        }
-    }
 };
 
 

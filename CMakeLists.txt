@@ -10,7 +10,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 include_directories (src)
 
 add_library(core
-    main.cpp
     src/ExceptionWithMessage.cpp
     src/instructions/InstructionSet.cpp
     src/Module.cpp
@@ -27,12 +26,6 @@ add_library(core
     src/types/Type.cpp
     src/TypeTable.cpp
     src/ModuleContext.cpp
-
-    src/interpreter/Thread.cpp
-    src/interpreter/FunctionState.cpp
-    src/interpreter/InstructionState.cpp
-    src/interpreter/RuntimeEnvironment.cpp
-    src/interpreter/Heap.cpp
 
     src/instructions/I32/I32Add.cpp
     src/instructions/I32/I32Sub.cpp
@@ -57,7 +50,6 @@ add_library(core
     src/instructions/SetGlobal.cpp
     src/instructions/FunctionCall.cpp
     src/instructions/Literal.cpp
-    src/instructions/StepResult.cpp
 
     src/types/Int8.cpp
     src/types/Int32.cpp
@@ -75,15 +67,6 @@ add_library(core
     src/parsing/CodeSectionParser.cpp
     src/parsing/OpcodeTableParser.cpp
 )
-
-
-####################
-# interpreter      #
-####################
-
-add_executable(wasmint main.cpp)
-
-target_link_libraries(wasmint core)
 
 
 ####################

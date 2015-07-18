@@ -6,6 +6,7 @@
 
 #include <instructions/Instruction.h>
 #include <types/Int32.h>
+#include <types/Void.h>
 
 class CalledReturn {
 public:
@@ -24,17 +25,6 @@ public:
 
     virtual Type* returnType() {
         return Void::instance();
-    }
-
-    virtual StepResult execute(Thread &thread) {
-        InstructionState& state = thread.getInstructionState();
-        switch(state.state()) {
-            case 0:
-                return children().at(0);
-            default:
-                return state.results().front();
-
-        }
     }
 };
 

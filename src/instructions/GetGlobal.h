@@ -6,6 +6,7 @@
 #define WASMINT_GETGLOBAL_H
 
 
+#include <ModuleContext.h>
 #include "Instruction.h"
 
 class GetGlobal : public Instruction {
@@ -30,10 +31,6 @@ public:
 
     virtual Type* returnType() {
         return returnType_;
-    }
-
-    virtual StepResult execute(Thread &thread) {
-        return thread.runtimeEnvironment().global(globalName);
     }
 };
 

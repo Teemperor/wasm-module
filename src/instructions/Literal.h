@@ -4,6 +4,7 @@
 #define WASMINT_LITERAL_H
 
 
+#include <ModuleContext.h>
 #include "Instruction.h"
 
 class Literal : public Instruction {
@@ -29,10 +30,6 @@ public:
 
     virtual Type* returnType() {
         return &literalValue.type();
-    }
-
-    virtual StepResult execute(Thread &thread) {
-        return StepResult(literalValue);
     }
 };
 
