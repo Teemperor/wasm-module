@@ -25,10 +25,10 @@
 
 class SetLocal : public Instruction {
 
-    uint32_t localIndex;
     Type* expectedType;
 
 public:
+    uint32_t localIndex;
     SetLocal(ByteStream& stream, FunctionContext& functionContext) {
         localIndex = stream.popULEB128();
         expectedType = functionContext.pureLocals().at(localIndex);

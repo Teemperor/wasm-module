@@ -22,10 +22,9 @@
 #include <ModuleContext.h>
 
 class FunctionCall : public Instruction {
-
+public:
     FunctionSignature functionSignature;
 
-public:
     FunctionCall(ByteStream& stream, ModuleContext& context) {
         functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
     }

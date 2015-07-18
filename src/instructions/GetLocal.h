@@ -24,10 +24,11 @@
 
 class GetLocal : public Instruction {
 
-    uint32_t localIndex;
     Type* returnType_;
 
 public:
+    uint32_t localIndex;
+
     GetLocal(ByteStream& stream, FunctionContext& context) {
         localIndex = stream.popULEB128();
         returnType_ = context.pureLocals().at(localIndex);

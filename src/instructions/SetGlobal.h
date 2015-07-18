@@ -26,9 +26,9 @@
 class SetGlobal : public Instruction {
 
     Type* expectedType;
-    std::string globalName;
 
 public:
+    std::string globalName;
     SetGlobal(ByteStream& stream, ModuleContext& context) {
         uint32_t globalIndex = stream.popULEB128();
         expectedType = context.globalTable().getGlobal(globalIndex).type();

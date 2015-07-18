@@ -22,9 +22,10 @@
 #include "Instruction.h"
 
 class Literal : public Instruction {
-    Variable literalValue;
 
 public:
+    Variable literalValue;
+
     Literal(ByteStream& stream, ModuleContext& context) {
         uint32_t typeId = stream.popULEB128();
 
