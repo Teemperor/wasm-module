@@ -20,7 +20,7 @@
 
 #include <exception>
 #include <string>
-#include <parsing/ByteStream.h>
+#include <binary_parsing/ByteStream.h>
 
 class ExceptionWithMessage : public std::exception {
 

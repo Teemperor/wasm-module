@@ -19,7 +19,7 @@
 
 
 #include <cstdint>
-#include <parsing/ByteStream.h>
+#include <binary_parsing/ByteStream.h>
 #include <typeinfo>
 #include <Variable.h>
 

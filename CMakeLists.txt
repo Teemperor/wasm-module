@@ -58,14 +58,14 @@ add_library(wasm-module
     src/types/Float32.cpp
     src/types/Float64.cpp
 
-    src/parsing/ByteStream.cpp
-    src/parsing/GlobalTableParser.cpp
-    src/parsing/FunctionParser.cpp
-    src/parsing/FunctionTableParser.cpp
-    src/parsing/TypeTableParser.cpp
-    src/parsing/ModuleParser.cpp
-    src/parsing/CodeSectionParser.cpp
-    src/parsing/OpcodeTableParser.cpp
+        src/binary_parsing/ByteStream.cpp
+        src/binary_parsing/GlobalTableParser.cpp
+        src/binary_parsing/FunctionParser.cpp
+        src/binary_parsing/FunctionTableParser.cpp
+        src/binary_parsing/TypeTableParser.cpp
+        src/binary_parsing/ModuleParser.cpp
+        src/binary_parsing/CodeSectionParser.cpp
+        src/binary_parsing/OpcodeTableParser.cpp
 )
 
 

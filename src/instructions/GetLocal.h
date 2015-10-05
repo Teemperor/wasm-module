@@ -19,7 +19,7 @@
 
 
 #include <instructions/Instruction.h>
-#include <parsing/ByteStream.h>
+#include <binary_parsing/ByteStream.h>
 #include <FunctionContext.h>
 
 class GetLocal : public Instruction {

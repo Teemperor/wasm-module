@@ -18,7 +18,7 @@
 #define INTERPRETER_MODULE_H
 
 #include <string>
-#include "parsing/ByteStream.h"
+#include "binary_parsing/ByteStream.h"
 #include "Section.h"
 #include "OpcodeTable.h"
 #include "TypeTable.h"

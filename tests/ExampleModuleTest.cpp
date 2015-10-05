@@ -16,9 +16,9 @@
 
 #include <cassert>
 #include <cstdint>
-#include <parsing/ByteStream.h>
+#include <binary_parsing/ByteStream.h>
 #include <Module.h>
-#include <parsing/ModuleParser.h>
+#include <binary_parsing/ModuleParser.h>
 #include <memory>
 #include <types/Int32.h>
 
