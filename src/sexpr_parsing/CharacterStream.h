@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace wasm_module {
+namespace wasm_module { namespace sexpr {
 
     class UnexpectedEndOfCharacterStream : public std::exception {
     };
@@ -62,6 +62,6 @@ namespace wasm_module {
 
     };
 
-}
+}}
 
 #endif //WASMINT_CHARACTERSTREAM_H

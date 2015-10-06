@@ -22,7 +22,7 @@
 #include <types/Int32.h>
 #include <sexpr_parsing/CharacterStream.h>
 
-using namespace wasm_module;
+using namespace wasm_module::sexpr;
 
 int main() {
     std::string str1 = "these are four words";

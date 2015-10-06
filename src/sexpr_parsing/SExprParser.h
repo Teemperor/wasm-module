@@ -5,7 +5,7 @@
 #include "CharacterStream.h"
 #include "SExpr.h"
 
-namespace wasm_module {
+namespace wasm_module { namespace sexpr {
 
     class UnknownDataAtEndOfStream : public std::exception {
     };
@@ -23,6 +23,6 @@ namespace wasm_module {
 
     };
 
-}
+}}
 
 #endif //WASMINT_SEXPRPARSER_H

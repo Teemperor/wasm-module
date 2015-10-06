@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace wasm_module {
+namespace wasm_module { namespace sexpr {
 
     class SExprIsFull : public std::exception {
     };
@@ -82,6 +82,6 @@ namespace wasm_module {
         }
 
     };
-}
+}}
 
 #endif //WASMINT_SEXPR_H

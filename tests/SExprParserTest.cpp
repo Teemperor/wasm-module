@@ -24,6 +24,7 @@
 #include <sexpr_parsing/SExprParser.h>
 
 using namespace wasm_module;
+using namespace wasm_module::sexpr;
 
 int main() {
     std::string str = "(module (memory 0 1))\n"

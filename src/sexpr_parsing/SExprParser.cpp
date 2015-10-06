@@ -1,6 +1,6 @@
 #include "SExprParser.h"
 
-namespace wasm_module {
+namespace wasm_module { namespace sexpr {
 
     void SExprParser::parseValues(SExpr &parent, bool allowsEndOfStream) {
 
@@ -56,4 +56,4 @@ namespace wasm_module {
 
     SExprParser::SExprParser(CharacterStream &stream) : stream_(stream) {
     }
-}
+}}
