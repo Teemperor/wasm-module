@@ -40,7 +40,7 @@ namespace wasm_module {
         }
 
         virtual ~Module() {
-            for (Section *section : sections_) {
+            for (Section* section : sections_) {
                 delete section;
             }
         }

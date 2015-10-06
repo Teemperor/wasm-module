@@ -14,8 +14,38 @@
  * limitations under the License.
  */
 
+#ifndef WASMINT_MODULEPARSER_H
+#define WASMINT_MODULEPARSER_H
+
+#include <Module.h>
 #include "CharacterStream.h"
+#include "SExpr.h"
 
 namespace wasm_module { namespace sexpr {
 
+    class ModuleParser {
+
+        Module* module_;
+
+        ModuleParser(const SExpr& moduleExpr) {
+            for(const SExpr& expr : moduleExpr.children()) {
+            }
+        }
+
+        Module* getParsedModule() {
+            return module_;
+        }
+
+    public:
+
+        static Module* parse(const SExpr& expr) {
+            ModuleParser parser(expr);
+            return parser.getParsedModule();
+        }
+
+    };
+
 }}
+
+
+#endif //WASMINT_MODULEPARSER_H
