@@ -5,6 +5,8 @@
 #include "CharacterStream.h"
 #include "SExpr.h"
 
+class UnknownDataAtEndOfStream : public std::exception {};
+
 class SExprParser {
 
     CharacterStream& stream_;
@@ -56,9 +58,12 @@ public:
     SExprParser(CharacterStream& stream) : stream_(stream) {
     }
 
-    SExpr parse() {
+    SExpr parse(bool allowExitBeforeEOF = false) {
         SExpr root;
         parseValues(root, true);
+        if (!allowExitBeforeEOF && !stream_.reachedEnd()) {
+            throw UnexpectedEndOfCharacterStream();
+        }
         return root;
     }
 
