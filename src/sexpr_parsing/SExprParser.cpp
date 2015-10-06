@@ -45,7 +45,7 @@ namespace wasm_module {
 
     }
 
-    SExpr SExprParser::parse(bool allowExitBeforeEOF = false) {
+    SExpr SExprParser::parse(bool allowExitBeforeEOF) {
         SExpr root;
         parseValues(root, true);
         if (!allowExitBeforeEOF && !stream_.reachedEnd()) {
