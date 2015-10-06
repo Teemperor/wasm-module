@@ -66,7 +66,7 @@ add_library(wasm-module
         src/binary_parsing/ModuleParser.cpp
         src/binary_parsing/CodeSectionParser.cpp
         src/binary_parsing/OpcodeTableParser.cpp
-)
+        src/sexpr_parsing/SExprParser.cpp src/sexpr_parsing/SExprParser.h src/sexpr_parsing/CharacterStream.cpp src/sexpr_parsing/CharacterStream.h src/sexpr_parsing/SExpr.cpp src/sexpr_parsing/SExpr.h)
 
 
 ####################
