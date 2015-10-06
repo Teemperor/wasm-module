@@ -17,3 +17,7 @@
 
 
 #include "TypeTableParser.h"
+
+namespace wasm_module {
+
+}

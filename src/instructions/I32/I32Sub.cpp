@@ -17,3 +17,7 @@
 
 
 #include "I32Sub.h"
+
+namespace wasm_module {
+
+}

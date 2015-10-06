@@ -21,26 +21,28 @@
 #include <instructions/Instruction.h>
 #include <ModuleContext.h>
 
-class FunctionCall : public Instruction {
-public:
-    FunctionSignature functionSignature;
+namespace wasm_module {
 
-    FunctionCall(ByteStream& stream, ModuleContext& context) {
-        functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
-    }
+    class FunctionCall : public Instruction {
+    public:
+        FunctionSignature functionSignature;
 
-    virtual std::string name() {
-        return "call_direct";
-    }
+        FunctionCall(ByteStream &stream, ModuleContext &context) {
+            functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
+        }
 
-    virtual std::vector<Type*> childrenTypes() {
-        return functionSignature.parameters();
-    }
+        virtual std::string name() {
+            return "call_direct";
+        }
 
-    virtual Type* returnType() {
-        return functionSignature.returnType();
-    }
-};
+        virtual std::vector<Type *> childrenTypes() {
+            return functionSignature.parameters();
+        }
 
+        virtual Type *returnType() {
+            return functionSignature.returnType();
+        }
+    };
+}
 
 #endif //WASMINT_FUNCTIONCALL_H

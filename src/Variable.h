@@ -22,30 +22,33 @@
 
 class InvalidDataSize : public std::exception {};
 
-class Type;
+namespace wasm_module {
+    class Type;
 
-class Variable {
-    Type* type_;
-    std::vector<uint8_t> value_;
+    class Variable {
+        wasm_module::Type *type_;
+        std::vector<uint8_t> value_;
 
-public:
-    Variable();
-    Variable(Type* type);
+    public:
+        Variable();
 
-    Type& type() {
-        return *type_;
-    }
+        Variable(wasm_module::Type *type);
 
-    void* value() {
-        return (void*) value_.data();
-    }
+        wasm_module::Type &type() {
+            return *type_;
+        }
 
-    std::vector<uint8_t> data() {
-        return value_;
-    }
+        void *value() {
+            return (void *) value_.data();
+        }
 
-    void setValue(std::vector<uint8_t> newData);
-};
+        std::vector<uint8_t> data() {
+            return value_;
+        }
+
+        void setValue(std::vector<uint8_t> newData);
+    };
+}
 
 
 #endif //WASMINT_VARIABLE_H

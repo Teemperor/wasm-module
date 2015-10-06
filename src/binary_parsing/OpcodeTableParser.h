@@ -23,33 +23,35 @@
 #include <OpcodeTable.h>
 #include "ByteStream.h"
 
-class OpcodeTableParser {
+namespace wasm_module {
 
-    ByteStream& stream;
-    OpcodeTable opcodeTable;
+    class OpcodeTableParser {
 
-protected:
-    OpcodeTableParser(ByteStream& stream) : stream(stream) {
-    }
+        ByteStream &stream;
+        OpcodeTable opcodeTable;
 
-    void parse() {
-        uint32_t numberOfOpcodes = stream.popULEB128();
-        for(uint32_t i = 0; i < numberOfOpcodes; i++) {
-            opcodeTable.addInstruction(i, stream.readCString());
+    protected:
+        OpcodeTableParser(ByteStream &stream) : stream(stream) {
         }
-    }
 
-    OpcodeTable getParsedTable() {
-        return opcodeTable;
-    }
+        void parse() {
+            uint32_t numberOfOpcodes = stream.popULEB128();
+            for (uint32_t i = 0; i < numberOfOpcodes; i++) {
+                opcodeTable.addInstruction(i, stream.readCString());
+            }
+        }
 
-public:
-    static OpcodeTable parse(ByteStream& stream) {
-        OpcodeTableParser parser(stream);
-        parser.parse();
-        return parser.getParsedTable();
-    }
-};
+        OpcodeTable getParsedTable() {
+            return opcodeTable;
+        }
 
+    public:
+        static OpcodeTable parse(ByteStream &stream) {
+            OpcodeTableParser parser(stream);
+            parser.parse();
+            return parser.getParsedTable();
+        }
+    };
+}
 
 #endif //WASMINT_OPCODETABLEPARSER_H

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "FunctionTable.h"
+
+namespace wasm_module {
+
+}

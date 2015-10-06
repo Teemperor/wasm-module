@@ -17,3 +17,7 @@
 
 
 #include "Break.h"
+
+namespace wasm_module {
+
+}

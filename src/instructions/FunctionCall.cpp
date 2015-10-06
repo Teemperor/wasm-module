@@ -17,3 +17,7 @@
 
 
 #include "FunctionCall.h"
+
+namespace wasm_module {
+
+}

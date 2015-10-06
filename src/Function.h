@@ -27,23 +27,27 @@
 #include <memory>
 #include <instructions/Instruction.h>
 
-class Instruction;
+namespace wasm_module {
 
-class Function : public FunctionContext {
+    class Instruction;
 
-    /**
+    class Function : public FunctionContext {
+
+        /**
      * The AST of this function which contains all instructions of this function.
      */
-    Instruction* mainInstruction_;
+        Instruction *mainInstruction_;
 
-public:
-    Function(FunctionContext& context, Instruction* mainInstruction);
-    virtual ~Function();
+    public:
+        Function(FunctionContext &context, Instruction *mainInstruction);
 
-    Instruction* mainInstruction() {
-        return mainInstruction_;
-    }
-};
+        virtual ~Function();
 
+        Instruction *mainInstruction() {
+            return mainInstruction_;
+        }
+    };
+
+}
 
 #endif //WASMINT_FUNCTION_H

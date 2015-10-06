@@ -21,32 +21,34 @@
 #include <ModuleContext.h>
 #include "Instruction.h"
 
-class Literal : public Instruction {
+namespace wasm_module {
 
-public:
-    Variable literalValue;
+    class Literal : public Instruction {
 
-    Literal(ByteStream& stream, ModuleContext& context) {
-        uint32_t typeId = stream.popULEB128();
+    public:
+        Variable literalValue;
 
-        Type* type = context.typeTable().getType(typeId);
+        Literal(ByteStream &stream, ModuleContext &context) {
+            uint32_t typeId = stream.popULEB128();
 
-        literalValue = Variable(type);
-        type->parse(stream, literalValue.value());
-    }
+            Type *type = context.typeTable().getType(typeId);
 
-    virtual std::vector<Type*> childrenTypes() {
-        return {};
-    }
+            literalValue = Variable(type);
+            type->parse(stream, literalValue.value());
+        }
 
-    virtual std::string name() {
-        return "literal";
-    }
+        virtual std::vector<Type *> childrenTypes() {
+            return {};
+        }
 
-    virtual Type* returnType() {
-        return &literalValue.type();
-    }
-};
+        virtual std::string name() {
+            return "literal";
+        }
 
+        virtual Type *returnType() {
+            return &literalValue.type();
+        }
+    };
+}
 
 #endif //WASMINT_LITERAL_H

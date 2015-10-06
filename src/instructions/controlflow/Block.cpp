@@ -17,3 +17,7 @@
 
 
 #include "Block.h"
+
+namespace wasm_module {
+
+}

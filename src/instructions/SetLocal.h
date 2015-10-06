@@ -23,29 +23,33 @@
 #include <types/Int32.h>
 #include <FunctionContext.h>
 
-class SetLocal : public Instruction {
+namespace wasm_module {
 
-    Type* expectedType;
+    class SetLocal : public Instruction {
 
-public:
-    uint32_t localIndex;
-    SetLocal(ByteStream& stream, FunctionContext& functionContext) {
-        localIndex = stream.popULEB128();
-        expectedType = functionContext.pureLocals().at(localIndex);
-    }
+        Type *expectedType;
 
-    virtual std::string name() {
-        return "set_local";
-    }
+    public:
+        uint32_t localIndex;
 
-    virtual std::vector<Type*> childrenTypes() {
-        return {expectedType};
-    }
+        SetLocal(ByteStream &stream, FunctionContext &functionContext) {
+            localIndex = stream.popULEB128();
+            expectedType = functionContext.pureLocals().at(localIndex);
+        }
 
-    virtual Type* returnType() {
-        return expectedType;
-    }
-};
+        virtual std::string name() {
+            return "set_local";
+        }
 
+        virtual std::vector<Type *> childrenTypes() {
+            return {expectedType};
+        }
+
+        virtual Type *returnType() {
+            return expectedType;
+        }
+    };
+
+}
 
 #endif //WASMINT_SETLOCAL_H

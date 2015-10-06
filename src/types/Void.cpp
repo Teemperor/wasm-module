@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "Void.h"
+
+namespace wasm_module {
+
+}

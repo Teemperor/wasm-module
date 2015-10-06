@@ -17,3 +17,7 @@
 
 
 #include "ByteStream.h"
+
+namespace wasm_module {
+
+}

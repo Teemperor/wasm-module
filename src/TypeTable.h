@@ -23,31 +23,34 @@
 #include "types/Type.h"
 #include "ExceptionWithMessage.h"
 
-ExceptionMessage(UnknownLocalTypeCode)
 
-class TypeTable {
+namespace wasm_module {
 
-    std::map<uint32_t, std::string> typesByLocalTypeCode;
+    ExceptionMessage(UnknownLocalTypeCode)
 
-public:
-    TypeTable() {
-    }
+    class TypeTable {
 
-    void addType(uint32_t localTypeCode, std::string name) {
-        typesByLocalTypeCode[localTypeCode] = name;
-    }
+        std::map<uint32_t, std::string> typesByLocalTypeCode;
 
-    Type * getType(uint32_t localTypeCode);
-
-    std::string getTypeName(uint32_t localTypeCode) {
-        auto result = typesByLocalTypeCode.find(localTypeCode);
-        if (result == typesByLocalTypeCode.end()) {
-            throw UnknownLocalTypeCode(std::to_string(localTypeCode));
-        } else {
-            return result->second;
+    public:
+        TypeTable() {
         }
-    }
-};
 
+        void addType(uint32_t localTypeCode, std::string name) {
+            typesByLocalTypeCode[localTypeCode] = name;
+        }
+
+        Type *getType(uint32_t localTypeCode);
+
+        std::string getTypeName(uint32_t localTypeCode) {
+            auto result = typesByLocalTypeCode.find(localTypeCode);
+            if (result == typesByLocalTypeCode.end()) {
+                throw UnknownLocalTypeCode(std::to_string(localTypeCode));
+            } else {
+                return result->second;
+            }
+        }
+    };
+}
 
 #endif //WASMINT_TYPETABLE_H

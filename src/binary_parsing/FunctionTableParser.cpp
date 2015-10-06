@@ -17,3 +17,7 @@
 
 
 #include "FunctionTableParser.h"
+
+namespace wasm_module {
+
+}

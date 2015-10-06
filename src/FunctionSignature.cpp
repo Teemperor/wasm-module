@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "FunctionSignature.h"
+
+namespace wasm_module {
+
+}

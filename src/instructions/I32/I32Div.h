@@ -21,24 +21,27 @@
 #include <instructions/Instruction.h>
 #include <types/Int32.h>
 
-class DivisionThroughZero : std::exception {};
+namespace wasm_module {
 
-class I32Div : public Instruction {
+    class DivisionThroughZero : std::exception {
+    };
 
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Int32::instance(), Int32::instance()};
-    }
+    class I32Div : public Instruction {
 
-    virtual std::string name() {
-        return "int32.div";
-    }
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Int32::instance(), Int32::instance()};
+        }
+
+        virtual std::string name() {
+            return "int32.div";
+        }
 
 
-    virtual Type* returnType() {
-        return Int32::instance();
-    }
-};
-
+        virtual Type *returnType() {
+            return Int32::instance();
+        }
+    };
+}
 
 #endif //WASMINT_I32DIV_H

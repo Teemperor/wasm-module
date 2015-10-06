@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "ModuleContext.h"
+
+namespace wasm_module {
+
+}

@@ -24,21 +24,22 @@
 #include "Break.h"
 #include "Continue.h"
 
-class DoWhile : public Instruction {
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Void::instance(), Int32::instance()};
-    }
+namespace wasm_module {
 
-    virtual std::string name() {
-        return "do_while";
-    }
+    class DoWhile : public Instruction {
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Void::instance(), Int32::instance()};
+        }
 
-    virtual Type* returnType() {
-        return Void::instance();
-    }
-};
+        virtual std::string name() {
+            return "do_while";
+        }
 
-
+        virtual Type *returnType() {
+            return Void::instance();
+        }
+    };
+}
 
 #endif //WASMINT_DOWHILE_H

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-//
-// Created by teemperor on 21.06.15.
-//
 
 #include "Global.h"
+
+namespace wasm_module {
+
+}

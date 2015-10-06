@@ -21,21 +21,23 @@
 #include <instructions/Instruction.h>
 #include <types/Int32.h>
 
-class Int32Store : public Instruction {
+namespace wasm_module {
 
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Int32::instance(), Int32::instance()};
-    }
+    class Int32Store : public Instruction {
 
-    virtual Type* returnType() {
-        return Int32::instance();
-    }
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Int32::instance(), Int32::instance()};
+        }
 
-    virtual std::string name() {
-        return "int32.store";
-    }
-};
+        virtual Type *returnType() {
+            return Int32::instance();
+        }
 
+        virtual std::string name() {
+            return "int32.store";
+        }
+    };
+}
 
 #endif //WASMINt_STOREHEAP_H

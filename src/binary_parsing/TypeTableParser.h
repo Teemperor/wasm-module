@@ -22,32 +22,34 @@
 #include <string>
 #include <TypeTable.h>
 
-class TypeTableParser {
-    ByteStream& stream;
-    TypeTable typeTable;
+namespace wasm_module {
 
-protected:
-    TypeTableParser(ByteStream& stream) : stream(stream) {
-    }
+    class TypeTableParser {
+        ByteStream &stream;
+        TypeTable typeTable;
 
-    void parse() {
-        uint32_t numberOfTypes = stream.popULEB128();
-        for(uint32_t i = 0; i < numberOfTypes; i++) {
-            typeTable.addType(i, stream.readCString());
+    protected:
+        TypeTableParser(ByteStream &stream) : stream(stream) {
         }
-    }
 
-    TypeTable getParsedTable() {
-        return typeTable;
-    }
+        void parse() {
+            uint32_t numberOfTypes = stream.popULEB128();
+            for (uint32_t i = 0; i < numberOfTypes; i++) {
+                typeTable.addType(i, stream.readCString());
+            }
+        }
 
-public:
-    static TypeTable parse(ByteStream& stream) {
-        TypeTableParser parser(stream);
-        parser.parse();
-        return parser.getParsedTable();
-    }
-};
+        TypeTable getParsedTable() {
+            return typeTable;
+        }
 
+    public:
+        static TypeTable parse(ByteStream &stream) {
+            TypeTableParser parser(stream);
+            parser.parse();
+            return parser.getParsedTable();
+        }
+    };
+}
 
 #endif //WASMINT_TYPETABLEPARSER_H

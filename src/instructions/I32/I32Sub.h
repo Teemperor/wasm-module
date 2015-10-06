@@ -21,22 +21,24 @@
 #include <instructions/Instruction.h>
 #include <types/Int32.h>
 
-class I32Sub : public Instruction {
+namespace wasm_module {
 
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Int32::instance(), Int32::instance()};
-    }
+    class I32Sub : public Instruction {
 
-    virtual std::string name() {
-        return "int32.sub";
-    }
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Int32::instance(), Int32::instance()};
+        }
+
+        virtual std::string name() {
+            return "int32.sub";
+        }
 
 
-    virtual Type* returnType() {
-        return Int32::instance();
-    }
-};
-
+        virtual Type *returnType() {
+            return Int32::instance();
+        }
+    };
+}
 
 #endif //WASMINT_I32SUB_H

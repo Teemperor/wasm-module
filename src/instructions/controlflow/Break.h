@@ -21,22 +21,26 @@
 #include <instructions/Instruction.h>
 #include <types/Void.h>
 
-class CalledBreak {};
+namespace wasm_module {
 
-class Break : public Instruction {
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {};
-    }
-    virtual std::string name() {
-        return "break";
-    }
+    class CalledBreak {
+    };
 
-    virtual Type* returnType() {
-        return Void::instance();
-    }
-};
+    class Break : public Instruction {
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {};
+        }
 
+        virtual std::string name() {
+            return "break";
+        }
+
+        virtual Type *returnType() {
+            return Void::instance();
+        }
+    };
+}
 
 
 #endif //WASMINT_BREAK_H

@@ -17,3 +17,7 @@
 
 
 #include "OpcodeTableParser.h"
+
+namespace wasm_module {
+
+}

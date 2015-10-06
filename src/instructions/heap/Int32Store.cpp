@@ -17,3 +17,7 @@
 
 
 #include "Int32Store.h"
+
+namespace wasm_module {
+
+}

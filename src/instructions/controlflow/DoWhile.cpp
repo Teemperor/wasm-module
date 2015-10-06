@@ -17,3 +17,7 @@
 
 
 #include "DoWhile.h"
+
+namespace wasm_module {
+
+}

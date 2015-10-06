@@ -17,3 +17,7 @@
 
 
 #include "Forever.h"
+
+namespace wasm_module {
+
+}

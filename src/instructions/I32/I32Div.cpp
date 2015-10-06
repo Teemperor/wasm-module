@@ -17,3 +17,7 @@
 
 
 #include "I32Div.h"
+
+namespace wasm_module {
+
+}

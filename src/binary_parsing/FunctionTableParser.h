@@ -20,33 +20,36 @@
 
 #include <FunctionTable.h>
 
-class FunctionTableParser {
+namespace wasm_module {
 
-    ByteStream& stream;
-    FunctionTable functionTable;
+    class FunctionTableParser {
 
-protected:
-    FunctionTableParser(ByteStream& stream) : stream(stream) {
-    }
+        ByteStream &stream;
+        FunctionTable functionTable;
 
-    void parse() {
-        uint32_t numberOfFunctions = stream.popULEB128();
-        for(uint32_t i = 0; i < numberOfFunctions; i++) {
-            functionTable.addFunctionSignature(FunctionSignature());
+    protected:
+        FunctionTableParser(ByteStream &stream) : stream(stream) {
         }
-    }
 
-    FunctionTable getParsedTable() {
-        return functionTable;
-    }
+        void parse() {
+            uint32_t numberOfFunctions = stream.popULEB128();
+            for (uint32_t i = 0; i < numberOfFunctions; i++) {
+                functionTable.addFunctionSignature(FunctionSignature());
+            }
+        }
 
-public:
-    static FunctionTable parse(ByteStream& stream) {
-        FunctionTableParser parser(stream);
-        parser.parse();
-        return parser.getParsedTable();
-    }
-};
+        FunctionTable getParsedTable() {
+            return functionTable;
+        }
 
+    public:
+        static FunctionTable parse(ByteStream &stream) {
+            FunctionTableParser parser(stream);
+            parser.parse();
+            return parser.getParsedTable();
+        }
+    };
+
+}
 
 #endif //WASMINT_FUNCTIONTABLEPARSER_H

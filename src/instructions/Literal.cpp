@@ -17,3 +17,7 @@
 
 
 #include "Literal.h"
+
+namespace wasm_module {
+
+}

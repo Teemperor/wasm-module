@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "types/Type.h"
+
+namespace wasm_module {
+
+}

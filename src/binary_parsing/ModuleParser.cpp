@@ -17,3 +17,7 @@
 
 
 #include "ModuleParser.h"
+
+namespace wasm_module {
+
+}

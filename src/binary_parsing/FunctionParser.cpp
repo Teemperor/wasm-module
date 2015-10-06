@@ -17,3 +17,7 @@
 
 
 #include "FunctionParser.h"
+
+namespace wasm_module {
+
+}

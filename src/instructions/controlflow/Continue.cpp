@@ -17,3 +17,7 @@
 
 
 #include "Continue.h"
+
+namespace wasm_module {
+
+}

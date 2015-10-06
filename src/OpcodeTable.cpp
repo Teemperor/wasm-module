@@ -15,5 +15,8 @@
  */
 
 
-
 #include "OpcodeTable.h"
+
+namespace wasm_module {
+
+}

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "ExceptionWithMessage.h"
+
+namespace wasm_module {
+
+}

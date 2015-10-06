@@ -23,13 +23,16 @@
 #include <ModuleContext.h>
 #include "Instruction.h"
 
-ExceptionMessage(UnknownInstructionName)
+namespace wasm_module {
 
-class InstructionSet {
+    ExceptionMessage(UnknownInstructionName)
 
-public:
-    static Instruction * getInstruction(std::string name, ByteStream& stream, ModuleContext& context, FunctionContext& functionContext);
-};
+    class InstructionSet {
 
+    public:
+        static Instruction *getInstruction(std::string name, ByteStream &stream, ModuleContext &context,
+                                           FunctionContext &functionContext);
+    };
+}
 
 #endif //WASMINT_INSTRUCTIONSET_H

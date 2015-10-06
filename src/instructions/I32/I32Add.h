@@ -22,22 +22,24 @@
 #include <assert.h>
 #include "instructions/Instruction.h"
 
-class I32Add : public Instruction {
+namespace wasm_module {
 
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Int32::instance(), Int32::instance()};
-    }
+    class I32Add : public Instruction {
 
-    virtual std::string name() {
-        return "int32.add";
-    }
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Int32::instance(), Int32::instance()};
+        }
+
+        virtual std::string name() {
+            return "int32.add";
+        }
 
 
-    virtual Type* returnType() {
-        return Int32::instance();
-    }
-};
-
+        virtual Type *returnType() {
+            return Int32::instance();
+        }
+    };
+}
 
 #endif //WASMINT_I32ADD_H

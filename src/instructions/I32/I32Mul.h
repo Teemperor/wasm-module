@@ -21,22 +21,24 @@
 #include <instructions/Instruction.h>
 #include <types/Int32.h>
 
-class I32Mul : public Instruction {
+namespace wasm_module {
 
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Int32::instance(), Int32::instance()};
-    }
+    class I32Mul : public Instruction {
 
-    virtual std::string name() {
-        return "int32.mul";
-    }
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Int32::instance(), Int32::instance()};
+        }
+
+        virtual std::string name() {
+            return "int32.mul";
+        }
 
 
-    virtual Type* returnType() {
-        return Int32::instance();
-    }
-};
-
+        virtual Type *returnType() {
+            return Int32::instance();
+        }
+    };
+}
 
 #endif //WASMINT_I32MUL_H

@@ -19,3 +19,7 @@
 //
 
 #include "SetGlobal.h"
+
+namespace wasm_module {
+
+}

@@ -19,10 +19,14 @@
 #include "Function.h"
 #include <instructions/Instruction.h>
 
-Function::Function(FunctionContext& context, Instruction* mainInstruction)
-        : FunctionContext(context), mainInstruction_(mainInstruction) {
-}
+namespace wasm_module {
 
-Function::~Function() {
-    delete mainInstruction_;
+    Function::Function(FunctionContext &context, Instruction *mainInstruction)
+            : FunctionContext(context), mainInstruction_(mainInstruction) {
+    }
+
+    Function::~Function() {
+        delete mainInstruction_;
+    }
+
 }

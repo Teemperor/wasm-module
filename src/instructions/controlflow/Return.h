@@ -22,26 +22,28 @@
 #include <types/Int32.h>
 #include <types/Void.h>
 
-class CalledReturn {
-public:
-    Variable result;
-};
+namespace wasm_module {
 
-class Return : public Instruction {
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Int32::instance()};
-    }
+    class CalledReturn {
+    public:
+        Variable result;
+    };
 
-    virtual std::string name() {
-        return "return";
-    }
+    class Return : public Instruction {
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Int32::instance()};
+        }
 
-    virtual Type* returnType() {
-        return Void::instance();
-    }
-};
+        virtual std::string name() {
+            return "return";
+        }
 
+        virtual Type *returnType() {
+            return Void::instance();
+        }
+    };
 
+}
 
 #endif //WASMINT_RETURN_H

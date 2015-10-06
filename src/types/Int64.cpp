@@ -17,3 +17,6 @@
 
 
 #include "Int64.h"
+namespace wasm_module {
+
+}

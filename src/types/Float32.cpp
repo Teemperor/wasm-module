@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-
-
 #include "Float32.h"
+
+namespace wasm_module {
+}

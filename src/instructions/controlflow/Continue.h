@@ -21,22 +21,26 @@
 #include <instructions/Instruction.h>
 #include <types/Void.h>
 
-class CalledContinue {};
+namespace wasm_module {
 
-class Continue : public Instruction {
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {};
-    }
-    virtual std::string name() {
-        return "continue";
-    }
+    class CalledContinue {
+    };
 
-    virtual Type* returnType() {
-        return Void::instance();
-    }
-};
+    class Continue : public Instruction {
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {};
+        }
 
+        virtual std::string name() {
+            return "continue";
+        }
 
+        virtual Type *returnType() {
+            return Void::instance();
+        }
+    };
+
+}
 
 #endif //WASMINT_CONTINUE_H

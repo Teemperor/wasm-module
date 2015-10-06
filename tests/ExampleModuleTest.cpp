@@ -32,6 +32,8 @@
 #define GET_GLOBAL 0x8
 #define SET_GLOBAL 0x9
 
+using namespace wasm_module;
+
 int main() {
     std::deque<uint8_t> data = {
             // Module header
@@ -99,22 +101,22 @@ int main() {
             0x1, // local variable 0x1 with type int32
 
             BLOCK, 0x6, // we start a new block with 6 instructions in it
-                SET_GLOBAL, 0x0, LITERAL, 0x1, 32, // set our only global to 32
-                SET_LOCAL, 0x0, LITERAL, 0x1, 3, // set_local the variable with index 0 to 3
-                SET_LOCAL, 0x1, LITERAL, 0x1, 4, // set_local the variable with index 1 to 4
-                PRINT, // print the result of
-                    INT32_ADD, // int32.add with
-                        GET_LOCAL, 0x0, // an variable at index 0x0 as first argument
-                        GET_LOCAL, 0x1, // an variable at index 0x1 as second argument
-                CALL, 0x1, // call the test function
-                CALL, 0x1, // call the test function again
+            SET_GLOBAL, 0x0, LITERAL, 0x1, 32, // set our only global to 32
+            SET_LOCAL, 0x0, LITERAL, 0x1, 3, // set_local the variable with index 0 to 3
+            SET_LOCAL, 0x1, LITERAL, 0x1, 4, // set_local the variable with index 1 to 4
+            PRINT, // print the result of
+            INT32_ADD, // int32.add with
+            GET_LOCAL, 0x0, // an variable at index 0x0 as first argument
+            GET_LOCAL, 0x1, // an variable at index 0x1 as second argument
+            CALL, 0x1, // call the test function
+            CALL, 0x1, // call the test function again
 
             // the test function
             1, // number of locals
             0x1, // local variable 0x0 with type int32
 
             BLOCK, 0x1, // we start a new block with 1 instruction in it
-                PRINT, GET_GLOBAL, 0x0, // print the 32 from the global (that was set in main)
+            PRINT, GET_GLOBAL, 0x0, // print the 32 from the global (that was set in main)
     };
 
     ByteStream stream(data);

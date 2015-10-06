@@ -20,22 +20,25 @@
 #include <string>
 #include <types/Type.h>
 
-class Global {
-    std::string name_;
-    Type* type_;
-public:
-    Global(std::string name, Type* type) : name_(name), type_(type) {
+namespace wasm_module {
 
-    }
+    class Global {
+        std::string name_;
+        Type *type_;
+    public:
+        Global(std::string name, Type *type) : name_(name), type_(type) {
 
-    std::string name() {
-        return name_;
-    }
+        }
 
-    Type* type() {
-        return type_;
-    }
-};
+        std::string name() {
+            return name_;
+        }
 
+        Type *type() {
+            return type_;
+        }
+    };
+
+}
 
 #endif //WASMINT_GLOBAL_H

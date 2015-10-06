@@ -22,6 +22,7 @@
 #include <string>
 #include <binary_parsing/ByteStream.h>
 
+
 class ExceptionWithMessage : public std::exception {
 
     std::string message_;
@@ -30,7 +31,7 @@ public:
     ExceptionWithMessage(std::string message) : message_(message) {
     }
 
-    virtual const char* what() const noexcept {
+    virtual const char *what() const noexcept {
         return message_.c_str();
     }
 

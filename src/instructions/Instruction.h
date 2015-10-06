@@ -24,31 +24,35 @@
 #include "types/Type.h"
 #include "Variable.h"
 
-class InstructionState;
+namespace wasm_module {
 
-class Instruction {
+    class InstructionState;
 
-    std::vector<Instruction*> children_;
+    class Instruction {
 
-public:
-    virtual ~Instruction() {
-        for(Instruction* child : children()) {
-            delete child;
+        std::vector<Instruction *> children_;
+
+    public:
+        virtual ~Instruction() {
+            for (Instruction *child : children()) {
+                delete child;
+            }
         }
-    }
 
-    virtual void children(std::vector<Instruction*> newChildren) {
-        children_ = newChildren;
-    }
-    std::vector<Instruction*> children() {
-        return children_;
-    }
+        virtual void children(std::vector<Instruction *> newChildren) {
+            children_ = newChildren;
+        }
 
-    virtual std::string name() = 0;
+        std::vector<Instruction *> children() {
+            return children_;
+        }
 
-    virtual std::vector<Type*> childrenTypes() = 0;
-    virtual Type* returnType() = 0;
-};
+        virtual std::string name() = 0;
 
+        virtual std::vector<Type *> childrenTypes() = 0;
+
+        virtual Type *returnType() = 0;
+    };
+}
 
 #endif //WASMINT_OPCODE_H

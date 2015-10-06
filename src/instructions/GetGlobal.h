@@ -21,32 +21,34 @@
 #include <ModuleContext.h>
 #include "Instruction.h"
 
-class GetGlobal : public Instruction {
+namespace wasm_module {
 
-    Type* returnType_;
+    class GetGlobal : public Instruction {
 
-public:
-    std::string globalName;
+        Type *returnType_;
 
-    GetGlobal(ByteStream& stream, ModuleContext& context) {
-        uint32_t globalIndex = stream.popULEB128();
-        returnType_ = context.globalTable().getGlobal(globalIndex).type();
-        globalName = context.globalTable().getGlobal(globalIndex).name();
-    }
+    public:
+        std::string globalName;
 
-    virtual std::string name() {
-        return "get_global";
-    }
+        GetGlobal(ByteStream &stream, ModuleContext &context) {
+            uint32_t globalIndex = stream.popULEB128();
+            returnType_ = context.globalTable().getGlobal(globalIndex).type();
+            globalName = context.globalTable().getGlobal(globalIndex).name();
+        }
 
-    virtual std::vector<Type*> childrenTypes() {
-        return {};
-    }
+        virtual std::string name() {
+            return "get_global";
+        }
 
-    virtual Type* returnType() {
-        return returnType_;
-    }
-};
+        virtual std::vector<Type *> childrenTypes() {
+            return {};
+        }
 
+        virtual Type *returnType() {
+            return returnType_;
+        }
+    };
 
+}
 
 #endif //WASMINT_GETGLOBAL_H

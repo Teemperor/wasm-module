@@ -17,3 +17,7 @@
 
 
 #include "Int32Load.h"
+
+namespace wasm_module {
+
+}

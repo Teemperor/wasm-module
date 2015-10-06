@@ -23,9 +23,11 @@
 #include <sexpr_parsing/CharacterStream.h>
 #include <sexpr_parsing/SExprParser.h>
 
+using namespace wasm_module;
+
 int main() {
     std::string str = "(module (memory 0 1))\n"
-                      "\t(module)";
+            "\t(module)";
 
     CharacterStream stream(str);
 

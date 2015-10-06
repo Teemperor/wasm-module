@@ -23,21 +23,23 @@
 #include "Break.h"
 #include "Continue.h"
 
-class Forever : public Instruction {
-public:
-    virtual std::vector<Type*> childrenTypes() {
-        return {Void::instance()};
-    }
+namespace wasm_module {
 
-    virtual std::string name() {
-        return "forever";
-    }
+    class Forever : public Instruction {
+    public:
+        virtual std::vector<Type *> childrenTypes() {
+            return {Void::instance()};
+        }
 
-    virtual Type* returnType() {
-        return Void::instance();
-    }
-};
+        virtual std::string name() {
+            return "forever";
+        }
 
+        virtual Type *returnType() {
+            return Void::instance();
+        }
+    };
 
+}
 
 #endif //WASMINT_FOREVER_H

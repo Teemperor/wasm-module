@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "FunctionContext.h"
+
+namespace wasm_module {
+
+}

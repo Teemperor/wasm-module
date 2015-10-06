@@ -17,3 +17,7 @@
 
 
 #include "If.h"
+
+namespace wasm_module {
+
+}

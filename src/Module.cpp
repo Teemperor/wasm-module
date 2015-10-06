@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "Module.h"
+
+namespace wasm_module {
+
+}

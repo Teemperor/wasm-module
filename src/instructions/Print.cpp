@@ -17,3 +17,7 @@
 
 
 #include "Print.h"
+
+namespace wasm_module {
+
+}

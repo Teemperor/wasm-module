@@ -19,3 +19,7 @@
 //
 
 #include "GlobalTableParser.h"
+
+namespace wasm_module {
+
+}

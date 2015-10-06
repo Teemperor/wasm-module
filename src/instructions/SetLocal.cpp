@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "SetLocal.h"
+
+namespace wasm_module {
+
+}

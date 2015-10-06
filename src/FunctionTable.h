@@ -23,29 +23,32 @@
 #include "FunctionSignature.h"
 #include "ExceptionWithMessage.h"
 
-ExceptionMessage(UnknownLocalFunctionId)
+namespace wasm_module {
+
+    ExceptionMessage(UnknownLocalFunctionId)
 
 /**
  * Maps local function ids to function signatures.
  */
-class FunctionTable {
+    class FunctionTable {
 
-    std::vector<FunctionSignature> functionNames_;
+        std::vector<FunctionSignature> functionNames_;
 
-public:
-    FunctionTable() {
-    }
+    public:
+        FunctionTable() {
+        }
 
-    void addFunctionSignature(FunctionSignature signature) {
-        functionNames_.push_back(signature);
-    }
+        void addFunctionSignature(FunctionSignature signature) {
+            functionNames_.push_back(signature);
+        }
 
-    FunctionSignature getFunctionSignature(uint32_t localFunctionId) {
-        if (localFunctionId > functionNames_.size())
-            throw UnknownLocalFunctionId(std::to_string(localFunctionId));
-        return functionNames_[localFunctionId];
-    }
-};
+        FunctionSignature getFunctionSignature(uint32_t localFunctionId) {
+            if (localFunctionId > functionNames_.size())
+                throw UnknownLocalFunctionId(std::to_string(localFunctionId));
+            return functionNames_[localFunctionId];
+        }
+    };
 
+}
 
 #endif //WASMINT_FUNCTIONTABLE_H

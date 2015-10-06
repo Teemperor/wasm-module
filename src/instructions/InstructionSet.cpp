@@ -38,48 +38,52 @@
 #include <instructions/heap/Int32Load.h>
 #include <instructions/heap/Int32Store.h>
 
-Instruction *InstructionSet::getInstruction(std::string name, ByteStream& stream, ModuleContext& context, FunctionContext& functionContext) {
-    if (name == "literal") {
-        return new Literal(stream, context);
-    } else if (name == "int32.add") {
-        return new I32Add();
-    } else if (name == "int32.sub") {
-        return new I32Sub();
-    } else if (name == "int32.mul") {
-        return new I32Mul();
-    } else if (name == "int32.div") {
-        return new I32Div();
-    } else if (name == "print") {
-        return new Print();
-    } else if (name == "call_direct") {
-        return new FunctionCall(stream, context);
-    } else if (name == "get_local") {
-        return new GetLocal(stream, functionContext);
-    } else if (name == "block") {
-        return new Block(stream);
-    } else if (name == "set_local") {
-        return new SetLocal(stream, functionContext);
-    } else if (name == "break") {
-        return new Break();
-    } else if (name == "continue") {
-        return new Continue();
-    } else if (name == "do_while") {
-        return new DoWhile();
-    } else if (name == "forever") {
-        return new Forever();
-    } else if (name == "int32.load") {
-        return new Int32Load();
-    } else if (name == "int32.store") {
-        return new Int32Store();
-    } else if (name == "if") {
-        return new If();
-    } else if (name == "return") {
-        return new Return();
-    } else if (name == "get_global") {
-        return new GetGlobal(stream, context);
-    } else if (name == "set_global") {
-        return new SetGlobal(stream, context);
-    } else {
-        throw UnknownInstructionName(name);
+namespace wasm_module {
+
+    Instruction *InstructionSet::getInstruction(std::string name, ByteStream &stream, ModuleContext &context,
+                                                FunctionContext &functionContext) {
+        if (name == "literal") {
+            return new Literal(stream, context);
+        } else if (name == "int32.add") {
+            return new I32Add();
+        } else if (name == "int32.sub") {
+            return new I32Sub();
+        } else if (name == "int32.mul") {
+            return new I32Mul();
+        } else if (name == "int32.div") {
+            return new I32Div();
+        } else if (name == "print") {
+            return new Print();
+        } else if (name == "call_direct") {
+            return new FunctionCall(stream, context);
+        } else if (name == "get_local") {
+            return new GetLocal(stream, functionContext);
+        } else if (name == "block") {
+            return new Block(stream);
+        } else if (name == "set_local") {
+            return new SetLocal(stream, functionContext);
+        } else if (name == "break") {
+            return new Break();
+        } else if (name == "continue") {
+            return new Continue();
+        } else if (name == "do_while") {
+            return new DoWhile();
+        } else if (name == "forever") {
+            return new Forever();
+        } else if (name == "int32.load") {
+            return new Int32Load();
+        } else if (name == "int32.store") {
+            return new Int32Store();
+        } else if (name == "if") {
+            return new If();
+        } else if (name == "return") {
+            return new Return();
+        } else if (name == "get_global") {
+            return new GetGlobal(stream, context);
+        } else if (name == "set_global") {
+            return new SetGlobal(stream, context);
+        } else {
+            throw UnknownInstructionName(name);
+        }
     }
 }

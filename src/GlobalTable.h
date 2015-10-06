@@ -22,32 +22,36 @@
 
 #include "ExceptionWithMessage.h"
 
-ExceptionMessage(NoGlobalWithIndex)
+namespace wasm_module {
 
-class GlobalTable {
 
-    std::vector<Global> globals;
-    std::vector<Global> internalGlobals_;
+    ExceptionMessage(NoGlobalWithIndex)
 
-public:
-    void addGlobal(Global global, bool internal) {
-        globals.push_back(global);
-        if (internal)
-            internalGlobals_.push_back(global);
-    }
+    class GlobalTable {
 
-    Global& getGlobal(uint32_t globalIndex) {
-        if (globalIndex >= globals.size())
-            throw NoGlobalWithIndex(std::to_string(globalIndex));
+        std::vector<Global> globals;
+        std::vector<Global> internalGlobals_;
 
-        return globals[globalIndex];
-    }
+    public:
+        void addGlobal(Global global, bool internal) {
+            globals.push_back(global);
+            if (internal)
+                internalGlobals_.push_back(global);
+        }
 
-    std::vector<Global> internalGlobals() {
-        return internalGlobals_;
-    }
+        Global &getGlobal(uint32_t globalIndex) {
+            if (globalIndex >= globals.size())
+                throw NoGlobalWithIndex(std::to_string(globalIndex));
 
-};
+            return globals[globalIndex];
+        }
 
+        std::vector<Global> internalGlobals() {
+            return internalGlobals_;
+        }
+
+    };
+
+}
 
 #endif //WASMINT_GLOBALTABLE_H

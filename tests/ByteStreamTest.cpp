@@ -21,6 +21,8 @@
 #include <cassert>
 #include <types/Int32.h>
 
+using namespace wasm_module;
+
 int main() {
     std::deque<uint8_t> data = {
             0x10, // 16u

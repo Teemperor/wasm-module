@@ -22,30 +22,33 @@
 #include <binary_parsing/ByteStream.h>
 #include <FunctionContext.h>
 
-class GetLocal : public Instruction {
+namespace wasm_module {
 
-    Type* returnType_;
+    class GetLocal : public Instruction {
 
-public:
-    uint32_t localIndex;
+        Type *returnType_;
 
-    GetLocal(ByteStream& stream, FunctionContext& context) {
-        localIndex = stream.popULEB128();
-        returnType_ = context.pureLocals().at(localIndex);
-    }
+    public:
+        uint32_t localIndex;
 
-    virtual std::string name() {
-        return "get_local";
-    }
+        GetLocal(ByteStream &stream, FunctionContext &context) {
+            localIndex = stream.popULEB128();
+            returnType_ = context.pureLocals().at(localIndex);
+        }
 
-    virtual std::vector<Type*> childrenTypes() {
-        return {};
-    }
+        virtual std::string name() {
+            return "get_local";
+        }
 
-    virtual Type* returnType() {
-        return returnType_;
-    }
-};
+        virtual std::vector<Type *> childrenTypes() {
+            return {};
+        }
 
+        virtual Type *returnType() {
+            return returnType_;
+        }
+    };
+
+}
 
 #endif //WASMINT_GETLOCAL_H

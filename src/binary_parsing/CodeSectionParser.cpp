@@ -17,3 +17,7 @@
 
 
 #include "CodeSectionParser.h"
+
+namespace wasm_module {
+
+}

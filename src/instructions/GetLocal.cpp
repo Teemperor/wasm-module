@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "GetLocal.h"
+
+namespace wasm_module {
+
+}

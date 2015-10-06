@@ -22,31 +22,34 @@
 #include <binary_parsing/ByteStream.h>
 #include <types/Void.h>
 
-class Block : public Instruction {
+namespace wasm_module {
 
-    uint32_t amountOfChildren;
+    class Block : public Instruction {
 
-public:
-    Block(ByteStream& stream) {
-        amountOfChildren = stream.popULEB128();
-    }
+        uint32_t amountOfChildren;
 
-    virtual std::string name() {
-        return "block";
-    }
-
-    virtual std::vector<Type*> childrenTypes() {
-        std::vector<Type*> result;
-        for(uint32_t i = 0; i < amountOfChildren; i++) {
-            result.push_back(Void::instance());
+    public:
+        Block(ByteStream &stream) {
+            amountOfChildren = stream.popULEB128();
         }
-        return result;
-    }
 
-    virtual Type* returnType() {
-        return Void::instance();
-    }
-};
+        virtual std::string name() {
+            return "block";
+        }
 
+        virtual std::vector<Type *> childrenTypes() {
+            std::vector<Type *> result;
+            for (uint32_t i = 0; i < amountOfChildren; i++) {
+                result.push_back(Void::instance());
+            }
+            return result;
+        }
+
+        virtual Type *returnType() {
+            return Void::instance();
+        }
+    };
+
+}
 
 #endif //WASMINT_BLOCK_H

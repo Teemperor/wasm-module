@@ -19,3 +19,7 @@
 //
 
 #include "GetGlobal.h"
+
+namespace wasm_module {
+
+}

@@ -23,31 +23,34 @@
 #include <ModuleContext.h>
 #include "Instruction.h"
 
-class SetGlobal : public Instruction {
+namespace wasm_module {
 
-    Type* expectedType;
+    class SetGlobal : public Instruction {
 
-public:
-    std::string globalName;
-    SetGlobal(ByteStream& stream, ModuleContext& context) {
-        uint32_t globalIndex = stream.popULEB128();
-        expectedType = context.globalTable().getGlobal(globalIndex).type();
-        globalName = context.globalTable().getGlobal(globalIndex).name();
-    }
+        Type *expectedType;
 
-    virtual std::string name() {
-        return "set_global";
-    }
+    public:
+        std::string globalName;
 
-    virtual std::vector<Type*> childrenTypes() {
-        return {expectedType};
-    }
+        SetGlobal(ByteStream &stream, ModuleContext &context) {
+            uint32_t globalIndex = stream.popULEB128();
+            expectedType = context.globalTable().getGlobal(globalIndex).type();
+            globalName = context.globalTable().getGlobal(globalIndex).name();
+        }
 
-    virtual Type* returnType() {
-        return expectedType;
-    }
-};
+        virtual std::string name() {
+            return "set_global";
+        }
 
+        virtual std::vector<Type *> childrenTypes() {
+            return {expectedType};
+        }
 
+        virtual Type *returnType() {
+            return expectedType;
+        }
+    };
+
+}
 
 #endif //WASMINT_SETGLOBAL_H

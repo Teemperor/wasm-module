@@ -24,58 +24,61 @@
 #include "../Section.h"
 #include "FunctionParser.h"
 
-class CodeSectionParser {
+namespace wasm_module {
 
-    ByteStream& stream;
+    class CodeSectionParser {
 
-    std::vector<Function*> functions;
-    std::vector<FunctionSignature> signatures;
+        ByteStream &stream;
 
-    ModuleContext& context;
+        std::vector<Function *> functions;
+        std::vector<FunctionSignature> signatures;
 
-    void parseFunctions() {
-        uint32_t numberOfFunctions = stream.popULEB128();
+        ModuleContext &context;
 
-        for (uint32_t i = 0; i < numberOfFunctions; i++) {
-            std::string functionName = stream.readCString();
-            bool exported = stream.popULEB128() != 0;
+        void parseFunctions() {
+            uint32_t numberOfFunctions = stream.popULEB128();
 
-            Type* returnType = context.typeTable().getType(stream.popULEB128());
+            for (uint32_t i = 0; i < numberOfFunctions; i++) {
+                std::string functionName = stream.readCString();
+                bool exported = stream.popULEB128() != 0;
 
-            uint32_t numberOfParameters = stream.popULEB128();
-            std::vector<Type*> parameters;
-            for (uint32_t j = 0; j < numberOfParameters; j++) {
-                parameters.push_back(context.typeTable().getType(stream.popULEB128()));
+                Type *returnType = context.typeTable().getType(stream.popULEB128());
+
+                uint32_t numberOfParameters = stream.popULEB128();
+                std::vector<Type *> parameters;
+                for (uint32_t j = 0; j < numberOfParameters; j++) {
+                    parameters.push_back(context.typeTable().getType(stream.popULEB128()));
+                }
+
+                uint32_t offset = stream.popULEB128();
+                FunctionSignature signature = FunctionSignature(functionName, returnType, parameters, exported);
+                signatures.push_back(signature);
+                context.functionTable().addFunctionSignature(signature);
             }
 
-            uint32_t offset = stream.popULEB128();
-            FunctionSignature signature = FunctionSignature(functionName, returnType, parameters, exported);
-            signatures.push_back(signature);
-            context.functionTable().addFunctionSignature(signature);
+            for (int i = 0; i < numberOfFunctions; i++) {
+                functions.push_back(FunctionParser::parse(context, signatures[i], stream));
+            }
         }
 
-        for (int i = 0; i < numberOfFunctions; i++) {
-            functions.push_back(FunctionParser::parse(context, signatures[i], stream));
+    protected:
+        CodeSectionParser(ModuleContext &context, ByteStream &stream)
+                : stream(stream), context(context) {
+
         }
-    }
 
-protected:
-    CodeSectionParser(ModuleContext& context, ByteStream& stream)
-            : stream(stream), context(context) {
+        Section *get(uint32_t offset) {
+            return new Section(offset, SectionType::CODE, functions);
+        }
 
-    }
+    public:
+        static Section *parse(uint32_t offset, ModuleContext &context, ByteStream &stream) {
+            CodeSectionParser parser(context, stream);
+            parser.parseFunctions();
+            return parser.get(offset);
+        }
+    };
 
-    Section* get(uint32_t offset) {
-        return new Section(offset, SectionType::CODE, functions);
-    }
-
-public:
-    static Section* parse(uint32_t offset, ModuleContext& context, ByteStream& stream) {
-        CodeSectionParser parser(context, stream);
-        parser.parseFunctions();
-        return parser.get(offset);
-    }
-};
-
+}
 
 #endif //INTERPRETER_SECTIONPARSER_H

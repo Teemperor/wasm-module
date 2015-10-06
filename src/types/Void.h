@@ -20,33 +20,37 @@
 
 #include <types/Type.h>
 
-class NoVoidLiteralsSupported : public std::exception {};
+namespace wasm_module {
 
-class Void : public Type {
+    class NoVoidLiteralsSupported : public std::exception {
+    };
 
-protected:
-    Void() {
-    }
+    class Void : public Type {
 
-public:
-    static Void* instance() {
-        static Void instance;
-        return &instance;
-    }
+    protected:
+        Void() {
+        }
 
-    virtual std::string name() {
-        return "void";
-    }
+    public:
+        static Void *instance() {
+            static Void instance;
+            return &instance;
+        }
 
-    virtual void parse(ByteStream& stream, void* data) {
-        throw NoVoidLiteralsSupported();
-    }
+        virtual std::string name() {
+            return "void";
+        }
 
-    virtual std::size_t size() {
-        return 1;
-    }
+        virtual void parse(ByteStream &stream, void *data) {
+            throw NoVoidLiteralsSupported();
+        }
 
-};
+        virtual std::size_t size() {
+            return 1;
+        }
 
+    };
+
+}
 
 #endif //WASMINT_VOID_H

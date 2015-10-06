@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-
-
 #include "Int32.h"
+
+namespace wasm_module {
+
+}

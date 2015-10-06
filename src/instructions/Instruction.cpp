@@ -16,3 +16,7 @@
 
 
 #include "Instruction.h"
+
+namespace wasm_module {
+
+}

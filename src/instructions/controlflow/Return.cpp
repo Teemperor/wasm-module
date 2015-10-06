@@ -17,3 +17,7 @@
 
 
 #include "Return.h"
+
+namespace wasm_module {
+
+}

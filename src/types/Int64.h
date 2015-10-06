@@ -21,54 +21,57 @@
 #include <types/Type.h>
 #include <Variable.h>
 
-class Int64  : public Type {
+namespace wasm_module {
 
-protected:
-    Int64() {
-    }
+    class Int64 : public Type {
 
-
-public:
-    static Int64* instance() {
-        static Int64 instance;
-        return &instance;
-    }
-
-    virtual std::string name() {
-        return "int64";
-    }
-
-    virtual void parse(ByteStream& stream, void* data) {
-        int64_t value = stream.popULEB128() << 32; // FIXME
-        value |= stream.popULEB128();
-        (*(int64_t*)data) = value;
-    }
-
-    static int64_t getValue(Variable variable) {
-        if (variable.type() == *instance()) {
-            int64_t result = 0;
-            int64_t* data = (int64_t*) variable.value();
-            result = *data;
-            return result;
-        } else {
-            throw IncompatibleType();
+    protected:
+        Int64() {
         }
-    }
 
-    static void setValue(Variable variable, int32_t value) {
-        if (variable.type() == *instance()) {
-            int32_t* data = (int32_t*) variable.value();
-            (*data) = value;
-        } else {
-            throw IncompatibleType();
+
+    public:
+        static Int64 *instance() {
+            static Int64 instance;
+            return &instance;
         }
-    }
 
-    virtual std::size_t size() {
-        return 8;
-    }
+        virtual std::string name() {
+            return "int64";
+        }
 
-};
+        virtual void parse(ByteStream &stream, void *data) {
+            int64_t value = stream.popULEB128() << 32; // FIXME
+            value |= stream.popULEB128();
+            (*(int64_t *) data) = value;
+        }
+
+        static int64_t getValue(Variable variable) {
+            if (variable.type() == *instance()) {
+                int64_t result = 0;
+                int64_t *data = (int64_t *) variable.value();
+                result = *data;
+                return result;
+            } else {
+                throw IncompatibleType();
+            }
+        }
+
+        static void setValue(Variable variable, int32_t value) {
+            if (variable.type() == *instance()) {
+                int32_t *data = (int32_t *) variable.value();
+                (*data) = value;
+            } else {
+                throw IncompatibleType();
+            }
+        }
+
+        virtual std::size_t size() {
+            return 8;
+        }
+
+    };
+}
 
 
 #endif //WASMINT_INT64_H
