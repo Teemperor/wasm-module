@@ -40,7 +40,7 @@
 
 namespace wasm_module {
 
-    Instruction *InstructionSet::getInstruction(std::string name, ByteStream &stream, ModuleContext &context,
+    Instruction *InstructionSet::getInstruction(std::string name, binary::ByteStream &stream, ModuleContext &context,
                                                 FunctionContext &functionContext) {
         if (name == "literal") {
             return new Literal(stream, context);

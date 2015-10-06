@@ -31,7 +31,7 @@ namespace wasm_module {
     public:
         uint32_t localIndex;
 
-        GetLocal(ByteStream &stream, FunctionContext &context) {
+        GetLocal(binary::ByteStream &stream, FunctionContext &context) {
             localIndex = stream.popULEB128();
             returnType_ = context.pureLocals().at(localIndex);
         }

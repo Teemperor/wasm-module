@@ -24,7 +24,7 @@
 #include "../Section.h"
 #include "FunctionParser.h"
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
     class CodeSectionParser {
 
@@ -79,6 +79,6 @@ namespace wasm_module {
         }
     };
 
-}
+}}
 
 #endif //INTERPRETER_SECTIONPARSER_H

@@ -41,7 +41,7 @@ namespace wasm_module {
             return "void";
         }
 
-        virtual void parse(ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) {
             throw NoVoidLiteralsSupported();
         }
 

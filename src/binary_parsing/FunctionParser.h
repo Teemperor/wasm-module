@@ -26,7 +26,7 @@
 #include <ModuleContext.h>
 #include "ByteStream.h"
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
     ExceptionMessage(InvalidParameterType)
 
@@ -101,6 +101,6 @@ namespace wasm_module {
         }
     };
 
-}
+}}
 
 #endif //WASMINT_FUNCTIONPARSER_H

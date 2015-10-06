@@ -20,6 +20,6 @@
 
 #include "GlobalTableParser.h"
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
-}
+}}

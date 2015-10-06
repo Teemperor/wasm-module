@@ -24,7 +24,7 @@
 #include <sstream>
 #include <vector>
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
     class LEB128PayloadBiggerThan32Bit : public std::exception {
     };
@@ -108,6 +108,6 @@ namespace wasm_module {
 
     };
 
-}
+}}
 
 #endif //INTERPRETER_BYTESTREAM_H

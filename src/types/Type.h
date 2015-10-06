@@ -50,7 +50,7 @@ namespace wasm_module {
 
         virtual std::string name() = 0;
 
-        virtual void parse(ByteStream &stream, void *data) = 0;
+        virtual void parse(binary::ByteStream &stream, void *data) = 0;
 
         virtual std::size_t size() = 0;
 

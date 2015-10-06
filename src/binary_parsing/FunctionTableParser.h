@@ -20,7 +20,7 @@
 
 #include <FunctionTable.h>
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
     class FunctionTableParser {
 
@@ -50,6 +50,6 @@ namespace wasm_module {
         }
     };
 
-}
+}}
 
 #endif //WASMINT_FUNCTIONTABLEPARSER_H

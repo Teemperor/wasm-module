@@ -32,7 +32,7 @@ int main() {
             0x9b, 0xf1, 0x59 // -624485s
     };
 
-    ByteStream stream(data);
+    binary::ByteStream stream(data);
 
     uint32_t leb = stream.popULEB128();
     assert (leb == 16);

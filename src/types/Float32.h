@@ -40,7 +40,7 @@ namespace wasm_module {
             return "float32";
         }
 
-        virtual void parse(ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) {
             ((uint8_t *) data)[0] = stream.popChar();
             ((uint8_t *) data)[1] = stream.popChar();
             ((uint8_t *) data)[2] = stream.popChar();

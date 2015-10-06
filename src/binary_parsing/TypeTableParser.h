@@ -22,7 +22,7 @@
 #include <string>
 #include <TypeTable.h>
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
     class TypeTableParser {
         ByteStream &stream;
@@ -50,6 +50,6 @@ namespace wasm_module {
             return parser.getParsedTable();
         }
     };
-}
+}}
 
 #endif //WASMINT_TYPETABLEPARSER_H

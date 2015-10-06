@@ -29,7 +29,7 @@ namespace wasm_module {
         uint32_t amountOfChildren;
 
     public:
-        Block(ByteStream &stream) {
+        Block(binary::ByteStream &stream) {
             amountOfChildren = stream.popULEB128();
         }
 

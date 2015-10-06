@@ -28,7 +28,7 @@ namespace wasm_module {
     public:
         Variable literalValue;
 
-        Literal(ByteStream &stream, ModuleContext &context) {
+        Literal(binary::ByteStream &stream, ModuleContext &context) {
             uint32_t typeId = stream.popULEB128();
 
             Type *type = context.typeTable().getType(typeId);

@@ -40,7 +40,7 @@ namespace wasm_module {
             return "int32";
         }
 
-        static int32_t getFromStream(ByteStream &stream) {
+        static int32_t getFromStream(binary::ByteStream &stream) {
             int32_t result = 0;
             uint32_t shift = 0;
             uint32_t size = 32;
@@ -66,7 +66,7 @@ namespace wasm_module {
             return result;
         }
 
-        virtual void parse(ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) {
             int32_t value = getFromStream(stream);
             (*(int32_t *) data) = value;
         }

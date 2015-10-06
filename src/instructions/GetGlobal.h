@@ -30,7 +30,7 @@ namespace wasm_module {
     public:
         std::string globalName;
 
-        GetGlobal(ByteStream &stream, ModuleContext &context) {
+        GetGlobal(binary::ByteStream &stream, ModuleContext &context) {
             uint32_t globalIndex = stream.popULEB128();
             returnType_ = context.globalTable().getGlobal(globalIndex).type();
             globalName = context.globalTable().getGlobal(globalIndex).name();

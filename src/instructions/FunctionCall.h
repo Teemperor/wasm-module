@@ -27,7 +27,7 @@ namespace wasm_module {
     public:
         FunctionSignature functionSignature;
 
-        FunctionCall(ByteStream &stream, ModuleContext &context) {
+        FunctionCall(binary::ByteStream &stream, ModuleContext &context) {
             functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
         }
 

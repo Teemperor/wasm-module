@@ -23,7 +23,7 @@
 #include <GlobalTable.h>
 #include <TypeTable.h>
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
     class GlobalTableParser {
 
@@ -79,6 +79,6 @@ namespace wasm_module {
         }
     };
 
-}
+}}
 
 #endif //WASMINT_GLOBALTABLEPARSER_H

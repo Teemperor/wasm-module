@@ -23,7 +23,7 @@
 #include <OpcodeTable.h>
 #include "ByteStream.h"
 
-namespace wasm_module {
+namespace wasm_module { namespace binary {
 
     class OpcodeTableParser {
 
@@ -52,6 +52,6 @@ namespace wasm_module {
             return parser.getParsedTable();
         }
     };
-}
+}}
 
 #endif //WASMINT_OPCODETABLEPARSER_H
