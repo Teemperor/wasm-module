@@ -38,6 +38,7 @@ namespace wasm_module {
         ModuleContext context_;
         std::vector<std::string> requiredModules_;
         std::vector<Function*> functions_;
+        std::vector<Function*> functionsToDelete_;
 
     public:
         Module(ModuleContext &context, std::vector<Section *> sections,
@@ -48,6 +49,9 @@ namespace wasm_module {
         virtual ~Module() {
             for (Section* section : sections_) {
                 delete section;
+            }
+            for (Function* function : functionsToDelete_) {
+                delete function;
             }
         }
 

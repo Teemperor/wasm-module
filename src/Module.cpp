@@ -24,6 +24,7 @@ namespace wasm_module {
         FunctionContext context(name, returnType, parameterTypes, {}, false);
         Function* function = new Function(context, new NativeInstruction(givenFunction, returnType, parameterTypes));
         functions_.push_back(function);
+        functionsToDelete_.push_back(function);
     }
 
     Module::Module(ModuleContext &context, std::vector<Section *> sections,
