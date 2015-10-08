@@ -26,26 +26,38 @@
 namespace wasm_module {
 
     ExceptionMessage(UnknownLocalFunctionId)
+    ExceptionMessage(UnknownFunctionName)
 
-/**
- * Maps local function ids to function signatures.
- */
+    /**
+     * Maps local function ids to function signatures.
+     */
     class FunctionTable {
 
-        std::vector<FunctionSignature> functionNames_;
+        std::vector<FunctionSignature> functions_;
+        std::map<std::string, unsigned> functionsByName_;
 
     public:
         FunctionTable() {
         }
 
         void addFunctionSignature(FunctionSignature signature) {
-            functionNames_.push_back(signature);
+            functionsByName_[signature.name()] = (unsigned int) functions_.size();
+            functions_.push_back(signature);
+        }
+
+        FunctionSignature getFunctionSignature(const std::string& name) {
+            auto iter = functionsByName_.find(name);
+            if (iter != functionsByName_.end()) {
+                return getFunctionSignature(iter->second);
+            } else {
+                throw UnknownFunctionName(name);
+            }
         }
 
         FunctionSignature getFunctionSignature(uint32_t localFunctionId) {
-            if (localFunctionId > functionNames_.size())
+            if (localFunctionId > functions_.size())
                 throw UnknownLocalFunctionId(std::to_string(localFunctionId));
-            return functionNames_[localFunctionId];
+            return functions_[localFunctionId];
         }
     };
 

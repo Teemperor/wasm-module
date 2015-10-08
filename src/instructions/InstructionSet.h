@@ -21,6 +21,7 @@
 #include <FunctionContext.h>
 #include <ExceptionWithMessage.h>
 #include <ModuleContext.h>
+#include <sexpr_parsing/SExpr.h>
 #include "Instruction.h"
 
 namespace wasm_module {
@@ -30,8 +31,12 @@ namespace wasm_module {
     class InstructionSet {
 
     public:
-        static Instruction *getInstruction(std::string name, binary::ByteStream &stream, ModuleContext &context,
+        static Instruction* getInstruction(std::string name, binary::ByteStream &stream, ModuleContext &context,
                                            FunctionContext &functionContext);
+
+
+        static Instruction* getInstruction(std::string name, sexpr::SExpr& expr, ModuleContext &context,
+                                                   FunctionContext &functionContext, const std::map<std::string, std::size_t>& nameToIndex);
     };
 }
 

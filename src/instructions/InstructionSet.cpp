@@ -86,4 +86,48 @@ namespace wasm_module {
             throw UnknownInstructionName(name);
         }
     }
+
+    Instruction *InstructionSet::getInstruction(std::string name, sexpr::SExpr& expr, ModuleContext &context,
+                                                       FunctionContext &functionContext, const std::map<std::string, std::size_t>& nameToIndex) {
+        // TODO literals
+        if (name == "int32.add") {
+            return new I32Add();
+        } else if (name == "int32.sub") {
+            return new I32Sub();
+        } else if (name == "int32.mul") {
+            return new I32Mul();
+        } else if (name == "int32.div") {
+            return new I32Div();
+        } else if (name == "print") {
+            return new Print();
+        } else if (name == "call") {
+            return new FunctionCall(expr, context);
+        } else if (name == "get_local") {
+            return new GetLocal(expr, functionContext);
+        } else if (name == "block") {
+            return new Block(expr);
+        } else if (name == "set_local") {
+            return new SetLocal(expr, functionContext);
+        } else if (name == "break") {
+            return new Break();
+        } else if (name == "continue") {
+            return new Continue();
+        } else if (name == "do_while") {
+            return new DoWhile();
+        } else if (name == "forever") {
+            return new Forever();
+        } else if (name == "int32.load") {
+            return new Int32Load();
+        } else if (name == "int32.store") {
+            return new Int32Store();
+        } else if (name == "if") {
+            return new If();
+        } else if (name == "return") {
+            return new Return();
+        } else {
+            throw UnknownInstructionName(name);
+        }
+
+        // TODO globals
+    }
 }

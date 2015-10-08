@@ -21,8 +21,10 @@
 #include <instructions/Instruction.h>
 #include <binary_parsing/ByteStream.h>
 #include <types/Void.h>
+#include <sexpr_parsing/SExpr.h>
 
 namespace wasm_module {
+
 
     class Block : public Instruction {
 
@@ -31,6 +33,8 @@ namespace wasm_module {
     public:
         Block(binary::ByteStream &stream) {
             amountOfChildren = stream.popULEB128();
+        }
+        Block(const sexpr::SExpr& expr) {
         }
 
         virtual std::string name() {

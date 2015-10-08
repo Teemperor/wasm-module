@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 
 namespace wasm_module { namespace sexpr {
 
@@ -93,8 +94,29 @@ namespace wasm_module { namespace sexpr {
             return children().at(i);
         }
 
-        bool operator==(const std::string &value) const {
-            return value_ == value;
+        bool operator!=(const std::string& otherValue) const {
+            return value() != otherValue;
+        }
+
+        bool operator==(const std::string& otherValue) const {
+            return value() == otherValue;
+        }
+
+        std::string toString() const {
+            if (hasValue()) {
+                return value_;
+            } else {
+                std::stringstream result;
+                result << "(";
+
+                for (const SExpr& child : children_) {
+                    result << child.toString();
+                    result << " ";
+                }
+
+                result << ")";
+                return result.str();
+            }
         }
 
     };

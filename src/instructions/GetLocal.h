@@ -21,6 +21,7 @@
 #include <instructions/Instruction.h>
 #include <binary_parsing/ByteStream.h>
 #include <FunctionContext.h>
+#include <sexpr_parsing/SExpr.h>
 
 namespace wasm_module {
 
@@ -33,7 +34,12 @@ namespace wasm_module {
 
         GetLocal(binary::ByteStream &stream, FunctionContext &context) {
             localIndex = stream.popULEB128();
-            returnType_ = context.pureLocals().at(localIndex);
+            returnType_ = context.locals().at(localIndex);
+        }
+
+        GetLocal(const sexpr::SExpr& expr, FunctionContext &context) {
+            localIndex = context.variableNameToIndex(expr[1].value());
+            returnType_ = context.locals().at(localIndex);
         }
 
         virtual std::string name() {

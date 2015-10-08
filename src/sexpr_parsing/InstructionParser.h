@@ -14,11 +14,32 @@
  * limitations under the License.
  */
 
+#ifndef WASMINT_INSTRUCTIONPARSER_H
+#define WASMINT_INSTRUCTIONPARSER_H
 
-#include "FunctionParser.h"
+#include <instructions/Instruction.h>
+#include <ModuleContext.h>
+#include <FunctionContext.h>
 
+namespace wasm_module {
 
+    namespace sexpr {
 
-namespace wasm_module { namespace sexpr {
+    class InstructionParser {
 
+        Instruction* instruction = nullptr;
+
+        InstructionParser() {
+        }
+
+    public:
+        static Instruction* parse(ModuleContext& moduleContext, FunctionContext& functionContext) {
+            InstructionParser parser;
+            return parser.instruction;
+        }
+
+    };
 }}
+
+
+#endif //WASMINT_INSTRUCTIONPARSER_H

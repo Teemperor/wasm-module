@@ -74,6 +74,8 @@ add_library(wasm-module
     src/sexpr_parsing/SExpr.cpp
     src/sexpr_parsing/ModuleParser.cpp
     src/sexpr_parsing/FunctionParser.cpp
+    src/sexpr_parsing/Types.cpp
+    src/sexpr_parsing/InstructionParser.cpp
 )
 
 

@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-
-#include "FunctionParser.h"
-
-
-
-namespace wasm_module { namespace sexpr {
-
-}}
+#include "InstructionParser.h"

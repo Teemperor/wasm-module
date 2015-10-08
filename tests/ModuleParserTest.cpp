@@ -45,7 +45,7 @@ int main() {
 
     SExpr expr = parser.parse();
 
-    Module* module = ModuleParser::parse(expr);
+    Module& module = *ModuleParser::parse(expr[0]);
 
-
+    module.getImport("$print_i32");
 }

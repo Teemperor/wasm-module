@@ -41,7 +41,7 @@ namespace wasm_module {
         }
 
         virtual void parse(binary::ByteStream &stream, void *data) {
-            int64_t value = stream.popULEB128() << 32; // FIXME
+            int64_t value = ((uint64_t) stream.popULEB128()) << 32;
             value |= stream.popULEB128();
             (*(int64_t *) data) = value;
         }

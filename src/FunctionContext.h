@@ -20,17 +20,22 @@
 
 #include "types/Type.h"
 #include "FunctionSignature.h"
+#include "ExceptionWithMessage.h"
 #include <vector>
+#include <unordered_map>
 
 namespace wasm_module {
 
-/**
- * The context of a function. This contains all information that are needed to
- * create the instructions in the AST of the related function.
- */
+    ExceptionMessage(UnknownVariableName);
+
+    /**
+     * The context of a function. This contains all information that are needed to
+     * create the instructions in the AST of the related function.
+     */
     class FunctionContext : public FunctionSignature {
 
         std::vector<Type *> locals_;
+        std::unordered_map<std::string, uint32_t> namesToIndizes_;
 
     public:
         FunctionContext() {
@@ -57,6 +62,19 @@ namespace wasm_module {
                 result.push_back(type);
             }
             return result;
+        }
+
+        void setVariableNameToIndexMap(const std::unordered_map<std::string, uint32_t> map) {
+            namesToIndizes_ = map;
+        }
+
+        uint32_t variableNameToIndex(const std::string& name) {
+            auto iter = namesToIndizes_.find(name);
+            if (iter != namesToIndizes_.end()) {
+                return iter->second;
+            } else {
+                throw UnknownVariableName(name);
+            }
         }
     };
 

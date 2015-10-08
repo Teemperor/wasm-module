@@ -20,6 +20,7 @@
 
 #include <instructions/Instruction.h>
 #include <ModuleContext.h>
+#include <sexpr_parsing/SExpr.h>
 
 namespace wasm_module {
 
@@ -33,6 +34,11 @@ namespace wasm_module {
 
         FunctionCall(binary::ByteStream &stream, ModuleContext &context) {
             functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
+            moduleName = context.name();
+        }
+
+        FunctionCall(const sexpr::SExpr& expr, ModuleContext &context) {
+            functionSignature = context.functionTable().getFunctionSignature(expr[1].value());
             moduleName = context.name();
         }
 

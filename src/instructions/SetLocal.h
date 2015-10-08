@@ -22,6 +22,7 @@
 #include <binary_parsing/ByteStream.h>
 #include <types/Int32.h>
 #include <FunctionContext.h>
+#include <sexpr_parsing/SExpr.h>
 
 namespace wasm_module {
 
@@ -36,6 +37,12 @@ namespace wasm_module {
             localIndex = stream.popULEB128();
             expectedType = functionContext.pureLocals().at(localIndex);
         }
+
+        SetLocal(const sexpr::SExpr& expr, FunctionContext &context) {
+            localIndex = context.variableNameToIndex(expr[1].value());
+            expectedType = context.pureLocals().at(localIndex);
+        }
+
 
         virtual std::string name() {
             return "set_local";
