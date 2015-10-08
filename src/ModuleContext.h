@@ -22,26 +22,55 @@
 #include "OpcodeTable.h"
 #include "FunctionTable.h"
 #include "GlobalTable.h"
+#include "ModuleImport.h"
 
 namespace wasm_module {
 
+    ExceptionMessage(NoImportWithName)
+    ExceptionMessage(AlreadyImportWithName)
+
     class ModuleContext {
 
+        std::map<std::string, ModuleImport> importsByImportName_;
         OpcodeTable opcodeTable_;
         TypeTable typeTable_;
         FunctionTable functionTable_;
         GlobalTable globalTable_;
+        std::string name_;
 
     public:
         ModuleContext() {
-
+            name_ = "UnknownModule" + std::to_string(rand());
         }
 
         ModuleContext(OpcodeTable &opcodeTable, TypeTable &typeTable, FunctionTable &functionTable,
                       GlobalTable &globalTable)
                 : opcodeTable_(opcodeTable), typeTable_(typeTable), functionTable_(functionTable),
                   globalTable_(globalTable) {
+            name_ = "UnknownModule" + std::to_string(rand());
 
+        }
+
+        void addImport(const ModuleImport& moduleImport) {
+            if (importsByImportName_.find(moduleImport.importName()) == importsByImportName_.end()) {
+                importsByImportName_[moduleImport.importName()] = moduleImport;
+            } else {
+                throw AlreadyImportWithName(moduleImport.importName());
+            }
+        }
+
+        const ModuleImport& getImport(const std::string& importName) const {
+            auto iter = importsByImportName_.find(importName);
+
+            if (iter != importsByImportName_.end()) {
+                return iter->second;
+            } else {
+                throw NoImportWithName(importName);
+            }
+        }
+
+        const std::string& name() const {
+            return name_;
         }
 
         OpcodeTable &opcodeTable() {

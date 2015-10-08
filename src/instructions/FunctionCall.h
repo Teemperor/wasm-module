@@ -23,16 +23,21 @@
 
 namespace wasm_module {
 
+    class Module;
+
     class FunctionCall : public Instruction {
+
     public:
+        std::string moduleName;
         FunctionSignature functionSignature;
 
         FunctionCall(binary::ByteStream &stream, ModuleContext &context) {
             functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
+            moduleName = context.name();
         }
 
         virtual std::string name() {
-            return "call_direct";
+            return "invoke";
         }
 
         virtual std::vector<Type *> childrenTypes() {

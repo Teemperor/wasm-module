@@ -15,7 +15,25 @@
  */
 
 #include "Module.h"
+#include <instructions/NativeInstruction.h>
+#include <Function.h>
 
 namespace wasm_module {
 
+    void Module::addFunction(std::string name, Type *returnType, std::vector<Type*> parameterTypes, std::function<Variable(std::vector<Variable>)> givenFunction) {
+        FunctionContext context(name, returnType, parameterTypes, {}, false);
+        Function* function = new Function(context, new NativeInstruction(givenFunction, returnType, parameterTypes));
+        functions_.push_back(function);
+    }
+
+    Module::Module(ModuleContext &context, std::vector<Section *> sections,
+                   std::vector<std::string> requiredModules)
+            : sections_(sections), context_(context), requiredModules_(requiredModules) {
+        for (Section *section : sections_) {
+            std::vector<Function *> sectionFunctions = section->functions();
+            for (Function *function : sectionFunctions) {
+                functions_.push_back(function);
+            }
+        }
+    }
 }

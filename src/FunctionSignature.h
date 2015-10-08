@@ -26,9 +26,9 @@
 
 namespace wasm_module {
 
-/**
- * Contains all information that are relevant to an caller of the given function.
- */
+    /**
+     * Contains all information that are relevant to an caller of the given function.
+     */
     class FunctionSignature {
 
         std::string name_;

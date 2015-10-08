@@ -33,7 +33,7 @@ namespace wasm_module {
 
     class Function : public FunctionContext {
 
-        /**
+    /**
      * The AST of this function which contains all instructions of this function.
      */
         Instruction *mainInstruction_;

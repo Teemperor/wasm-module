@@ -27,8 +27,16 @@ namespace wasm_module { namespace sexpr {
 
         Module* module_;
 
+        void parseImport(const SExpr& moduleExpr) {
+
+        }
+
         ModuleParser(const SExpr& moduleExpr) {
             for(const SExpr& expr : moduleExpr.children()) {
+                const std::string& typeName = expr[0].value();
+                if (typeName == "import") {
+                    parseImport(expr[0]);
+                }
             }
         }
 

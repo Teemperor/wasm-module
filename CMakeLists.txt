@@ -25,6 +25,7 @@ add_library(wasm-module
     src/types/Type.cpp
     src/TypeTable.cpp
     src/ModuleContext.cpp
+    src/ModuleImport.cpp
 
     src/instructions/I32/I32Add.cpp
     src/instructions/I32/I32Sub.cpp
@@ -50,6 +51,7 @@ add_library(wasm-module
     src/instructions/FunctionCall.cpp
     src/instructions/Literal.cpp
     src/instructions/Instruction.cpp
+    src/instructions/NativeInstruction.cpp
 
     src/types/Int8.cpp
     src/types/Int32.cpp
@@ -58,15 +60,21 @@ add_library(wasm-module
     src/types/Float32.cpp
     src/types/Float64.cpp
 
-        src/binary_parsing/ByteStream.cpp
-        src/binary_parsing/GlobalTableParser.cpp
-        src/binary_parsing/FunctionParser.cpp
-        src/binary_parsing/FunctionTableParser.cpp
-        src/binary_parsing/TypeTableParser.cpp
-        src/binary_parsing/ModuleParser.cpp
-        src/binary_parsing/CodeSectionParser.cpp
-        src/binary_parsing/OpcodeTableParser.cpp
-        src/sexpr_parsing/SExprParser.cpp src/sexpr_parsing/SExprParser.h src/sexpr_parsing/CharacterStream.cpp src/sexpr_parsing/CharacterStream.h src/sexpr_parsing/SExpr.cpp src/sexpr_parsing/SExpr.h src/sexpr_parsing/ModuleParser.cpp src/sexpr_parsing/ModuleParser.h src/sexpr_parsing/FunctionParser.cpp src/sexpr_parsing/FunctionParser.h)
+    src/binary_parsing/ByteStream.cpp
+    src/binary_parsing/GlobalTableParser.cpp
+    src/binary_parsing/FunctionParser.cpp
+    src/binary_parsing/FunctionTableParser.cpp
+    src/binary_parsing/TypeTableParser.cpp
+    src/binary_parsing/ModuleParser.cpp
+    src/binary_parsing/CodeSectionParser.cpp
+    src/binary_parsing/OpcodeTableParser.cpp
+
+    src/sexpr_parsing/SExprParser.cpp
+    src/sexpr_parsing/CharacterStream.cpp
+    src/sexpr_parsing/SExpr.cpp
+    src/sexpr_parsing/ModuleParser.cpp
+    src/sexpr_parsing/FunctionParser.cpp
+)
 
 
 ####################

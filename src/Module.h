@@ -23,20 +23,26 @@
 #include "OpcodeTable.h"
 #include "TypeTable.h"
 #include "ModuleContext.h"
+#include "FunctionContext.h"
+#include "Function.h"
 #include <vector>
+#include <functional>
 
 namespace wasm_module {
+
+    ExceptionMessage(NoFunctionWithName)
 
     class Module {
 
         std::vector<Section *> sections_;
         ModuleContext context_;
         std::vector<std::string> requiredModules_;
+        std::vector<Function*> functions_;
 
     public:
         Module(ModuleContext &context, std::vector<Section *> sections,
-               std::vector<std::string> requiredModules)
-                : sections_(sections), context_(context), requiredModules_(requiredModules) {
+                       std::vector<std::string> requiredModules);
+        Module() {
         }
 
         virtual ~Module() {
@@ -45,19 +51,39 @@ namespace wasm_module {
             }
         }
 
-        std::vector<Function *> functions() {
-            std::vector<Function *> result;
-            for (Section *section : sections_) {
-                std::vector<Function *> sectionFunctions = section->functions();
-                for (Function *function : sectionFunctions) {
-                    result.push_back(function);
-                }
-            }
-            return result;
+        const std::vector<Function *>& functions() {
+            return functions_;
         }
+
+        void addFunction(Function* function) {
+            functions_.push_back(function);
+        }
+
+        void addFunction(std::string name, Type *returnType, std::vector<Type*> parameterTypes, std::function<Variable(std::vector<Variable>)> givenFunction);
 
         std::vector<Section *> sections() {
             return sections_;
+        }
+
+        Function& getFunction(std::string functionName) {
+            for (Function* function : functions_) {
+                if (function->name() == functionName) {
+                    return *function;
+                }
+            }
+            throw NoFunctionWithName(functionName + " in module " + name());
+        }
+
+        void addImport(const ModuleImport& moduleImport) {
+            context_.addImport(moduleImport);
+        }
+
+        const ModuleImport& getImport(const std::string& importName) const {
+            return context_.getImport(importName);
+        }
+
+        const std::string& name() {
+            return context_.name();
         }
 
         OpcodeTable &opcodeTable() {
