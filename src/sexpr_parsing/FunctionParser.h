@@ -22,7 +22,9 @@
 #include <ExceptionWithMessage.h>
 #include "SExpr.h"
 #include "Types.h"
+#include "InstructionParser.h"
 #include <unordered_map>
+#include <instructions/controlflow/Block.h>
 
 namespace wasm_module { namespace sexpr {
 
@@ -36,6 +38,8 @@ namespace wasm_module { namespace sexpr {
 
     class FunctionParser {
 
+        ModuleContext& context_;
+
         std::vector<Type*> locals;
         std::vector<Type*> parameters;
 
@@ -48,6 +52,8 @@ namespace wasm_module { namespace sexpr {
         Type* returnType = Void::instance();
 
         std::string functionName_;
+
+        Instruction* instruction_ = nullptr;
 
         void parseLocal(const SExpr& local) {
             if (local.children().size() == 3) {
@@ -94,11 +100,23 @@ namespace wasm_module { namespace sexpr {
             }
         }
 
-        Instruction* parseInstruction(const SExpr& instruction) {
-            Instruction* result;
+        void parseInstructions(std::vector<const SExpr*>& instructionExprs) {
+            if (instructionExprs.size() == 1) {
+                instruction_ = InstructionParser::parse(*instructionExprs.front(), context_, functionContext_);
+            } else {
+
+                instruction_ = new Block((uint32_t) instructionExprs.size());
+                std::vector<Instruction*> children;
+                for (const SExpr* expr : instructionExprs) {
+                    Instruction* newInstruction = InstructionParser::parse(*expr, context_, functionContext_);
+                    children.push_back(newInstruction);
+                }
+                instruction_->children(children);
+
+            }
         }
 
-        FunctionParser(const SExpr& funcExpr) {
+        FunctionParser(const SExpr& funcExpr, ModuleContext& context) : context_(context) {
             if (funcExpr.children().size() < 2) {
                 throw MissingFunctionName(funcExpr.toString());
             }
@@ -147,6 +165,7 @@ namespace wasm_module { namespace sexpr {
             functionContext_ = FunctionContext(functionName_, returnType, parameters, locals, false);
             functionContext_.setVariableNameToIndexMap(namesToIndex_);
 
+            std::vector<const SExpr*> instructionExprs;
             for(unsigned i = 2; i < funcExpr.children().size(); i++) {
                 const SExpr& expr = funcExpr[i];
 
@@ -157,9 +176,11 @@ namespace wasm_module { namespace sexpr {
                 const std::string& typeName = expr[0].value();
 
                 if (typeName != "local" && typeName != "param" && typeName != "result") {
-                    parseInstruction(expr);
+                    instructionExprs.push_back(&expr);
                 }
             }
+            parseInstructions(instructionExprs);
+            function_ = new Function(functionContext_, instruction_);
         }
 
         Function& getParsedFunction() {
@@ -168,8 +189,8 @@ namespace wasm_module { namespace sexpr {
 
 
     public:
-        static Function& parse(const SExpr& funcExpr) {
-            FunctionParser parser(funcExpr);
+        static Function& parse(const SExpr& funcExpr, ModuleContext& context) {
+            FunctionParser parser(funcExpr, context);
             return parser.getParsedFunction();
         }
     };

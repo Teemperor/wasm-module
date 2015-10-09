@@ -19,23 +19,29 @@
 
 
 #include <ModuleContext.h>
+#include <sexpr_parsing/SExpr.h>
 #include "Instruction.h"
 
 namespace wasm_module {
 
     class Literal : public Instruction {
 
+        Variable literalValue_;
     public:
-        Variable literalValue;
+        Variable literalValue() {
+            return literalValue_;
+        }
 
         Literal(binary::ByteStream &stream, ModuleContext &context) {
             uint32_t typeId = stream.popULEB128();
 
             Type *type = context.typeTable().getType(typeId);
 
-            literalValue = Variable(type);
-            type->parse(stream, literalValue.value());
+            literalValue_ = Variable(type);
+            type->parse(stream, literalValue_.value());
         }
+
+        Literal(const sexpr::SExpr& expr);
 
         virtual std::vector<Type *> childrenTypes() {
             return {};
@@ -46,7 +52,7 @@ namespace wasm_module {
         }
 
         virtual Type *returnType() {
-            return &literalValue.type();
+            return &literalValue_.type();
         }
     };
 }

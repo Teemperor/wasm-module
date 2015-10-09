@@ -40,6 +40,12 @@
 
 namespace wasm_module {
 
+    inline bool ends_with(std::string const & value, std::string const & ending)
+    {
+        if (ending.size() > value.size()) return false;
+        return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+    }
+
     Instruction *InstructionSet::getInstruction(std::string name, binary::ByteStream &stream, ModuleContext &context,
                                                 FunctionContext &functionContext) {
         if (name == "literal") {
@@ -87,9 +93,8 @@ namespace wasm_module {
         }
     }
 
-    Instruction *InstructionSet::getInstruction(std::string name, sexpr::SExpr& expr, ModuleContext &context,
-                                                       FunctionContext &functionContext, const std::map<std::string, std::size_t>& nameToIndex) {
-        // TODO literals
+    Instruction *InstructionSet::getInstruction(std::string name, const sexpr::SExpr& expr, ModuleContext &context,
+                                                       FunctionContext &functionContext) {
         if (name == "int32.add") {
             return new I32Add();
         } else if (name == "int32.sub") {
@@ -104,8 +109,6 @@ namespace wasm_module {
             return new FunctionCall(expr, context);
         } else if (name == "get_local") {
             return new GetLocal(expr, functionContext);
-        } else if (name == "block") {
-            return new Block(expr);
         } else if (name == "set_local") {
             return new SetLocal(expr, functionContext);
         } else if (name == "break") {
@@ -124,6 +127,8 @@ namespace wasm_module {
             return new If();
         } else if (name == "return") {
             return new Return();
+        } else if (ends_with(name, ".const")) {
+            return new Literal(expr);
         } else {
             throw UnknownInstructionName(name);
         }

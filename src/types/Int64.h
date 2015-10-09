@@ -57,6 +57,11 @@ namespace wasm_module {
             }
         }
 
+
+        virtual void parse(const std::string& literal, void *data) {
+            (*(int64_t*) data) = std::atol(literal.c_str());
+        }
+
         static void setValue(Variable variable, int32_t value) {
             if (variable.type() == *instance()) {
                 int32_t *data = (int32_t *) variable.value();

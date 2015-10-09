@@ -34,7 +34,7 @@ namespace wasm_module {
         Block(binary::ByteStream &stream) {
             amountOfChildren = stream.popULEB128();
         }
-        Block(const sexpr::SExpr& expr) {
+        Block(uint32_t children) : amountOfChildren(children) {
         }
 
         virtual std::string name() {

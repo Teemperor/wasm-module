@@ -68,6 +68,12 @@ namespace wasm_module {
             return result;
         }
 
+
+
+        virtual void parse(const std::string& literal, void *data) {
+            (*(int8_t*) data) = (int8_t) std::atoi(literal.c_str());
+        }
+
         virtual void parse(binary::ByteStream &stream, void *data) {
             int8_t value = getFromStream(stream);
             (*(int8_t *) data) = value;

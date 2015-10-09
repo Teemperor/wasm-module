@@ -16,8 +16,17 @@
 
 
 
+#include <sexpr_parsing/Types.h>
 #include "Literal.h"
 
 namespace wasm_module {
 
+    Literal::Literal(const sexpr::SExpr& expr) {
+        std::string value = expr[1].value();
+        std::string typeName = expr[0].value().substr(0, 3);
+
+        Type* type = sexpr::Types::getByName(typeName);
+        literalValue_ = Variable(type);
+        type->parse(value, literalValue_.value());
+    }
 }

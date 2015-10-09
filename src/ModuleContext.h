@@ -59,6 +59,12 @@ namespace wasm_module {
             }
         }
 
+        bool hasImport(const std::string& importName) const {
+            auto iter = importsByImportName_.find(importName);
+
+            return iter != importsByImportName_.end();
+        }
+
         const ModuleImport& getImport(const std::string& importName) const {
             auto iter = importsByImportName_.find(importName);
 
@@ -71,6 +77,11 @@ namespace wasm_module {
 
         const std::string& name() const {
             return name_;
+        }
+
+        const std::string& name(const std::string& newName) {
+            name_ = newName;
+            return name();
         }
 
         OpcodeTable &opcodeTable() {

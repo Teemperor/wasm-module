@@ -45,6 +45,10 @@ namespace wasm_module {
             throw NoVoidLiteralsSupported();
         }
 
+        virtual void parse(const std::string& literal, void *data) {
+            throw NoVoidLiteralsSupported();
+        }
+
         virtual std::size_t size() {
             return 1;
         }

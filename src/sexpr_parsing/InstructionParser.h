@@ -20,21 +20,64 @@
 #include <instructions/Instruction.h>
 #include <ModuleContext.h>
 #include <FunctionContext.h>
+#include <instructions/controlflow/Block.h>
+#include <instructions/InstructionSet.h>
+#include "SExpr.h"
 
-namespace wasm_module {
+namespace wasm_module { namespace sexpr {
 
-    namespace sexpr {
+    ExceptionMessage(EmptyExpression)
 
     class InstructionParser {
 
         Instruction* instruction = nullptr;
 
-        InstructionParser() {
+        ModuleContext& moduleContext_;
+        FunctionContext& functionContext_;
+
+        Instruction* parse(const SExpr& expr) {
+            if (expr.children().size() != 0) {
+                if (expr[0].hasValue()) {
+                    Instruction* result = InstructionSet::getInstruction(expr[0].value(), expr, moduleContext_, functionContext_);
+
+                    std::vector<Instruction*> children;
+
+                    for (const SExpr& child : expr.children()) {
+                        if (child.hasChildren())
+                            children.push_back(parse(child));
+                    }
+
+                    result->children(children);
+
+                    return result;
+
+                } else {
+                    Instruction* result = new Block((uint32_t) expr.children().size());
+
+                    std::vector<Instruction*> children;
+
+                    for (const SExpr& child : expr.children()) {
+                        if (child.hasChildren())
+                            children.push_back(parse(child));
+                    }
+
+                    result->children(children);
+
+                    return result;
+                }
+            } else {
+                throw EmptyExpression(expr.toString());
+            }
+        }
+
+        InstructionParser(const SExpr& expr, ModuleContext& moduleContext, FunctionContext& functionContext)
+                : moduleContext_(moduleContext), functionContext_(functionContext) {
+            instruction = parse(expr);
         }
 
     public:
-        static Instruction* parse(ModuleContext& moduleContext, FunctionContext& functionContext) {
-            InstructionParser parser;
+        static Instruction* parse(const SExpr& expr, ModuleContext& moduleContext, FunctionContext& functionContext) {
+            InstructionParser parser(expr, moduleContext, functionContext);
             return parser.instruction;
         }
 

@@ -23,13 +23,14 @@ namespace wasm_module { namespace sexpr {
         bool exit = false;
 
         while (!exit) {
+            stream_.trimWhitespace();
+
             if (allowsEndOfStream) {
                 if (stream_.reachedEnd()) {
                     break;
                 }
             }
 
-            stream_.trimWhitespace();
 
             if (stream_.peekChar() == '(') {
                 stream_.popChar();

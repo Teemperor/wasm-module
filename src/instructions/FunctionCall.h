@@ -38,8 +38,14 @@ namespace wasm_module {
         }
 
         FunctionCall(const sexpr::SExpr& expr, ModuleContext &context) {
-            functionSignature = context.functionTable().getFunctionSignature(expr[1].value());
-            moduleName = context.name();
+            if (context.functionTable().hasFunctionSignature(expr[1].value())) {
+                functionSignature = context.functionTable().getFunctionSignature(expr[1].value());
+                moduleName = context.name();
+            } else {
+                auto& import = context.getImport(expr[1].value());
+                functionSignature = import.signature();
+                moduleName = import.module();
+            }
         }
 
         virtual std::string name() {

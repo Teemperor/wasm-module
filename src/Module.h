@@ -63,6 +63,11 @@ namespace wasm_module {
             functions_.push_back(function);
         }
 
+
+        ModuleContext& context() {
+            return context_;
+        }
+
         void addFunction(std::string name, Type *returnType, std::vector<Type*> parameterTypes, std::function<Variable(std::vector<Variable>)> givenFunction);
 
         std::vector<Section *> sections() {

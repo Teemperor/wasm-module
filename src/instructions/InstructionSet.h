@@ -35,8 +35,8 @@ namespace wasm_module {
                                            FunctionContext &functionContext);
 
 
-        static Instruction* getInstruction(std::string name, sexpr::SExpr& expr, ModuleContext &context,
-                                                   FunctionContext &functionContext, const std::map<std::string, std::size_t>& nameToIndex);
+        static Instruction* getInstruction(std::string name, const sexpr::SExpr& expr, ModuleContext &context,
+                                                   FunctionContext &functionContext);
     };
 }
 

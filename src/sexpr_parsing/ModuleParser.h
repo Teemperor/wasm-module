@@ -27,41 +27,16 @@ namespace wasm_module { namespace sexpr {
     ExceptionMessage(UnknownModuleChild)
     ExceptionMessage(MalformedImportStatement)
     ExceptionMessage(MissingModuleKeyword)
+    ExceptionMessage(UnknownImportExpressionChild)
+    ExceptionMessage(MultipleReturnTypesInImport)
 
     class ModuleParser {
 
         Module* module_  = new Module();
 
-        void parseImport(const SExpr& importExpr) {
-            if (importExpr.children().size() != 5) {
-                throw MalformedImportStatement(importExpr.toString());
-            } else {
-                if (importExpr[0] != "import") {
-                    throw MalformedImportStatement(importExpr.toString());
-                }
+        void parseImport(const SExpr& importExpr);
 
-                std::string importName = importExpr[1].value();
-                std::string moduleName = importExpr[2].value();
-                std::string functionName = importExpr[3].value();
-
-                ModuleImport moduleImport(importName, moduleName, functionName);
-                module_->addImport(moduleImport);
-            }
-        }
-
-        ModuleParser(const SExpr& moduleExpr) {
-            for(unsigned i = 1; i < moduleExpr.children().size(); i++) {
-                const SExpr& expr = moduleExpr[i];
-                const std::string& typeName = expr[0].value();
-                if (typeName == "import") {
-                    parseImport(expr);
-                } else if (typeName == "func") {
-
-                } else {
-                    throw UnknownModuleChild(typeName);
-                }
-            }
-        }
+        ModuleParser(const SExpr& moduleExpr);
 
         Module* getParsedModule() {
             return module_;

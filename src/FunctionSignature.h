@@ -51,16 +51,16 @@ namespace wasm_module {
             return returnType_;
         }
 
-        std::vector<Type *> parameters() {
+        const std::vector<Type *>& parameters() const {
             return parameterTypes_;
         }
 
 
-        std::string name() {
+        const std::string& name() const {
             return name_;
         }
 
-        bool isExported() {
+        bool isExported() const {
             return isExported_;
         }
     };

@@ -45,6 +45,11 @@ namespace wasm_module {
             functions_.push_back(signature);
         }
 
+        bool hasFunctionSignature(const std::string& name) const {
+            auto iter = functionsByName_.find(name);
+            return iter != functionsByName_.end();
+        }
+
         FunctionSignature getFunctionSignature(const std::string& name) {
             auto iter = functionsByName_.find(name);
             if (iter != functionsByName_.end()) {
