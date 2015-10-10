@@ -59,8 +59,10 @@ namespace wasm_module {
             return functions_;
         }
 
-        void addFunction(Function* function) {
+        void addFunction(Function* function, bool takeMemoryOwnership = false) {
             functions_.push_back(function);
+            if (takeMemoryOwnership)
+                functionsToDelete_.push_back(function);
         }
 
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(wasm-module)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 
 ####################
 # Common code      #
@@ -76,7 +76,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-)
+        src/instructions/assert/I32AssertReturn.cpp src/instructions/assert/I32AssertReturn.h)
 
 
 ####################

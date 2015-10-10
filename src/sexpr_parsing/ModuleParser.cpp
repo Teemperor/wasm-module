@@ -30,7 +30,7 @@ namespace wasm_module { namespace sexpr {
                 } else if (typeName == "func") {
                     Function* function = &FunctionParser::parse(expr, module_->context());
                     module_->context().functionTable().addFunctionSignature(*function);
-                    module_->addFunction(function);
+                    module_->addFunction(function, true);
                 } else {
                     throw UnknownModuleChild(typeName);
                 }

@@ -37,6 +37,7 @@
 #include <instructions/I32/I32Div.h>
 #include <instructions/heap/Int32Load.h>
 #include <instructions/heap/Int32Store.h>
+#include <instructions/assert/I32AssertReturn.h>
 
 namespace wasm_module {
 
@@ -117,6 +118,8 @@ namespace wasm_module {
             return new Continue();
         } else if (name == "do_while") {
             return new DoWhile();
+        } else if (name == "i32.assert_return") {
+            return new I32AssertReturn();
         } else if (name == "forever") {
             return new Forever();
         } else if (name == "int32.load") {

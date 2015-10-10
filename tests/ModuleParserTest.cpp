@@ -48,4 +48,6 @@ int main() {
     Module& module = *ModuleParser::parse(expr[0]);
 
     module.getImport("$print_i32");
+
+    delete &module;
 }
