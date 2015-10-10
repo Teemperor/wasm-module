@@ -53,6 +53,8 @@ add_library(wasm-module
     src/instructions/Instruction.cpp
     src/instructions/NativeInstruction.cpp
 
+    src/instructions/assert/I32AssertReturn.cpp
+
     src/types/Int8.cpp
     src/types/Int32.cpp
     src/types/Int64.cpp
@@ -76,7 +78,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-        src/instructions/assert/I32AssertReturn.cpp src/instructions/assert/I32AssertReturn.h)
+)
 
 
 ####################
