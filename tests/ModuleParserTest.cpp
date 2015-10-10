@@ -32,10 +32,10 @@ int main() {
         "(module \n"
         "    (import $print_i32 \"stdio\" \"print\" (param i32))\n"
         "    (func $print (param $i i32)\n"
-        "        (call_import $print_i32 (get_local $i))\n"
+        "        (call $print_i32 (get_local $i))\n"
         "    )\n"
         "    (func $main (param)\n"
-        "        (invoke $print (i32.const 13))\n"
+        "        (call $print (i32.const 13))\n"
         "    )\n"
         ")";
 

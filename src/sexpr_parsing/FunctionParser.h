@@ -70,8 +70,10 @@ namespace wasm_module { namespace sexpr {
         }
 
         void parseParam(const SExpr& param) {
-
-            if (param.children().size() == 3) {
+            if (param.children().size() == 1) {
+                // empty parameter
+            }
+            else if (param.children().size() == 3) {
                 std::string paramName = param[1].value();
                 std::string typeName = param[2].value();
                 Type* type = Types::getByName(typeName);
