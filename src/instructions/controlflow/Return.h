@@ -31,7 +31,7 @@ namespace wasm_module {
 
     class Return : public Instruction {
     public:
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {Int32::instance()};
         }
 
@@ -39,7 +39,7 @@ namespace wasm_module {
             return "return";
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return Void::instance();
         }
     };

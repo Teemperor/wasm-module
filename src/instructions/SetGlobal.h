@@ -27,7 +27,7 @@ namespace wasm_module {
 
     class SetGlobal : public Instruction {
 
-        Type *expectedType;
+        const Type* expectedType;
 
     public:
         std::string globalName;
@@ -42,11 +42,11 @@ namespace wasm_module {
             return "set_global";
         }
 
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {expectedType};
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return expectedType;
         }
     };

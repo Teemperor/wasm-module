@@ -33,7 +33,7 @@ namespace wasm_module { namespace sexpr {
 
     class Types {
 
-        std::unordered_map<std::string, Type*> typesByName_;
+        std::unordered_map<std::string, const Type*> typesByName_;
 
         Types() {
             typesByName_ = {
@@ -46,7 +46,7 @@ namespace wasm_module { namespace sexpr {
         }
 
     public:
-        static Type* getByName(const std::string& typeName) {
+        static const Type* getByName(const std::string& typeName) {
             static Types types;
 
             auto iter = types.typesByName_.find(typeName);

@@ -28,7 +28,7 @@ namespace wasm_module {
 
     class Continue : public Instruction {
     public:
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {};
         }
 
@@ -36,7 +36,7 @@ namespace wasm_module {
             return "continue";
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return Void::instance();
         }
     };

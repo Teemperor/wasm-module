@@ -8,16 +8,16 @@ namespace wasm_module {
     class NativeInstruction : public Instruction {
 
         std::function<Variable(std::vector<Variable>)> internalFunction_;
-        std::vector<Type*> parameterTypes_;
-        Type* returnType_;
+        std::vector<const Type*> parameterTypes_;
+        const Type* returnType_;
 
     public:
-        NativeInstruction(std::function<Variable(std::vector<Variable>)> internalFunction, Type* returnType, std::vector<Type*> parameterTypes)
+        NativeInstruction(std::function<Variable(std::vector<Variable>)> internalFunction, const Type* returnType, std::vector<const Type*> parameterTypes)
                 : internalFunction_(internalFunction), parameterTypes_(parameterTypes)
         {
         }
 
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return parameterTypes_;
         }
 
@@ -25,7 +25,7 @@ namespace wasm_module {
             return "native";
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return returnType_;
         }
 

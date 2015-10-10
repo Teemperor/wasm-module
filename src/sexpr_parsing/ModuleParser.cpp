@@ -49,9 +49,9 @@ namespace wasm_module { namespace sexpr {
                 std::string moduleName = importExpr[2].value();
                 std::string functionName = importExpr[3].value();
 
-                Type* returnType = Void::instance();
+                const Type* returnType = Void::instance();
 
-                std::vector<Type*> parameters;
+                std::vector<const Type*> parameters;
 
                 for (uint32_t i = 4; i < importExpr.children().size(); i++) {
                     const SExpr& subExpr = importExpr[i];

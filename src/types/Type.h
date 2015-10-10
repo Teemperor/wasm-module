@@ -32,29 +32,27 @@ namespace wasm_module {
 
     protected:
         Type() {
-
         }
 
     public:
-        Type(const Type &type) {
+        Type(const Type &type); // no copy
+        Type& operator=(const Type& other); // no copy
 
-        }
-
-        virtual Type *localType() {
+        virtual const Type* localType() const {
             return this;
         }
 
-        virtual std::vector<uint8_t> convertFromMemoryType(std::vector<uint8_t> bytes, Type *memoryType) {
+        virtual std::vector<uint8_t> convertFromMemoryType(std::vector<uint8_t> bytes, Type *memoryType) const {
             return bytes;
         }
 
-        virtual std::string name() = 0;
+        virtual std::string name() const = 0;
 
-        virtual void parse(binary::ByteStream &stream, void *data) = 0;
+        virtual void parse(binary::ByteStream &stream, void *data) const = 0;
 
-        virtual void parse(const std::string& literal, void *data) = 0;
+        virtual void parse(const std::string& literal, void *data) const = 0;
 
-        virtual std::size_t size() = 0;
+        virtual std::size_t size() const = 0;
 
         bool operator==(const Type &other) const {
             return typeid(*this) == typeid(other);

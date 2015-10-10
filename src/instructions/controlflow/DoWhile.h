@@ -28,7 +28,7 @@ namespace wasm_module {
 
     class DoWhile : public Instruction {
     public:
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() {
             return {Void::instance(), Int32::instance()};
         }
 
@@ -36,7 +36,7 @@ namespace wasm_module {
             return "do_while";
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() {
             return Void::instance();
         }
     };

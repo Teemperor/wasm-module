@@ -49,9 +49,9 @@ namespace wasm_module {
 
         virtual std::string name() = 0;
 
-        virtual std::vector<Type *> childrenTypes() = 0;
+        virtual std::vector<const Type *> childrenTypes() = 0;
 
-        virtual Type *returnType() = 0;
+        virtual const Type* returnType() = 0;
     };
 }
 

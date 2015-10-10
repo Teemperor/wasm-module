@@ -31,12 +31,12 @@ namespace wasm_module {
 
 
     public:
-        static Int32 *instance() {
+        static const Int32* instance() {
             static Int32 instance;
             return &instance;
         }
 
-        virtual std::string name() {
+        virtual std::string name() const {
             return "int32";
         }
 
@@ -67,12 +67,12 @@ namespace wasm_module {
         }
 
 
-        virtual void parse(const std::string& literal, void *data) {
+        virtual void parse(const std::string& literal, void *data) const {
             int32_t value = std::atoi(literal.c_str());
             (*(int32_t*) data) = value;
         }
 
-        virtual void parse(binary::ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) const {
             int32_t value = getFromStream(stream);
             (*(int32_t *) data) = value;
         }
@@ -97,7 +97,7 @@ namespace wasm_module {
             }
         }
 
-        virtual std::size_t size() {
+        virtual std::size_t size() const {
             return 4;
         }
 

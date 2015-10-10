@@ -23,7 +23,7 @@
 
 namespace wasm_module {
 
-    Type *TypeTable::getType(uint32_t localTypeCode) {
+    const Type* TypeTable::getType(uint32_t localTypeCode) {
         std::string typeName = getTypeName(localTypeCode);
         if (typeName == "void") {
             return Void::instance();

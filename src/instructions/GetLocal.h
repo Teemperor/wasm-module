@@ -27,7 +27,7 @@ namespace wasm_module {
 
     class GetLocal : public Instruction {
 
-        Type *returnType_;
+        const Type* returnType_;
 
     public:
         uint32_t localIndex;
@@ -46,11 +46,11 @@ namespace wasm_module {
             return "get_local";
         }
 
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {};
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return returnType_;
         }
     };

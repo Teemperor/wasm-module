@@ -41,15 +41,15 @@ namespace wasm_module {
             return "block";
         }
 
-        virtual std::vector<Type *> childrenTypes() {
-            std::vector<Type *> result;
+        virtual std::vector<const Type*> childrenTypes() override {
+            std::vector<const Type *> result;
             for (uint32_t i = 0; i < amountOfChildren; i++) {
                 result.push_back(Void::instance());
             }
             return result;
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return Void::instance();
         }
     };

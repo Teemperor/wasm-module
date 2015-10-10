@@ -40,8 +40,8 @@ namespace wasm_module { namespace sexpr {
 
         ModuleContext& context_;
 
-        std::vector<Type*> locals;
-        std::vector<Type*> parameters;
+        std::vector<const Type*> locals;
+        std::vector<const Type*> parameters;
 
         std::unordered_map<std::string, uint32_t> namesToIndex_;
 
@@ -49,7 +49,7 @@ namespace wasm_module { namespace sexpr {
 
         Function* function_;
 
-        Type* returnType = Void::instance();
+        const Type* returnType = Void::instance();
 
         std::string functionName_;
 
@@ -60,7 +60,7 @@ namespace wasm_module { namespace sexpr {
                 std::string variableName = local[1].value();
                 std::string typeName = local[2].value();
 
-                Type* type = Types::getByName(typeName);
+                const Type* type = Types::getByName(typeName);
 
                 namesToIndex_[variableName] = parameters.size() + locals.size();
                 locals.push_back(type);
@@ -76,7 +76,7 @@ namespace wasm_module { namespace sexpr {
             else if (param.children().size() == 3) {
                 std::string paramName = param[1].value();
                 std::string typeName = param[2].value();
-                Type* type = Types::getByName(typeName);
+                const Type* type = Types::getByName(typeName);
 
                 namesToIndex_[paramName] = parameters.size();
                 parameters.push_back(type);
@@ -89,7 +89,7 @@ namespace wasm_module { namespace sexpr {
 
             if (result.children().size() == 2) {
                 std::string resultTypeName = result[1].value();
-                Type*newReturnType = Types::getByName(resultTypeName);
+                const Type* newReturnType = Types::getByName(resultTypeName);
 
                 if (returnType != Void::instance()) {
                     throw MultipleReturnTypes(std::string("Return type was already defines as ") + returnType->name()

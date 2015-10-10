@@ -32,24 +32,24 @@ namespace wasm_module {
         }
 
     public:
-        static Void *instance() {
+        static const Void* instance() {
             static Void instance;
             return &instance;
         }
 
-        virtual std::string name() {
+        virtual std::string name() const {
             return "void";
         }
 
-        virtual void parse(binary::ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) const {
             throw NoVoidLiteralsSupported();
         }
 
-        virtual void parse(const std::string& literal, void *data) {
+        virtual void parse(const std::string& literal, void *data) const {
             throw NoVoidLiteralsSupported();
         }
 
-        virtual std::size_t size() {
+        virtual std::size_t size() const {
             return 1;
         }
 

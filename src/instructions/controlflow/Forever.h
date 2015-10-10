@@ -27,7 +27,7 @@ namespace wasm_module {
 
     class Forever : public Instruction {
     public:
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() {
             return {Void::instance()};
         }
 
@@ -35,7 +35,7 @@ namespace wasm_module {
             return "forever";
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() {
             return Void::instance();
         }
     };

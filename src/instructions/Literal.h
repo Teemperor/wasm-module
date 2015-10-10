@@ -35,7 +35,7 @@ namespace wasm_module {
         Literal(binary::ByteStream &stream, ModuleContext &context) {
             uint32_t typeId = stream.popULEB128();
 
-            Type *type = context.typeTable().getType(typeId);
+            const Type* type = context.typeTable().getType(typeId);
 
             literalValue_ = Variable(type);
             type->parse(stream, literalValue_.value());
@@ -43,7 +43,7 @@ namespace wasm_module {
 
         Literal(const sexpr::SExpr& expr);
 
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {};
         }
 
@@ -51,7 +51,7 @@ namespace wasm_module {
             return "literal";
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return &literalValue_.type();
         }
     };

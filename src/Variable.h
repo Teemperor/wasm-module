@@ -26,19 +26,19 @@ namespace wasm_module {
     class Type;
 
     class Variable {
-        wasm_module::Type *type_;
+        const wasm_module::Type *type_;
         std::vector<uint8_t> value_;
 
     public:
         Variable();
 
-        Variable(wasm_module::Type *type);
+        Variable(const wasm_module::Type *type);
 
-        wasm_module::Type &type() {
+        const wasm_module::Type& type() {
             return *type_;
         }
 
-        void *value() {
+        void* value() {
             return (void *) value_.data();
         }
 

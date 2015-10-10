@@ -42,7 +42,7 @@ namespace wasm_module { namespace binary {
                 uint32_t typeData = stream.popULEB128();
                 std::string name = stream.readCString();
 
-                Type *type = typeTable_.getType(typeData);
+                const Type* type = typeTable_.getType(typeData);
 
                 globalTable.addGlobal(Global(name, type), false);
             }
@@ -54,7 +54,7 @@ namespace wasm_module { namespace binary {
                 uint32_t typeData = stream.popULEB128();
                 std::string name = stream.readCString();
 
-                Type *type = typeTable_.getType(typeData);
+                const Type* type = typeTable_.getType(typeData);
 
                 globalTable.addGlobal(Global(name, type), true);
 

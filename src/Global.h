@@ -24,9 +24,9 @@ namespace wasm_module {
 
     class Global {
         std::string name_;
-        Type *type_;
+        const Type* type_;
     public:
-        Global(std::string name, Type *type) : name_(name), type_(type) {
+        Global(std::string name, const Type* type) : name_(name), type_(type) {
 
         }
 
@@ -34,7 +34,7 @@ namespace wasm_module {
             return name_;
         }
 
-        Type *type() {
+        const Type* type() {
             return type_;
         }
     };

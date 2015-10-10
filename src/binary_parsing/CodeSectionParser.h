@@ -42,10 +42,10 @@ namespace wasm_module { namespace binary {
                 std::string functionName = stream.readCString();
                 bool exported = stream.popULEB128() != 0;
 
-                Type *returnType = context.typeTable().getType(stream.popULEB128());
+                const Type* returnType = context.typeTable().getType(stream.popULEB128());
 
                 uint32_t numberOfParameters = stream.popULEB128();
-                std::vector<Type *> parameters;
+                std::vector<const Type*> parameters;
                 for (uint32_t j = 0; j < numberOfParameters; j++) {
                     parameters.push_back(context.typeTable().getType(stream.popULEB128()));
                 }

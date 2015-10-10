@@ -40,7 +40,7 @@ namespace wasm_module {
             typesByLocalTypeCode[localTypeCode] = name;
         }
 
-        Type *getType(uint32_t localTypeCode);
+        const Type* getType(uint32_t localTypeCode);
 
         std::string getTypeName(uint32_t localTypeCode) {
             auto result = typesByLocalTypeCode.find(localTypeCode);

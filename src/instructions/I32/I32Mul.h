@@ -26,7 +26,7 @@ namespace wasm_module {
     class I32Mul : public Instruction {
 
     public:
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {Int32::instance(), Int32::instance()};
         }
 
@@ -35,7 +35,7 @@ namespace wasm_module {
         }
 
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return Int32::instance();
         }
     };

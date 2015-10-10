@@ -31,16 +31,16 @@ namespace wasm_module {
 
 
     public:
-        static Int64 *instance() {
+        static const Int64* instance() {
             static Int64 instance;
             return &instance;
         }
 
-        virtual std::string name() {
+        virtual std::string name() const {
             return "int64";
         }
 
-        virtual void parse(binary::ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) const {
             int64_t value = ((uint64_t) stream.popULEB128()) << 32;
             value |= stream.popULEB128();
             (*(int64_t *) data) = value;
@@ -58,7 +58,7 @@ namespace wasm_module {
         }
 
 
-        virtual void parse(const std::string& literal, void *data) {
+        virtual void parse(const std::string& literal, void *data) const {
             (*(int64_t*) data) = std::atol(literal.c_str());
         }
 
@@ -71,7 +71,7 @@ namespace wasm_module {
             }
         }
 
-        virtual std::size_t size() {
+        virtual std::size_t size() const {
             return 8;
         }
 

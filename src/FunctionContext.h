@@ -34,31 +34,31 @@ namespace wasm_module {
      */
     class FunctionContext : public FunctionSignature {
 
-        std::vector<Type *> locals_;
+        std::vector<const Type*> locals_;
         std::unordered_map<std::string, uint32_t> namesToIndizes_;
 
     public:
         FunctionContext() {
         }
 
-        FunctionContext(std::string name, Type *returnType, std::vector<Type *> parameterTypes,
-                        std::vector<Type *> locals, bool exported)
+        FunctionContext(std::string name, const Type*returnType, std::vector<const Type*> parameterTypes,
+                        std::vector<const Type*> locals, bool exported)
                 : locals_(locals), FunctionSignature(name, returnType, parameterTypes, exported) {
 
         }
 
-        std::vector<Type *> pureLocals() {
+        std::vector<const Type*> pureLocals() {
             return locals_;
         }
 
-        std::vector<Type *> locals() {
-            std::vector<Type *> result;
+        std::vector<const Type*> locals() {
+            std::vector<const Type*> result;
 
-            for (Type *type : parameters()) {
+            for (const Type* type : parameters()) {
                 result.push_back(type);
             }
 
-            for (Type *type : pureLocals()) {
+            for (const Type* type : pureLocals()) {
                 result.push_back(type);
             }
             return result;

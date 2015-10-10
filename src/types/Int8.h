@@ -30,16 +30,16 @@ namespace wasm_module {
         }
 
     public:
-        static Int8 *instance() {
+        static const Int8* instance() {
             static Int8 instance;
             return &instance;
         }
 
-        virtual std::string name() {
+        virtual std::string name() const {
             return "int8";
         }
 
-        virtual Type *localType() override {
+        virtual const Type* localType() const override {
             return Int32::instance();
         }
 
@@ -70,11 +70,11 @@ namespace wasm_module {
 
 
 
-        virtual void parse(const std::string& literal, void *data) {
+        virtual void parse(const std::string& literal, void *data) const {
             (*(int8_t*) data) = (int8_t) std::atoi(literal.c_str());
         }
 
-        virtual void parse(binary::ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) const {
             int8_t value = getFromStream(stream);
             (*(int8_t *) data) = value;
         }
@@ -99,7 +99,7 @@ namespace wasm_module {
             }
         }
 
-        virtual std::size_t size() {
+        virtual std::size_t size() const {
             return 1;
         }
 

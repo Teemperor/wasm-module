@@ -52,11 +52,11 @@ namespace wasm_module {
             return "invoke";
         }
 
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return functionSignature.parameters();
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return functionSignature.returnType();
         }
     };

@@ -46,7 +46,7 @@ namespace wasm_module { namespace binary {
         void parse() {
             uint32_t numberOfLocals = stream.popULEB128();
 
-            std::vector<Type *> typeOfLocals;
+            std::vector<const Type*> typeOfLocals;
             for (uint32_t i = 0; i < numberOfLocals; i++) {
                 uint32_t typeData = stream.popULEB128();
                 typeOfLocals.push_back(context_.typeTable().getType(typeData));
@@ -68,7 +68,7 @@ namespace wasm_module { namespace binary {
             for (uint32_t args = 0; args < instruction->childrenTypes().size(); args++) {
                 Instruction *child = parseInstruction();
 
-                Type *expectedChildType = instruction->childrenTypes().at(args);
+                const Type* expectedChildType = instruction->childrenTypes().at(args);
                 if (expectedChildType != Void::instance()) {
                     if (expectedChildType != child->returnType()) {
                         throw InvalidParameterType(

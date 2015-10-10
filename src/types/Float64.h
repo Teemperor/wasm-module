@@ -31,21 +31,21 @@ namespace wasm_module {
 
 
     public:
-        static Float64 *instance() {
+        static const Float64* instance() {
             static Float64 instance;
             return &instance;
         }
 
 
-        virtual std::string name() {
+        virtual std::string name() const {
             return "float64";
         }
 
-        virtual void parse(const std::string& literal, void *data) {
+        virtual void parse(const std::string& literal, void *data) const {
             (*(double*) data) = std::atof(literal.c_str());
         }
 
-        virtual void parse(binary::ByteStream &stream, void *data) {
+        virtual void parse(binary::ByteStream &stream, void *data) const {
             ((uint8_t *) data)[0] = stream.popChar();
             ((uint8_t *) data)[1] = stream.popChar();
             ((uint8_t *) data)[2] = stream.popChar();
@@ -76,7 +76,7 @@ namespace wasm_module {
             }
         }
 
-        virtual std::size_t size() {
+        virtual std::size_t size() const {
             return 8;
         }
     };

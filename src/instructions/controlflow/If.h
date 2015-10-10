@@ -26,7 +26,7 @@ namespace wasm_module {
 
     class If : public Instruction {
     public:
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {Int32::instance(), Void::instance()};
         }
 
@@ -34,7 +34,7 @@ namespace wasm_module {
             return "if";
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() override {
             return Void::instance();
         }
     };

@@ -28,7 +28,7 @@ namespace wasm_module {
 
     class SetLocal : public Instruction {
 
-        Type *expectedType;
+        const Type* expectedType;
 
     public:
         uint32_t localIndex;
@@ -48,11 +48,11 @@ namespace wasm_module {
             return "set_local";
         }
 
-        virtual std::vector<Type *> childrenTypes() {
+        virtual std::vector<const Type*> childrenTypes() override {
             return {expectedType};
         }
 
-        virtual Type *returnType() {
+        virtual const Type* returnType() {
             return expectedType;
         }
     };

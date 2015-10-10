@@ -21,7 +21,7 @@
 
 namespace wasm_module {
 
-    Variable::Variable(wasm_module::Type *type) : type_(type) {
+    Variable::Variable(const wasm_module::Type *type) : type_(type) {
         value_.resize(type->size());
     }
 
