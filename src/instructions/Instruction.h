@@ -39,7 +39,7 @@ namespace wasm_module {
             }
         }
 
-        virtual void children(std::vector<Instruction *> newChildren) {
+        virtual void children(const std::vector<Instruction*>& newChildren) {
             children_ = newChildren;
         }
 

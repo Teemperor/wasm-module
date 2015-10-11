@@ -42,6 +42,7 @@ add_library(wasm-module
     src/instructions/controlflow/Forever.cpp
     src/instructions/controlflow/If.cpp
     src/instructions/controlflow/Return.cpp
+    src/instructions/controlflow/Comma.cpp
 
     src/instructions/Print.cpp
     src/instructions/GetLocal.cpp
@@ -78,6 +79,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
+
 )
 
 

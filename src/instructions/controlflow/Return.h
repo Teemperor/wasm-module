@@ -24,11 +24,6 @@
 
 namespace wasm_module {
 
-    class CalledReturn {
-    public:
-        Variable result;
-    };
-
     class Return : public Instruction {
     public:
         virtual std::vector<const Type*> childrenTypes() override {

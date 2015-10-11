@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-#ifndef WASMINT_BREAK_H
-#define WASMINT_BREAK_H
-
+#ifndef WASMINT_COMMA_H
+#define WASMINT_COMMA_H
 
 #include <instructions/Instruction.h>
 #include <types/Void.h>
+#include <ExceptionWithMessage.h>
 
 namespace wasm_module {
 
-    class Break : public Instruction {
+    class Comma : public Instruction {
     public:
-        virtual std::vector<const Type*> childrenTypes() override {
-            return {};
+        virtual std::vector<const Type *> childrenTypes() override {
+            return {Void::instance(), Void::instance()};
         }
 
         virtual std::string name() {
-            return "break";
+            return "comma";
         }
 
         virtual const Type* returnType() override {
-            return Void::instance();
+            return children().at(1)->returnType();
         }
+
     };
 }
 
-
-#endif //WASMINT_BREAK_H
+#endif //WASMINT_COMMA_H
