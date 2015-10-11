@@ -85,6 +85,10 @@ namespace wasm_module {
             throw NoFunctionWithName(functionName + " in module " + name());
         }
 
+        bool hasImport(const std::string& moduleImport) {
+            context_.hasImport(moduleImport);
+        }
+
         void addImport(const ModuleImport& moduleImport) {
             context_.addImport(moduleImport);
         }

@@ -38,7 +38,7 @@ namespace wasm_module { namespace sexpr {
         }
 
         void ModuleParser::parseImport(const SExpr& importExpr) {
-            if (importExpr.children().size() != 5) {
+            if (importExpr.children().size() < 4) {
                 throw MalformedImportStatement(importExpr.toString());
             } else {
                 if (importExpr[0] != "import") {
