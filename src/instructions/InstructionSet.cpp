@@ -34,6 +34,8 @@
 #include <instructions/FunctionCall.h>
 #include <instructions/I32/I32Sub.h>
 #include <instructions/I32/I32Mul.h>
+#include <instructions/I32/I32LessEqualSigned.h>
+#include <instructions/I32/I32LessThanSigned.h>
 #include <instructions/I32/I32Div.h>
 #include <instructions/heap/Int32Load.h>
 #include <instructions/heap/Int32Store.h>
@@ -59,6 +61,10 @@ namespace wasm_module {
             return new I32Mul();
         } else if (name == "int32.div") {
             return new I32Div();
+        } else if (name == "int32.lt") {
+            return new I32LessThanSigned();
+        } else if (name == "int32.le") {
+            return new I32LessEqualSigned();
         } else if (name == "print") {
             return new Print();
         } else if (name == "call_direct") {

@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-#ifndef WASMINT_IF_H
-#define WASMINT_IF_H
+#ifndef WASMINT_I32LESSTHAN_H
+#define WASMINT_I32LESSTHAN_H
+
 
 
 #include <instructions/Instruction.h>
 #include <types/Int32.h>
-#include <types/Void.h>
 
 namespace wasm_module {
 
-    class If : public Instruction {
+    class I32LessThanSigned : public Instruction {
+
     public:
         virtual std::vector<const Type*> childrenTypes() override {
-            return {Int32::instance(), Void::instance(), Void::instance()};
+            return {Int32::instance(), Int32::instance()};
         }
 
         virtual std::string name() {
-            return "if";
+            return "int32.lt";
         }
+
 
         virtual const Type* returnType() override {
-            return Void::instance();
+            return Int32::instance();
         }
     };
-
 }
 
-#endif //WASMINT_IF_H
+#endif //WASMINT_I32LESSTHAN_H

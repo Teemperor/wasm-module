@@ -14,31 +14,4 @@
  * limitations under the License.
  */
 
-#ifndef WASMINT_IF_H
-#define WASMINT_IF_H
-
-
-#include <instructions/Instruction.h>
-#include <types/Int32.h>
-#include <types/Void.h>
-
-namespace wasm_module {
-
-    class If : public Instruction {
-    public:
-        virtual std::vector<const Type*> childrenTypes() override {
-            return {Int32::instance(), Void::instance(), Void::instance()};
-        }
-
-        virtual std::string name() {
-            return "if";
-        }
-
-        virtual const Type* returnType() override {
-            return Void::instance();
-        }
-    };
-
-}
-
-#endif //WASMINT_IF_H
+#include "I32LessThanSigned.h"

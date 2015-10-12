@@ -80,7 +80,7 @@ add_library(wasm-module
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
 
-)
+src/instructions/I32/I32LessThanSigned.cpp src/instructions/I32/I32LessThanSigned.h src/instructions/I32/I32LessEqualSigned.cpp src/instructions/I32/I32LessEqualSigned.h)
 
 
 ####################
