@@ -53,17 +53,17 @@ namespace wasm_module {
                                                 FunctionContext &functionContext) {
         if (name == "literal") {
             return new Literal(stream, context);
-        } else if (name == "int32.add") {
+        } else if (name == "i32.add") {
             return new I32Add();
-        } else if (name == "int32.sub") {
+        } else if (name == "i32.sub") {
             return new I32Sub();
-        } else if (name == "int32.mul") {
+        } else if (name == "i32.mul") {
             return new I32Mul();
-        } else if (name == "int32.div") {
+        } else if (name == "i32.div") {
             return new I32Div();
-        } else if (name == "int32.lt") {
+        } else if (name == "i32.lt") {
             return new I32LessThanSigned();
-        } else if (name == "int32.le") {
+        } else if (name == "i32.le") {
             return new I32LessEqualSigned();
         } else if (name == "print") {
             return new Print();
@@ -104,11 +104,15 @@ namespace wasm_module {
                                                        FunctionContext &functionContext) {
         if (name == "int32.add") {
             return new I32Add();
-        } else if (name == "int32.sub") {
+        } else if (name == "i32.sub") {
             return new I32Sub();
-        } else if (name == "int32.mul") {
+        } else if (name == "i32.mul") {
             return new I32Mul();
-        } else if (name == "int32.div") {
+        } else if (name == "i32.div") {
+            return new I32Div();
+        } else if (name == "i32.lt") {
+            return new I32Div();
+        } else if (name == "i32.le") {
             return new I32Div();
         } else if (name == "print") {
             return new Print();

@@ -34,7 +34,7 @@ namespace wasm_module {
         }
 
         virtual std::string name() {
-            return "int32.div";
+            return "i32.div";
         }
 
 

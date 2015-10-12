@@ -19,7 +19,7 @@ namespace wasm_module {
         }
 
         virtual std::string name() {
-            return "int32.le";
+            return "i32.le";
         }
 
 
