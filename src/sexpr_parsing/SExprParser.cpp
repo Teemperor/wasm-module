@@ -31,10 +31,25 @@ namespace wasm_module { namespace sexpr {
                 }
             }
 
-
             if (stream_.peekChar() == '(') {
                 stream_.popChar();
                 parseValues(parent.addChild(), false);
+            } else if (stream_.peekChar() == '"') {
+
+                stream_.popChar();
+
+                std::string word;
+
+                while (true) {
+                    char c = stream_.popChar();
+                    if (c != '"') {
+                        word.push_back(c);
+                    } else {
+                        parent.addChild(word);
+                        break;
+                    }
+                }
+
             } else if (stream_.peekChar() == ')') {
                 stream_.popChar();
                 exit = true;

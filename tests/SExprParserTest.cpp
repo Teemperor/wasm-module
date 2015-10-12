@@ -27,7 +27,7 @@ using namespace wasm_module;
 using namespace wasm_module::sexpr;
 
 int main() {
-    std::string str = "(module (memory 0 1))\n"
+    std::string str = "(module (memory \"langes wort\" 0 1))\n"
             "\t(module)";
 
     CharacterStream stream(str);
@@ -40,10 +40,11 @@ int main() {
 
     assert(expr.children()[0].children().size() == 2);
     assert(expr.children()[0][0] == "module");
-    assert(expr.children()[0][1].children().size() == 3);
+    assert(expr.children()[0][1].children().size() == 4);
     assert(expr.children()[0][1][0] == "memory");
-    assert(expr.children()[0][1][1] == "0");
-    assert(expr.children()[0][1][2] == "1");
+    assert(expr.children()[0][1][1] == "langes wort");
+    assert(expr.children()[0][1][2] == "0");
+    assert(expr.children()[0][1][3] == "1");
 
     assert(expr.children()[1][0] == "module");
 
