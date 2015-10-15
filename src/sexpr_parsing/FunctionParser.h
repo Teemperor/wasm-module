@@ -24,7 +24,6 @@
 #include "Types.h"
 #include "InstructionParser.h"
 #include <unordered_map>
-#include <instructions/controlflow/Block.h>
 
 namespace wasm_module { namespace sexpr {
 

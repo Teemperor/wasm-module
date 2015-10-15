@@ -88,9 +88,29 @@ namespace wasm_module {
             }
         }
 
+        static uint32_t getUnsignedValue(Variable variable) {
+            if (variable.type() == *instance()) {
+                uint32_t result = 0;
+                uint32_t *data = (uint32_t *) variable.value();
+                result = *data;
+                return result;
+            } else {
+                throw IncompatibleType();
+            }
+        }
+
         static void setValue(Variable &variable, int32_t value) {
             if (variable.type() == *instance()) {
                 int32_t *data = (int32_t *) variable.value();
+                (*data) = value;
+            } else {
+                throw IncompatibleType();
+            }
+        }
+
+        static void setUnsignedValue(Variable &variable, uint32_t value) {
+            if (variable.type() == *instance()) {
+                uint32_t *data = (uint32_t *) variable.value();
                 (*data) = value;
             } else {
                 throw IncompatibleType();

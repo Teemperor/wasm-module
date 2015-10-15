@@ -15,14 +15,15 @@
  */
 
 #include <types/Void.h>
+#include <types/Int32.h>
 #include "Variable.h"
 #include "types/Type.h"
 
 
 namespace wasm_module {
 
-    Variable::Variable(const wasm_module::Type *type) : type_(type) {
-        value_.resize(type->size());
+    Variable::Variable(const wasm_module::Type *type) {
+        setType(type);
     }
 
     Variable::Variable() : type_(wasm_module::Void::instance()) {
@@ -34,4 +35,42 @@ namespace wasm_module {
         value_ = newData;
     }
 
+    uint32_t Variable::uint32() const {
+        if (type_ != Int32::instance())
+            throw InvalidTypeForShortMethod();
+        return Int32::getUnsignedValue(*this);
+    }
+
+    int32_t Variable::int32() const {
+        if (type_ != Int32::instance())
+            throw InvalidTypeForShortMethod();
+        return Int32::getValue(*this);
+    }
+
+    Variable::Variable(uint32_t value) {
+        setType(Int32::instance());
+        uint32(value);
+    }
+
+    Variable::Variable(int32_t value) {
+        setType(Int32::instance());
+        int32(value);
+    }
+
+    void Variable::setType(const wasm_module::Type* type) {
+        type_ = type;
+        value_.resize(type->size());
+    }
+
+    void Variable::uint32(uint32_t value) {
+        if (type_ != Int32::instance())
+            throw InvalidTypeForShortMethod();
+        Int32::setUnsignedValue(*this, value);
+    }
+
+    void Variable::int32(int32_t value) {
+        if (type_ != Int32::instance())
+            throw InvalidTypeForShortMethod();
+        Int32::setValue(*this, value);
+    }
 }

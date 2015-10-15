@@ -15,8 +15,7 @@
  */
 
 #include "Module.h"
-#include <instructions/NativeInstruction.h>
-#include <Function.h>
+#include <instructions/Instructions.h>
 
 namespace wasm_module {
 

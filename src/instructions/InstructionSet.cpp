@@ -17,28 +17,8 @@
 
 
 #include "InstructionSet.h"
-#include "Literal.h"
-#include "SetGlobal.h"
-#include "GetGlobal.h"
-#include <instructions/I32/I32Add.h>
+#include "Instructions.h"
 #include <instructions/Print.h>
-#include <instructions/GetLocal.h>
-#include <instructions/controlflow/Block.h>
-#include <instructions/SetLocal.h>
-#include <instructions/controlflow/Break.h>
-#include <instructions/controlflow/Continue.h>
-#include <instructions/controlflow/DoWhile.h>
-#include <instructions/controlflow/If.h>
-#include <instructions/controlflow/Return.h>
-#include <instructions/controlflow/Forever.h>
-#include <instructions/FunctionCall.h>
-#include <instructions/I32/I32Sub.h>
-#include <instructions/I32/I32Mul.h>
-#include <instructions/I32/I32LessEqualSigned.h>
-#include <instructions/I32/I32LessThanSigned.h>
-#include <instructions/I32/I32Div.h>
-#include <instructions/heap/Int32Load.h>
-#include <instructions/heap/Int32Store.h>
 #include <instructions/assert/I32AssertReturn.h>
 
 namespace wasm_module {
@@ -59,16 +39,26 @@ namespace wasm_module {
             return new I32Sub();
         } else if (name == "i32.mul") {
             return new I32Mul();
-        } else if (name == "i32.div") {
-            return new I32Div();
+        } else if (name == "i32.div_u") {
+            return new I32DivSigned();
+        } else if (name == "i32.div_s") {
+            return new I32DivUnsigned();
         } else if (name == "i32.lt") {
             return new I32LessThanSigned();
         } else if (name == "i32.le") {
             return new I32LessEqualSigned();
+        } else if (name == "i32.or") {
+            return new I32Or();
+        } else if (name == "i32.xor") {
+            return new I32Xor();
+        } else if (name == "i32.rem_s") {
+            return new I32RemainderSigned();
+        } else if (name == "i32.rem_u") {
+            return new I32RemainderUnsigned();
         } else if (name == "print") {
             return new Print();
         } else if (name == "call_direct") {
-            return new FunctionCall(stream, context);
+            return new Call(stream, context);
         } else if (name == "get_local") {
             return new GetLocal(stream, functionContext);
         } else if (name == "block") {
@@ -83,18 +73,10 @@ namespace wasm_module {
             return new DoWhile();
         } else if (name == "forever") {
             return new Forever();
-        } else if (name == "int32.load") {
-            return new Int32Load();
-        } else if (name == "int32.store") {
-            return new Int32Store();
         } else if (name == "if") {
             return new If();
         } else if (name == "return") {
             return new Return();
-        } else if (name == "get_global") {
-            return new GetGlobal(stream, context);
-        } else if (name == "set_global") {
-            return new SetGlobal(stream, context);
         } else {
             throw UnknownInstructionName(name);
         }
@@ -102,22 +84,32 @@ namespace wasm_module {
 
     Instruction *InstructionSet::getInstruction(std::string name, const sexpr::SExpr& expr, ModuleContext &context,
                                                        FunctionContext &functionContext) {
-        if (name == "int32.add") {
+        if (name == "i32.add") {
             return new I32Add();
         } else if (name == "i32.sub") {
             return new I32Sub();
         } else if (name == "i32.mul") {
             return new I32Mul();
-        } else if (name == "i32.div") {
-            return new I32Div();
+        } else if (name == "i32.div_u") {
+            return new I32DivSigned();
+        } else if (name == "i32.div_s") {
+            return new I32DivUnsigned();
         } else if (name == "i32.lt") {
-            return new I32Div();
+            return new I32LessThanSigned();
         } else if (name == "i32.le") {
-            return new I32Div();
+            return new I32LessEqualSigned();
+        } else if (name == "i32.or") {
+            return new I32Or();
+        } else if (name == "i32.xor") {
+            return new I32Xor();
+        } else if (name == "i32.rem_s") {
+            return new I32RemainderSigned();
+        } else if (name == "i32.rem_u") {
+            return new I32RemainderUnsigned();
         } else if (name == "print") {
             return new Print();
         } else if (name == "call") {
-            return new FunctionCall(expr, context);
+            return new Call(expr, context);
         } else if (name == "get_local") {
             return new GetLocal(expr, functionContext);
         } else if (name == "set_local") {
@@ -132,10 +124,6 @@ namespace wasm_module {
             return new I32AssertReturn();
         } else if (name == "forever") {
             return new Forever();
-        } else if (name == "int32.load") {
-            return new Int32Load();
-        } else if (name == "int32.store") {
-            return new Int32Store();
         } else if (name == "if") {
             return new If();
         } else if (name == "return") {

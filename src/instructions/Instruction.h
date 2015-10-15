@@ -23,6 +23,7 @@
 
 #include "types/Type.h"
 #include "Variable.h"
+#include "InstructionId.h"
 
 namespace wasm_module {
 
@@ -43,15 +44,17 @@ namespace wasm_module {
             children_ = newChildren;
         }
 
-        std::vector<Instruction *> children() {
+        const std::vector<Instruction *>& children() const {
             return children_;
         }
 
-        virtual std::string name() = 0;
+        virtual const std::string& name() const = 0;
 
-        virtual std::vector<const Type *> childrenTypes() = 0;
+        virtual const std::vector<const Type *>& childrenTypes() const = 0;
 
-        virtual const Type* returnType() = 0;
+        virtual const Type* returnType() const = 0;
+
+        virtual InstructionId::Value id() const = 0;
     };
 }
 

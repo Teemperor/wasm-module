@@ -26,16 +26,23 @@ namespace wasm_module {
 
     class Print : public Instruction {
     public:
-        virtual std::vector<const Type*> childrenTypes() override {
-            return {Int32::instance()};
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_ = {Int32::instance()};;
+            return chTypes_;
         }
 
-        virtual std::string name() override {
-            return "print";
+        virtual const std::string& name() const override {
+            static std::string name_ = "print";
+            return name_;
         }
 
-        virtual const Type* returnType() override {
+        virtual const Type* returnType() const override {
             return Void::instance();
+        }
+
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::Print;
         }
     };
 

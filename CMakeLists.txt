@@ -11,7 +11,6 @@ include_directories (src)
 
 add_library(wasm-module
     src/ExceptionWithMessage.cpp
-    src/instructions/InstructionSet.cpp
     src/Module.cpp
     src/Section.cpp
     src/FunctionContext.cpp
@@ -27,34 +26,10 @@ add_library(wasm-module
     src/ModuleContext.cpp
     src/ModuleImport.cpp
 
-    src/instructions/I32/I32Add.cpp
-    src/instructions/I32/I32Sub.cpp
-    src/instructions/I32/I32Mul.cpp
-    src/instructions/I32/I32Div.cpp
-
-    src/instructions/heap/Int32Load.cpp
-    src/instructions/heap/Int32Store.cpp
-
-    src/instructions/controlflow/Block.cpp
-    src/instructions/controlflow/Break.cpp
-    src/instructions/controlflow/Continue.cpp
-    src/instructions/controlflow/DoWhile.cpp
-    src/instructions/controlflow/Forever.cpp
-    src/instructions/controlflow/If.cpp
-    src/instructions/controlflow/Return.cpp
-    src/instructions/controlflow/Comma.cpp
-
-    src/instructions/Print.cpp
-    src/instructions/GetLocal.cpp
-    src/instructions/SetLocal.cpp
-    src/instructions/GetGlobal.cpp
-    src/instructions/SetGlobal.cpp
-    src/instructions/FunctionCall.cpp
-    src/instructions/Literal.cpp
+    src/instructions/InstructionSet.cpp
     src/instructions/Instruction.cpp
-    src/instructions/NativeInstruction.cpp
-
-    src/instructions/assert/I32AssertReturn.cpp
+    src/instructions/InstructionId.cpp
+    src/instructions/Instructions.cpp
 
     src/types/Int8.cpp
     src/types/Int32.cpp
@@ -79,8 +54,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-
-src/instructions/I32/I32LessThanSigned.cpp src/instructions/I32/I32LessThanSigned.h src/instructions/I32/I32LessEqualSigned.cpp src/instructions/I32/I32LessEqualSigned.h)
+)
 
 
 ####################

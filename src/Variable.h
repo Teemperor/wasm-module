@@ -19,22 +19,30 @@
 
 #include <cstdint>
 #include <vector>
+#include <types/Type.h>
 
-class InvalidDataSize : public std::exception {};
 
 namespace wasm_module {
     class Type;
+
+    class InvalidDataSize : public std::exception {};
+    class InvalidTypeForShortMethod : public std::exception {};
+
 
     class Variable {
         const wasm_module::Type *type_;
         std::vector<uint8_t> value_;
 
+        void setType(const wasm_module::Type* type);
+
     public:
         Variable();
+        Variable(uint32_t value);
+        Variable(int32_t value);
 
         Variable(const wasm_module::Type *type);
 
-        const wasm_module::Type& type() {
+        const wasm_module::Type& type() const {
             return *type_;
         }
 
@@ -47,6 +55,14 @@ namespace wasm_module {
         }
 
         void setValue(std::vector<uint8_t> newData);
+
+        uint32_t uint32() const;
+
+        int32_t int32() const;
+
+        void uint32(uint32_t value);
+
+        void int32(int32_t value);
     };
 }
 

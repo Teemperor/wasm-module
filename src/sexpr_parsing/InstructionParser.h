@@ -20,8 +20,8 @@
 #include <instructions/Instruction.h>
 #include <ModuleContext.h>
 #include <FunctionContext.h>
-#include <instructions/controlflow/Block.h>
 #include <instructions/InstructionSet.h>
+#include <instructions/Instructions.h>
 #include "SExpr.h"
 
 namespace wasm_module { namespace sexpr {

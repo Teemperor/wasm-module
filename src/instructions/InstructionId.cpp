@@ -14,30 +14,4 @@
  * limitations under the License.
  */
 
-#ifndef WASMINT_BREAK_H
-#define WASMINT_BREAK_H
-
-
-#include <instructions/Instruction.h>
-#include <types/Void.h>
-
-namespace wasm_module {
-
-    class Break : public Instruction {
-    public:
-        virtual std::vector<const Type*> childrenTypes() override {
-            return {};
-        }
-
-        virtual std::string name() {
-            return "break";
-        }
-
-        virtual const Type* returnType() override {
-            return Void::instance();
-        }
-    };
-}
-
-
-#endif //WASMINT_BREAK_H
+#include "InstructionId.h"
