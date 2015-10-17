@@ -29,7 +29,10 @@
 
 namespace wasm_module {
 
+    class FunctionWithoutModule : public std::exception {};
+
     class Instruction;
+    class Module;
 
     class Function : public FunctionContext {
 
@@ -37,6 +40,7 @@ namespace wasm_module {
      * The AST of this function which contains all instructions of this function.
      */
         Instruction *mainInstruction_;
+        Module* module_ = nullptr;
 
     public:
         Function(FunctionContext &context, Instruction *mainInstruction);
@@ -45,6 +49,16 @@ namespace wasm_module {
 
         Instruction *mainInstruction() {
             return mainInstruction_;
+        }
+
+        Module& module() {
+            if (module_ == nullptr)
+                throw FunctionWithoutModule();
+            return *module_;
+        }
+
+        void module(Module* module) {
+            this->module_ = module;
         }
     };
 

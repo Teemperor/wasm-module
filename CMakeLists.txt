@@ -54,7 +54,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-)
+src/HeapData.cpp src/HeapData.h src/HeapSegment.cpp src/HeapSegment.h)
 
 
 ####################

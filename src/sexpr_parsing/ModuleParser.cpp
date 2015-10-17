@@ -64,6 +64,8 @@ namespace wasm_module { namespace sexpr {
                         }
 
                         returnType = Types::getByName(subExpr[1].value());
+                    } else if (subExpr[0].value() == "memory") {
+                        parseMemory(subExpr);
                     } else {
                         throw UnknownImportExpressionChild(subExpr.value());
                     }
@@ -71,6 +73,32 @@ namespace wasm_module { namespace sexpr {
 
                 ModuleImport moduleImport(importName, moduleName, FunctionSignature(functionName, returnType, parameters, true));
                 module_->addImport(moduleImport);
+            }
+        }
+
+        void ModuleParser::parseMemory(const SExpr&memoryExpr) {
+            if (memoryExpr.children().size() >= 3) {
+                uint32_t startMem = (uint32_t) std::atoll(memoryExpr[1].value().c_str());
+                uint32_t maxMem = (uint32_t) std::atoll(memoryExpr[2].value().c_str());
+                HeapData data(startMem, maxMem);
+
+                for(uint32_t childNum = 3; childNum < memoryExpr.children().size(); childNum++) {
+                    const SExpr& segmentExpr = memoryExpr[childNum];
+                    if (memoryExpr.children().size() >= 3) {
+                        uint32_t offset = (uint32_t) std::atoll(segmentExpr[1].value().c_str());
+                        // todo char to uin8t is maybe compiler specific
+                        std::vector<uint8_t> segmentData(segmentExpr[2].value().begin(), segmentExpr[2].value().begin());
+
+                        HeapSegment segment(offset, segmentData);
+                        data.addNextSegment(segment);
+                    } else {
+                        throw MalformedMemoryStatement("Not enough children for a valid segment statement (needs at least 3): " + segmentExpr.toString());
+                    }
+                }
+
+                module_->heapData(data);
+            } else {
+                throw MalformedMemoryStatement("Not enough children for a valid memory statement (needs at least 3): " + memoryExpr.toString());
             }
         }
     }}

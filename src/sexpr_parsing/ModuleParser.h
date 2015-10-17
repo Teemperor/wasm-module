@@ -30,11 +30,15 @@ namespace wasm_module { namespace sexpr {
     ExceptionMessage(UnknownImportExpressionChild)
     ExceptionMessage(MultipleReturnTypesInImport)
 
+    ExceptionMessage(MalformedMemoryStatement)
+
     class ModuleParser {
 
         Module* module_  = new Module();
 
         void parseImport(const SExpr& importExpr);
+
+        void parseMemory(const SExpr&memoryExpr);
 
         ModuleParser(const SExpr& moduleExpr);
 

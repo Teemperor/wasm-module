@@ -25,6 +25,7 @@
 #include "ModuleContext.h"
 #include "FunctionContext.h"
 #include "Function.h"
+#include "HeapData.h"
 #include <vector>
 #include <functional>
 
@@ -39,6 +40,8 @@ namespace wasm_module {
         std::vector<std::string> requiredModules_;
         std::vector<Function*> functions_;
         std::vector<Function*> functionsToDelete_;
+
+        HeapData heapData_;
 
     public:
         Module(ModuleContext &context, std::vector<Section *> sections,
@@ -55,11 +58,20 @@ namespace wasm_module {
             }
         }
 
+        const HeapData& heapData() const {
+            return heapData_;
+        }
+
+        void heapData(const HeapData& data) {
+            heapData_ = data;
+        }
+
         const std::vector<Function *>& functions() {
             return functions_;
         }
 
         void addFunction(Function* function, bool takeMemoryOwnership = false) {
+            function->module(this);
             functions_.push_back(function);
             if (takeMemoryOwnership)
                 functionsToDelete_.push_back(function);
@@ -97,7 +109,7 @@ namespace wasm_module {
             return context_.getImport(importName);
         }
 
-        const std::string& name() {
+        const std::string& name() const {
             return context_.name();
         }
 

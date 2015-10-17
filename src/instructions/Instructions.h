@@ -92,10 +92,6 @@ namespace wasm_module {
     DeclInstruction(I64CountTrailingZeroes, "i64.ctz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
 
-
-    //needs special implementation
-    DeclInstruction(Conditional, "conditional", {Void::instance() DeclInstComma Void::instance() DeclInstComma Void::instance()}, Void::instance())};
-
     DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
     DeclInstruction(CallImport, "call_import", {}, Void::instance())};
 
@@ -107,10 +103,34 @@ namespace wasm_module {
     DeclInstruction(Return, "return", {}, Void::instance())};
     DeclInstruction(Switch, "switch", {}, Void::instance())};
 
-    DeclInstruction(GrowMemory, "grow_memory", {}, Void::instance())};
-    DeclInstruction(PageSize, "page_size", {}, Void::instance())};
+    DeclInstruction(GrowMemory, "grow_memory", {Int32::instance()}, Int32::instance())};
+    DeclInstruction(PageSize, "page_size", {}, Int32::instance())};
 
-    // TODO load/store
+    DeclInstruction(I32Load8Signed, "i32.load8_s", {Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32Load8Unsigned, "i32.load8_u", {Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32Load16Signed, "i32.load16_s", {Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32Load16Unsigned, "i32.load16_u", {Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32Load, "i32.load", {Int32::instance()}, Int32::instance())};
+    DeclInstruction(I64Load8Signed, "i64.load8_s", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64Load8Unsigned, "i64.load8_u", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64Load16Signed, "i64.load16_s", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64Load16Unsigned, "i64.load16_u", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64Load32Signed, "i64.load32_s", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64Load32Unsigned, "i64.load32_u", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64Load, "i64.load", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(F32Load, "f32.load", {Int32::instance()}, Float32::instance())};
+    DeclInstruction(F64Load, "f64.load", {Int32::instance()}, Float64::instance())};
+
+    DeclInstruction(I32Store8, "i32.store8", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
+    DeclInstruction(I32Store16, "i32.store16", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
+    DeclInstruction(I32Store, "i32.store", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
+    DeclInstruction(I64Store8, "i64.store8", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclInstruction(I64Store16, "i64.store16", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclInstruction(I64Store32, "i64.store32", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclInstruction(I64Store, "i64.store", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclInstruction(F32Store, "f32.store", {Int32::instance() DeclInstComma Float32::instance()}, Void::instance())};
+    DeclInstruction(F64Store, "f64.store", {Int32::instance() DeclInstComma Float64::instance()}, Void::instance())};
+
 
     DeclInstruction(I32Wrap, "i32.wrap[i64]", {Int64::instance()}, Int32::instance())};
     DeclInstruction(I32TruncSignedF32, "i32.trunc_s[f32]", {Float32::instance()}, Int32::instance())};
@@ -236,6 +256,41 @@ namespace wasm_module {
 
         virtual InstructionId::Value id() const {
             return InstructionId::Comma;
+        }
+    };
+
+    class Conditional : public Instruction {
+
+        const Type* returnType_ = Void::instance();
+
+    public:
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_ = {Int32::instance(), Void::instance(), Void::instance()};
+            return chTypes_;
+        }
+
+        virtual void children(const std::vector<Instruction*>& newChildren) override {
+            Instruction::children(newChildren);
+            const Type* newReturnType_ = newChildren.at(1)->returnType();
+            if (newReturnType_ != newChildren.at(2)->returnType()) {
+                throw std::domain_error(
+                        std::string("Then and else child of conditional operation have different return types: ")
+                        + newReturnType_->name() + " and " + newChildren.at(2)->name());
+            }
+            returnType_ = newReturnType_;
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "conditional";
+            return name_;
+        }
+
+        virtual const Type* returnType() const override {
+            return returnType_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::Conditional;
         }
     };
 
@@ -456,6 +511,51 @@ namespace wasm_module {
             return functionSignature.returnType();
         }
     };
+
+    class I32AssertReturn : public Instruction {
+
+    public:
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_ = {Int64::instance(), Int64::instance()};;
+            return chTypes_;
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "print";
+            return name_;
+        }
+
+        virtual const Type* returnType() const override {
+            return Void::instance();
+        }
+
+        virtual InstructionId::Value id() const override {
+            return InstructionId::I32AssertReturn;
+        }
+    };
+
+    class Print : public Instruction {
+    public:
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_ = {Int32::instance()};;
+            return chTypes_;
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "print";
+            return name_;
+        }
+
+        virtual const Type* returnType() const override {
+            return Void::instance();
+        }
+
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::Print;
+        }
+    };
+
 }
 
 #endif //WASMINT_INSTRUCTIONS_H

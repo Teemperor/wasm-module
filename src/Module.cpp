@@ -23,6 +23,7 @@ namespace wasm_module {
                              std::function<Variable(std::vector<Variable>)> givenFunction) {
         FunctionContext context(name, returnType, parameterTypes, {}, false);
         Function* function = new Function(context, new NativeInstruction(givenFunction, returnType, parameterTypes));
+        function->module(this);
         functions_.push_back(function);
         functionsToDelete_.push_back(function);
     }

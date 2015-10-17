@@ -18,8 +18,6 @@
 
 #include "InstructionSet.h"
 #include "Instructions.h"
-#include <instructions/Print.h>
-#include <instructions/assert/I32AssertReturn.h>
 
 namespace wasm_module {
 
