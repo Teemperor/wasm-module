@@ -27,6 +27,8 @@ namespace wasm_module { namespace sexpr {
                 const std::string& typeName = expr[0].value();
                 if (typeName == "import") {
                     parseImport(expr);
+                } else if (typeName == "memory") {
+                    parseMemory(expr);
                 } else if (typeName == "func") {
                     Function* function = &FunctionParser::parse(expr, module_->context());
                     module_->context().functionTable().addFunctionSignature(*function);
@@ -64,8 +66,6 @@ namespace wasm_module { namespace sexpr {
                         }
 
                         returnType = Types::getByName(subExpr[1].value());
-                    } else if (subExpr[0].value() == "memory") {
-                        parseMemory(subExpr);
                     } else {
                         throw UnknownImportExpressionChild(subExpr.value());
                     }
@@ -77,16 +77,20 @@ namespace wasm_module { namespace sexpr {
         }
 
         void ModuleParser::parseMemory(const SExpr&memoryExpr) {
-            if (memoryExpr.children().size() >= 3) {
+            if (memoryExpr.children().size() >= 2) {
                 uint32_t startMem = (uint32_t) std::atoll(memoryExpr[1].value().c_str());
-                uint32_t maxMem = (uint32_t) std::atoll(memoryExpr[2].value().c_str());
+                uint32_t maxMem = std::numeric_limits<uint32_t>::max();
+                bool hasMaxValue = memoryExpr.children()[2].hasValue();
+                if (hasMaxValue) {
+                    maxMem = (uint32_t) std::atoll(memoryExpr[2].value().c_str());
+                }
                 HeapData data(startMem, maxMem);
 
-                for(uint32_t childNum = 3; childNum < memoryExpr.children().size(); childNum++) {
+                for(uint32_t childNum = hasMaxValue ? 3 : 2; childNum < memoryExpr.children().size(); childNum++) {
                     const SExpr& segmentExpr = memoryExpr[childNum];
-                    if (memoryExpr.children().size() >= 3) {
+                    if (segmentExpr.children().size() >= 3) {
                         uint32_t offset = (uint32_t) std::atoll(segmentExpr[1].value().c_str());
-                        // todo char to uin8t is maybe compiler specific
+                        // todo char to uint8_t is maybe compiler specific
                         std::vector<uint8_t> segmentData(segmentExpr[2].value().begin(), segmentExpr[2].value().begin());
 
                         HeapSegment segment(offset, segmentData);

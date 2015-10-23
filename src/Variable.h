@@ -26,8 +26,6 @@ namespace wasm_module {
     class Type;
 
     class InvalidDataSize : public std::exception {};
-    class InvalidTypeForShortMethod : public std::exception {};
-
 
     class Variable {
         const wasm_module::Type *type_;
@@ -39,6 +37,10 @@ namespace wasm_module {
         Variable();
         Variable(uint32_t value);
         Variable(int32_t value);
+        Variable(uint64_t value);
+        Variable(int64_t value);
+        Variable(float value);
+        Variable(double value);
 
         Variable(const wasm_module::Type *type);
 

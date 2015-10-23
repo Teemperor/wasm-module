@@ -20,10 +20,17 @@
 
 #include <types/Type.h>
 #include <Variable.h>
+#include <regex>
+#include <ExceptionWithMessage.h>
 
 namespace wasm_module {
 
+    ExceptionMessage(InvalidI32Format)
+
     class Int32 : public Type {
+
+        static const std::regex hexNumber;
+        static const std::regex decNumber;
 
     protected:
         Int32() {
@@ -67,10 +74,7 @@ namespace wasm_module {
         }
 
 
-        virtual void parse(const std::string& literal, void *data) const {
-            int32_t value = std::atoi(literal.c_str());
-            (*(int32_t*) data) = value;
-        }
+        virtual void parse(const std::string& literal, void *data) const;
 
         virtual void parse(binary::ByteStream &stream, void *data) const {
             int32_t value = getFromStream(stream);
@@ -118,7 +122,8 @@ namespace wasm_module {
         }
 
         virtual std::size_t size() const {
-            return 4;
+            static_assert(sizeof(uint32_t) == 4u, "wasmint requires that that uint32_t is exactly 4 bytes big");
+            return 4u;
         }
 
     };

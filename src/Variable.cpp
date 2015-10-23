@@ -16,6 +16,9 @@
 
 #include <types/Void.h>
 #include <types/Int32.h>
+#include <types/Int64.h>
+#include <types/Float32.h>
+#include <types/Float64.h>
 #include "Variable.h"
 #include "types/Type.h"
 
@@ -36,14 +39,10 @@ namespace wasm_module {
     }
 
     uint32_t Variable::uint32() const {
-        if (type_ != Int32::instance())
-            throw InvalidTypeForShortMethod();
         return Int32::getUnsignedValue(*this);
     }
 
     int32_t Variable::int32() const {
-        if (type_ != Int32::instance())
-            throw InvalidTypeForShortMethod();
         return Int32::getValue(*this);
     }
 
@@ -63,14 +62,32 @@ namespace wasm_module {
     }
 
     void Variable::uint32(uint32_t value) {
-        if (type_ != Int32::instance())
-            throw InvalidTypeForShortMethod();
+        setType(Int32::instance());
         Int32::setUnsignedValue(*this, value);
     }
 
     void Variable::int32(int32_t value) {
-        if (type_ != Int32::instance())
-            throw InvalidTypeForShortMethod();
+        setType(Int32::instance());
         Int32::setValue(*this, value);
+    }
+
+    Variable::Variable(int64_t value) {
+        setType(Int64::instance());
+        Int64::setValue(*this, value);
+    }
+
+    Variable::Variable(uint64_t value) {
+        setType(Int64::instance());
+        Int64::setUnsignedValue(*this, value);
+    }
+
+    Variable::Variable(float value) {
+        setType(Float32::instance());
+        Float32::setValue(*this, value);
+    }
+
+    Variable::Variable(double value) {
+        setType(Float64::instance());
+        Float64::setValue(*this, value);
     }
 }

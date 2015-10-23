@@ -30,6 +30,9 @@ namespace wasm_module {
 
     class InstructionSet {
 
+        static Instruction* getInstruction(std::string name, ModuleContext &context,
+                                                   FunctionContext &functionContext);
+
     public:
         static Instruction* getInstruction(std::string name, binary::ByteStream &stream, ModuleContext &context,
                                            FunctionContext &functionContext);

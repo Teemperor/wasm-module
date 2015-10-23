@@ -132,34 +132,34 @@ namespace wasm_module {
     DeclInstruction(F64Store, "f64.store", {Int32::instance() DeclInstComma Float64::instance()}, Void::instance())};
 
 
-    DeclInstruction(I32Wrap, "i32.wrap[i64]", {Int64::instance()}, Int32::instance())};
-    DeclInstruction(I32TruncSignedF32, "i32.trunc_s[f32]", {Float32::instance()}, Int32::instance())};
-    DeclInstruction(I32TruncSignedF64, "i32.trunc_s[f64]", {Float64::instance()}, Int32::instance())};
-    DeclInstruction(I32TruncUnsignedF32, "i32.trunc_u[f32]", {Float32::instance()}, Int32::instance())};
-    DeclInstruction(I32TruncUnsignedF64, "i32.trunc_u[f64]", {Float64::instance()}, Int32::instance())};
-    DeclInstruction(I32ReinterpretF32, "i32.reinterpret[f32]", {Float32::instance()}, Int32::instance())};
+    DeclInstruction(I32Wrap, "i32.wrap/i64", {Int64::instance()}, Int32::instance())};
+    DeclInstruction(I32TruncSignedF32, "i32.trunc_s/f32", {Float32::instance()}, Int32::instance())};
+    DeclInstruction(I32TruncSignedF64, "i32.trunc_s/f64", {Float64::instance()}, Int32::instance())};
+    DeclInstruction(I32TruncUnsignedF32, "i32.trunc_u/f32", {Float32::instance()}, Int32::instance())};
+    DeclInstruction(I32TruncUnsignedF64, "i32.trunc_u/f64", {Float64::instance()}, Int32::instance())};
+    DeclInstruction(I32ReinterpretF32, "i32.reinterpret/f32", {Float32::instance()}, Int32::instance())};
 
-    DeclInstruction(I64ExtendSignedI32, "i64.extend_s[i32]", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64ExtendUnsignedI32, "i64.extend_u[i32]", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64TruncSignedF32, "i64.trunc_s[f32]", {Float32::instance()}, Int64::instance())};
-    DeclInstruction(I64TruncSignedF64, "i64.trunc_s[f64]", {Float64::instance()}, Int64::instance())};
-    DeclInstruction(I64TruncUnsignedF32, "i64.trunc_u[f32]", {Float32::instance()}, Int64::instance())};
-    DeclInstruction(I64TruncUnsignedF64, "i64.trunc_u[f64]", {Float64::instance()}, Int64::instance())};
-    DeclInstruction(I64ReinterpretF64, "i64.reinterpret[f64]", {Float64::instance()}, Int64::instance())};
+    DeclInstruction(I64ExtendSignedI32, "i64.extend_s/i32", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64ExtendUnsignedI32, "i64.extend_u/i32", {Int32::instance()}, Int64::instance())};
+    DeclInstruction(I64TruncSignedF32, "i64.trunc_s/f32", {Float32::instance()}, Int64::instance())};
+    DeclInstruction(I64TruncSignedF64, "i64.trunc_s/f64", {Float64::instance()}, Int64::instance())};
+    DeclInstruction(I64TruncUnsignedF32, "i64.trunc_u/f32", {Float32::instance()}, Int64::instance())};
+    DeclInstruction(I64TruncUnsignedF64, "i64.trunc_u/f64", {Float64::instance()}, Int64::instance())};
+    DeclInstruction(I64ReinterpretF64, "i64.reinterpret/f64", {Float64::instance()}, Int64::instance())};
 
-    DeclInstruction(F32DemoteF64, "f32.demote[f64]", {Float32::instance()}, Float32::instance())};
-    DeclInstruction(F32ConvertSignedI32, "f32.convert_s[i32]", {Float32::instance()}, Float32::instance())};
-    DeclInstruction(F32ConvertSignedI64, "f32.convert_s[i64]", {Float32::instance()}, Float32::instance())};
-    DeclInstruction(F32ConvertUnsignedI32, "f32.convert_u[i32]", {Float32::instance()}, Float32::instance())};
-    DeclInstruction(F32ConvertUnsignedI64, "f32.convert_u[i64]", {Float32::instance()}, Float32::instance())};
-    DeclInstruction(F32ReinterpretI32, "f32.reinterpret[i32]", {Float32::instance()}, Float32::instance())};
+    DeclInstruction(F32DemoteF64, "f32.demote/f64", {Float64::instance()}, Float32::instance())};
+    DeclInstruction(F32ConvertSignedI32, "f32.convert_s/i32", {Int32::instance()}, Float32::instance())};
+    DeclInstruction(F32ConvertSignedI64, "f32.convert_s/i64", {Int64::instance()}, Float32::instance())};
+    DeclInstruction(F32ConvertUnsignedI32, "f32.convert_u/i32", {Int32::instance()}, Float32::instance())};
+    DeclInstruction(F32ConvertUnsignedI64, "f32.convert_u/i64", {Int32::instance()}, Float32::instance())};
+    DeclInstruction(F32ReinterpretI32, "f32.reinterpret/i32", {Int32::instance()}, Float32::instance())};
 
-    DeclInstruction(F64PromoteF32, "f64.promote[f32]", {Float32::instance()}, Float64::instance())};
-    DeclInstruction(F64ConvertSignedI32, "f64.convert_s[i32]", {Float32::instance()}, Float64::instance())};
-    DeclInstruction(F64ConvertSignedI64, "f64.convert_s[i64]", {Float32::instance()}, Float64::instance())};
-    DeclInstruction(F64ConvertUnsignedI32, "f64.convert_u[i32]", {Float32::instance()}, Float64::instance())};
-    DeclInstruction(F64ConvertUnsignedI64, "f64.convert_u[i64]", {Float32::instance()}, Float64::instance())};
-    DeclInstruction(F64ReinterpretI64, "f64.reinterpret[i64]", {Int64::instance()}, Float64::instance())};
+    DeclInstruction(F64PromoteF32, "f64.promote/f32", {Float32::instance()}, Float64::instance())};
+    DeclInstruction(F64ConvertSignedI32, "f64.convert_s/i32", {Int32::instance()}, Float64::instance())};
+    DeclInstruction(F64ConvertSignedI64, "f64.convert_s/i64", {Int64::instance()}, Float64::instance())};
+    DeclInstruction(F64ConvertUnsignedI32, "f64.convert_u/i32", {Int32::instance()}, Float64::instance())};
+    DeclInstruction(F64ConvertUnsignedI64, "f64.convert_u/i64", {Int64::instance()}, Float64::instance())};
+    DeclInstruction(F64ReinterpretI64, "f64.reinterpret/i64", {Int64::instance()}, Float64::instance())};
 
 
     DeclInstruction(F32Add, "f32.add", {Float32::instance() DeclInstComma Float32::instance()}, Float32::instance())};
@@ -168,11 +168,11 @@ namespace wasm_module {
     DeclInstruction(F32Div, "f32.div", {Float32::instance() DeclInstComma Float32::instance()}, Float32::instance())};
     DeclInstruction(F32Abs, "f32.abs", {Float32::instance()}, Float32::instance())};
     DeclInstruction(F32Neg, "f32.neg", {Float32::instance()}, Float32::instance())};
-    DeclInstruction(F32Copysign, "f32.copysign", {Float32::instance() DeclInstComma Float32::instance()}, Float32::instance())};
+    DeclInstruction(F32CopySign, "f32.copysign", {Float32::instance() DeclInstComma Float32::instance()}, Float32::instance())};
     DeclInstruction(F32Ceil, "f32.ceil", {Float32::instance()}, Float32::instance())};
-    DeclInstruction(F32Floor, "f32.floor", {Float32::instance()}, Int32::instance())};
-    DeclInstruction(F32Trunc, "f32.trunc", {Float32::instance()}, Int32::instance())};
-    DeclInstruction(F32Nearest, "f32.nearest", {Float32::instance()}, Int32::instance())};
+    DeclInstruction(F32Floor, "f32.floor", {Float32::instance()}, Float32::instance())};
+    DeclInstruction(F32Trunc, "f32.trunc", {Float32::instance()}, Float32::instance())};
+    DeclInstruction(F32Nearest, "f32.nearest", {Float32::instance()}, Float32::instance())};
     DeclInstruction(F32Equal, "f32.eq", {Float32::instance() DeclInstComma Float32::instance()}, Int32::instance())};
     DeclInstruction(F32NotEqual, "f32.ne", {Float32::instance() DeclInstComma Float32::instance()}, Int32::instance())};
     DeclInstruction(F32LesserThan, "f32.lt", {Float32::instance() DeclInstComma Float32::instance()}, Int32::instance())};
@@ -189,11 +189,11 @@ namespace wasm_module {
     DeclInstruction(F64Div, "f64.div", {Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Abs, "f64.abs", {Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Neg, "f64.neg", {Float64::instance()}, Float64::instance())};
-    DeclInstruction(F64Copysign, "f64.copysign", {Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
+    DeclInstruction(F64CopySign, "f64.copysign", {Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Ceil, "f64.ceil", {Float64::instance()}, Float64::instance())};
-    DeclInstruction(F64Floor, "f64.floor", {Float64::instance()}, Int64::instance())};
-    DeclInstruction(F64Trunc, "f64.trunc", {Float64::instance()}, Int64::instance())};
-    DeclInstruction(F64Nearest, "f64.nearest", {Float64::instance()}, Int64::instance())};
+    DeclInstruction(F64Floor, "f64.floor", {Float64::instance()}, Float64::instance())};
+    DeclInstruction(F64Trunc, "f64.trunc", {Float64::instance()}, Float64::instance())};
+    DeclInstruction(F64Nearest, "f64.nearest", {Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Equal, "f64.eq", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
     DeclInstruction(F64NotEqual, "f64.ne", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
     DeclInstruction(F64LesserThan, "f64.lt", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};

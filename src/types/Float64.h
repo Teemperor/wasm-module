@@ -77,7 +77,8 @@ namespace wasm_module {
         }
 
         virtual std::size_t size() const {
-            return 8;
+            static_assert(sizeof(double) == 8u, "wasmint requires that that double is exactly 8 bytes big");
+            return 8u;
         }
     };
 

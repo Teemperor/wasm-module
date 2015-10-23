@@ -18,4 +18,33 @@
 
 namespace wasm_module {
 
+    const std::regex Int32::hexNumber("0(x|X)[0-9a-fA-F]{1,8}");
+    const std::regex Int32::decNumber("(-|\\+)?[0-9]+");
+
+    void Int32::parse(const std::string& literal, void *data) const {
+        uint32_t value = 0;
+        if (std::regex_match(literal, hexNumber)) {
+            for(std::size_t i = 2; i < literal.size(); i++) {
+                char c = literal[i];
+                if (c >= 'a' && c <= 'f') {
+                    value |= c - 'a';
+                } else if (c >= 'A' && c <= 'F') {
+                    value |= c - 'A';
+                } else {
+                    value |= c - '0';
+                }
+                value <<= 4u;
+            }
+        } else if (std::regex_match(literal, decNumber)) {
+            for(std::size_t i = 2; i < literal.size(); i++) {
+                char c = literal[i];
+                value += c - '0';
+                value *= 10;
+            }
+        } else {
+            throw InvalidI32Format(literal);
+        };
+
+        (*(int32_t*) data) = value;
+    }
 }

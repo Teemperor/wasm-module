@@ -20,9 +20,7 @@
 
 namespace InstructionId {
     enum Value {
-        START_LIST = 0,
-
-        I32Add,
+        I32Add = 0,
         I32Sub,
         I32Mul,
         I32DivSigned,
@@ -157,7 +155,7 @@ namespace InstructionId {
         F32Div,
         F32Abs,
         F32Neg,
-        F32Copysign,
+        F32CopySign,
         F32Ceil,
         F32Floor,
         F32Trunc,
@@ -178,7 +176,7 @@ namespace InstructionId {
         F64Div,
         F64Abs,
         F64Neg,
-        F64Copysign,
+        F64CopySign,
         F64Ceil,
         F64Floor,
         F64Trunc,
@@ -197,9 +195,7 @@ namespace InstructionId {
 
         I32AssertReturn,
 
-        Print,
-
-        END_LIST
+        Print
     };
 }
 

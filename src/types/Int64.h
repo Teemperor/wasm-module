@@ -20,10 +20,17 @@
 
 #include <types/Type.h>
 #include <Variable.h>
+#include <ExceptionWithMessage.h>
+#include <regex>
 
 namespace wasm_module {
 
+    ExceptionMessage(InvalidI64Format)
+
     class Int64 : public Type {
+
+        static const std::regex hexNumber;
+        static const std::regex decNumber;
 
     protected:
         Int64() {
@@ -57,21 +64,40 @@ namespace wasm_module {
             }
         }
 
-
-        virtual void parse(const std::string& literal, void *data) const {
-            (*(int64_t*) data) = std::atol(literal.c_str());
+        static uint64_t getUnsignedValue(Variable variable) {
+            if (variable.type() == *instance()) {
+                uint64_t result = 0;
+                uint64_t *data = (uint64_t *) variable.value();
+                result = *data;
+                return result;
+            } else {
+                throw IncompatibleType();
+            }
         }
 
-        static void setValue(Variable variable, int32_t value) {
+        virtual void parse(const std::string& literal, void *data) const;
+
+        static void setValue(Variable variable, int64_t value) {
             if (variable.type() == *instance()) {
-                int32_t *data = (int32_t *) variable.value();
+                int64_t *data = (int64_t *) variable.value();
                 (*data) = value;
             } else {
                 throw IncompatibleType();
             }
         }
 
+        static void setUnsignedValue(Variable variable, uint64_t value) {
+            if (variable.type() == *instance()) {
+                uint64_t *data = (uint64_t *) variable.value();
+                (*data) = value;
+            } else {
+                throw IncompatibleType();
+            }
+        }
+
+
         virtual std::size_t size() const {
+            static_assert(sizeof(uint64_t) == 8u, "wasmint requires that that uint64_t is exactly 8 bytes big");
             return 8;
         }
 

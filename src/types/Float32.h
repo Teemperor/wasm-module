@@ -73,7 +73,8 @@ namespace wasm_module {
         }
 
         virtual std::size_t size() const {
-            return 4;
+            static_assert(sizeof(float) == 4u, "wasmint requires that that float is exactly 4 bytes big");
+            return 4u;
         }
     };
 

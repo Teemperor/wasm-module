@@ -29,109 +29,105 @@ namespace wasm_module {
 
     Instruction *InstructionSet::getInstruction(std::string name, binary::ByteStream &stream, ModuleContext &context,
                                                 FunctionContext &functionContext) {
-        if (name == "literal") {
-            return new Literal(stream, context);
-        } else if (name == "i32.add") {
-            return new I32Add();
-        } else if (name == "i32.sub") {
-            return new I32Sub();
-        } else if (name == "i32.mul") {
-            return new I32Mul();
-        } else if (name == "i32.div_u") {
-            return new I32DivSigned();
-        } else if (name == "i32.div_s") {
-            return new I32DivUnsigned();
-        } else if (name == "i32.lt") {
-            return new I32LessThanSigned();
-        } else if (name == "i32.le") {
-            return new I32LessEqualSigned();
-        } else if (name == "i32.or") {
-            return new I32Or();
-        } else if (name == "i32.xor") {
-            return new I32Xor();
-        } else if (name == "i32.rem_s") {
-            return new I32RemainderSigned();
-        } else if (name == "i32.rem_u") {
-            return new I32RemainderUnsigned();
-        } else if (name == "print") {
-            return new Print();
-        } else if (name == "call_direct") {
-            return new Call(stream, context);
-        } else if (name == "get_local") {
-            return new GetLocal(stream, functionContext);
-        } else if (name == "block") {
-            return new Block(stream);
-        } else if (name == "set_local") {
-            return new SetLocal(stream, functionContext);
-        } else if (name == "break") {
-            return new Break();
-        } else if (name == "continue") {
-            return new Continue();
-        } else if (name == "do_while") {
-            return new DoWhile();
-        } else if (name == "forever") {
-            return new Forever();
-        } else if (name == "if") {
-            return new If();
-        } else if (name == "return") {
-            return new Return();
+        Instruction* instruction = getInstruction(name, context, functionContext);
+
+        if (instruction) {
+            return instruction;
         } else {
-            throw UnknownInstructionName(name);
+            if (name == "literal") {
+                return new Literal(stream, context);
+            } else if (name == "call_direct") {
+                return new Call(stream, context);
+            } else if (name == "get_local") {
+                return new GetLocal(stream, functionContext);
+            } else if (name == "block") {
+                return new Block(stream);
+            } else if (name == "set_local") {
+                return new SetLocal(stream, functionContext);
+            } else {
+                throw UnknownInstructionName(name);
+            }
         }
+
     }
 
     Instruction *InstructionSet::getInstruction(std::string name, const sexpr::SExpr& expr, ModuleContext &context,
                                                        FunctionContext &functionContext) {
-        if (name == "i32.add") {
-            return new I32Add();
-        } else if (name == "i32.sub") {
-            return new I32Sub();
-        } else if (name == "i32.mul") {
-            return new I32Mul();
-        } else if (name == "i32.div_u") {
-            return new I32DivSigned();
-        } else if (name == "i32.div_s") {
-            return new I32DivUnsigned();
-        } else if (name == "i32.lt") {
-            return new I32LessThanSigned();
-        } else if (name == "i32.le") {
-            return new I32LessEqualSigned();
-        } else if (name == "i32.or") {
-            return new I32Or();
-        } else if (name == "i32.xor") {
-            return new I32Xor();
-        } else if (name == "i32.rem_s") {
-            return new I32RemainderSigned();
-        } else if (name == "i32.rem_u") {
-            return new I32RemainderUnsigned();
-        } else if (name == "print") {
-            return new Print();
-        } else if (name == "call") {
-            return new Call(expr, context);
-        } else if (name == "get_local") {
-            return new GetLocal(expr, functionContext);
-        } else if (name == "set_local") {
-            return new SetLocal(expr, functionContext);
-        } else if (name == "break") {
-            return new Break();
-        } else if (name == "continue") {
-            return new Continue();
-        } else if (name == "do_while") {
-            return new DoWhile();
-        } else if (name == "i32.assert_return") {
-            return new I32AssertReturn();
-        } else if (name == "forever") {
-            return new Forever();
-        } else if (name == "if") {
-            return new If();
-        } else if (name == "return") {
-            return new Return();
-        } else if (ends_with(name, ".const")) {
-            return new Literal(expr);
+
+        Instruction* instruction = getInstruction(name, context, functionContext);
+
+        if (instruction) {
+            return instruction;
         } else {
-            throw UnknownInstructionName(name);
+            if (name == "call") {
+                return new Call(expr, context);
+            } else if (name == "get_local") {
+                return new GetLocal(expr, functionContext);
+            } else if (name == "set_local") {
+                return new SetLocal(expr, functionContext);
+            } else if (ends_with(name, ".const")) {
+                return new Literal(expr);
+            } else {
+                throw UnknownInstructionName(name);
+            }
+        }
+    }
+
+    #define INSTRUCTION(INSTRNAME, CLASSNAME) if(name==INSTRNAME){return new CLASSNAME();}
+
+    Instruction* InstructionSet::getInstruction(std::string name, ModuleContext &context,
+                                                FunctionContext &functionContext) {
+        INSTRUCTION("i32.add", I32Add)
+        else INSTRUCTION("i32.sub", I32Sub)
+        else INSTRUCTION("i32.mul", I32Mul)
+        else INSTRUCTION("i32.div_s", I32DivSigned)
+        else INSTRUCTION("i32.div_u", I32DivUnsigned)
+        else INSTRUCTION("i32.lt", I32LessThanSigned)
+        else INSTRUCTION("i32.le", I32LessEqualSigned)
+        else INSTRUCTION("i32.or", I32Or)
+        else INSTRUCTION("i32.xor", I32Xor)
+        else INSTRUCTION("i32.rem_s", I32RemainderSigned)
+        else INSTRUCTION("i32.rem_u", I32RemainderUnsigned)
+
+        else INSTRUCTION("i32.load8_s", I32Load8Signed)
+        else INSTRUCTION("i32.load8_u", I32Load8Unsigned)
+        else INSTRUCTION("i32.load16_s", I32Load16Signed)
+        else INSTRUCTION("i32.load16_u", I32Load16Unsigned)
+        else INSTRUCTION("i32.load", I32Load)
+
+        else INSTRUCTION("i64.load8_s", I64Load8Signed)
+        else INSTRUCTION("i64.load8_u", I64Load8Unsigned)
+        else INSTRUCTION("i64.load16_s", I64Load16Signed)
+        else INSTRUCTION("i64.load16_u", I64Load16Unsigned)
+        else INSTRUCTION("i64.load32_s", I64Load32Signed)
+        else INSTRUCTION("i64.load32_u", I64Load32Unsigned)
+        else INSTRUCTION("i64.load", I64Load)
+
+        else INSTRUCTION("i32.store8", I32Store8)
+        else INSTRUCTION("i32.store16", I32Store16)
+        else INSTRUCTION("i32.store", I32Store)
+
+        else INSTRUCTION("i64.store8", I64Store8)
+        else INSTRUCTION("i64.store16", I64Store16)
+        else INSTRUCTION("i64.store32", I64Store32)
+        else INSTRUCTION("i64.store", I64Store)
+
+        else INSTRUCTION("f32.store", F32Store)
+        else INSTRUCTION("f64.store", F64Store)
+
+        else INSTRUCTION("print", Print)
+        else INSTRUCTION("break", Break)
+        else INSTRUCTION("continue", Continue)
+        else INSTRUCTION("do_while", DoWhile)
+        else INSTRUCTION("forever", Forever)
+        else INSTRUCTION("if", If)
+        else INSTRUCTION("i32.assert_return", I32AssertReturn)
+
+        else {
+            new I32Store8;
+            return nullptr;
         }
 
-        // TODO globals
+
     }
 }

@@ -31,7 +31,6 @@ add_library(wasm-module
     src/instructions/InstructionId.cpp
     src/instructions/Instructions.cpp
 
-    src/types/Int8.cpp
     src/types/Int32.cpp
     src/types/Int64.cpp
     src/types/Void.cpp
