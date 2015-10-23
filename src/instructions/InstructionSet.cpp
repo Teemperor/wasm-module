@@ -124,7 +124,6 @@ namespace wasm_module {
         else INSTRUCTION("i32.assert_return", I32AssertReturn)
 
         else {
-            new I32Store8;
             return nullptr;
         }
 
