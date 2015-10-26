@@ -90,4 +90,8 @@ namespace wasm_module {
         setType(Float64::instance());
         Float64::setValue(*this, value);
     }
+
+    Variable Variable::Void() {
+        return Variable(Void::instance());
+    }
 }

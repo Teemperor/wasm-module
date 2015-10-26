@@ -27,7 +27,9 @@ using namespace wasm_module;
 using namespace wasm_module::sexpr;
 
 int main() {
-    std::string str = "(module (memory \"langes wort\" 0 1))\n"
+    std::string str = ";This is a comment\n"
+            "(module (memory \"langes wort\" 0 1))\n"
+            ";This is another comment\n"
             "\t(module)";
 
     CharacterStream stream(str);

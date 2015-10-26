@@ -80,6 +80,7 @@ namespace InstructionId {
         I64Const,
         F32Const,
         F64Const,
+        AddressOf,
         CallIndirect,
         CallImport,
         Call,

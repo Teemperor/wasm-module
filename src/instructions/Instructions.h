@@ -92,6 +92,7 @@ namespace wasm_module {
     DeclInstruction(I64CountTrailingZeroes, "i64.ctz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
 
+    DeclInstruction(AddressOf, "address_of", {}, Void::instance())};
     DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
     DeclInstruction(CallImport, "call_import", {}, Void::instance())};
 
@@ -499,7 +500,7 @@ namespace wasm_module {
         }
 
         virtual const std::string& name() const override {
-            static std::string name_ = "invoke";
+            static std::string name_ = "call";
             return name_;
         }
 

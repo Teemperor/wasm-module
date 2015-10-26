@@ -3,11 +3,6 @@
 
 A parser and serializer for WebAssembly modules.
 
-## Known Bugs
-
-* The LEB128 parser could be buggy for big(ger) 32 bit integers
-* Not all instructions from the draft are supported yet.
-
 ## Binary format
 
 As the binary format of WASM is still up to decision, this parser is currently using it's own 

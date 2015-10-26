@@ -42,6 +42,8 @@ namespace wasm_module {
         Variable(float value);
         Variable(double value);
 
+        static Variable Void();
+
         Variable(const wasm_module::Type *type);
 
         const wasm_module::Type& type() const {
