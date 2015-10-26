@@ -18,7 +18,7 @@
 
 namespace wasm_module { namespace sexpr {
 
-    void SExprParser::parseValues(SExpr &parent, bool allowsEndOfStream, bool topLevel) {
+    void SExprParser::parseValues(SExpr &parent, bool allowsEndOfStream) {
 
         bool exit = false;
 
@@ -40,11 +40,13 @@ namespace wasm_module { namespace sexpr {
                         break;
                     }
                 }
+                continue;
             }
+
 
             if (stream_.peekChar() == '(') {
                 stream_.popChar();
-                parseValues(parent.addChild(), false, false);
+                parseValues(parent.addChild(), false);
             } else if (stream_.peekChar() == '"') {
 
                 stream_.popChar();
@@ -90,7 +92,7 @@ namespace wasm_module { namespace sexpr {
 
     SExpr SExprParser::parse(bool allowExitBeforeEOF) {
         SExpr root;
-        parseValues(root, true, true);
+        parseValues(root, true);
         if (!allowExitBeforeEOF && !stream_.reachedEnd()) {
             throw UnknownDataAtEndOfStream();
         }

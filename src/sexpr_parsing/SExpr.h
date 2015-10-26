@@ -53,7 +53,7 @@ namespace wasm_module { namespace sexpr {
             return lastChild();
         }
 
-        SExpr &addChild(std::string value) {
+        SExpr &addChild(const std::string& value) {
             if (!value_.empty())
                 throw SExprIsFull();
 

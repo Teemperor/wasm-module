@@ -30,7 +30,7 @@ namespace wasm_module { namespace sexpr {
 
         CharacterStream &stream_;
 
-        void parseValues(SExpr &parent, bool allowsEndOfStream, bool topLevel);
+        void parseValues(SExpr &parent, bool allowsEndOfStream);
 
     public:
         SExprParser(CharacterStream &stream);
