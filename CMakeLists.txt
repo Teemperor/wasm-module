@@ -3,6 +3,8 @@ project(wasm-module)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 
+find_package(Boost COMPONENTS system filesystem)
+
 ####################
 # Common code      #
 ####################
@@ -25,6 +27,8 @@ add_library(wasm-module
     src/TypeTable.cpp
     src/ModuleContext.cpp
     src/ModuleImport.cpp
+    src/HeapData.cpp
+    src/HeapSegment.cpp
 
     src/instructions/InstructionSet.cpp
     src/instructions/Instruction.cpp
@@ -53,7 +57,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-src/HeapData.cpp src/HeapData.h src/HeapSegment.cpp src/HeapSegment.h)
+)
 
 
 ####################
@@ -68,3 +72,14 @@ foreach(TEST_FILE ${TEST_FILES})
   target_link_libraries(${BASENAME} wasm-module)
   add_test(${BASENAME} ${BASENAME})
 endforeach()
+
+
+####################
+# testsuite conv   #
+####################
+
+if(${Boost_FOUND})
+    INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+    add_executable(testsuite-converter testsuite-converter/main.cpp)
+    target_link_libraries(testsuite-converter wasm-module ${Boost_LIBRARIES})
+endif()

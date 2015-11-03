@@ -18,4 +18,30 @@
 
 namespace wasm_module { namespace sexpr {
 
-}}
+        std::string SExpr::toString(unsigned int intend) const {
+            if (hasValue()) {
+                return value_;
+            } else {
+                std::stringstream result;
+                result << '\n' << std::string(intend, ' ');
+                result << "(";
+
+                bool hasNonValueChildren = false;
+
+                std::size_t i = 0;
+                for (const SExpr& child : children_) {
+                    result << child.toString(intend + 4u);
+                    if (i != (children_.size() - 1u))
+                        result << " ";
+                    if (child.hasChildren())
+                        hasNonValueChildren = true;
+                    i++;
+                }
+
+                if (hasNonValueChildren)
+                    result << '\n' << std::string(intend, ' ');
+                result << ")";
+                return result.str();
+            }
+        }
+    }}

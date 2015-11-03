@@ -53,11 +53,19 @@ namespace wasm_module { namespace sexpr {
             return lastChild();
         }
 
-        SExpr &addChild(const std::string& value) {
+        SExpr& addChild(const std::string& value) {
             if (!value_.empty())
                 throw SExprIsFull();
 
             children_.push_back(SExpr(value));
+            return lastChild();
+        }
+
+        SExpr& addChild(const SExpr& expr) {
+            if (!value_.empty())
+                throw SExprIsFull();
+
+            children_.push_back(expr);
             return lastChild();
         }
 
@@ -75,6 +83,16 @@ namespace wasm_module { namespace sexpr {
             return !value_.empty();
         }
 
+        void insertChild(const SExpr& child, std::size_t pos) {
+            if (hasValue())
+                throw SExprHasNoChildren();
+            children_.insert(children_.begin() + pos, child);
+        }
+
+        void removeChild(std::size_t pos) {
+            children_.erase(children_.begin() + pos);
+        }
+
         const std::string &value() const {
             if (!hasValue()) {
                 throw SExprHasNoValue();
@@ -88,10 +106,16 @@ namespace wasm_module { namespace sexpr {
             return children_;
         }
 
-        const SExpr &operator[](std::size_t i) const {
+        const SExpr& operator[](std::size_t i) const {
             if (!hasChildren())
                 throw SExprHasNoChildren();
             return children().at(i);
+        }
+
+        SExpr& operator[](std::size_t i) {
+            if (!hasChildren())
+                throw SExprHasNoChildren();
+            return children_.at(i);
         }
 
         bool operator!=(const std::string& otherValue) const {
@@ -102,22 +126,7 @@ namespace wasm_module { namespace sexpr {
             return value() == otherValue;
         }
 
-        std::string toString() const {
-            if (hasValue()) {
-                return value_;
-            } else {
-                std::stringstream result;
-                result << "(";
-
-                for (const SExpr& child : children_) {
-                    result << child.toString();
-                    result << " ";
-                }
-
-                result << ")";
-                return result.str();
-            }
-        }
+        std::string toString(unsigned int intend = 0) const;
 
     };
 }}

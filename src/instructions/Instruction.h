@@ -55,6 +55,28 @@ namespace wasm_module {
         virtual const Type* returnType() const = 0;
 
         virtual InstructionId::Value id() const = 0;
+
+        virtual std::string dataString() const {
+            return name();
+        }
+
+        virtual std::string toSExprString() const {
+            std::string result = "(";
+
+            result += dataString();
+            if (!children_.empty())
+                result += " ";
+
+            for (std::size_t i = 0; i < children_.size(); i++) {
+                result += children_[i]->toSExprString();
+                if (i != children_.size() - 1)
+                    result += " ";
+            }
+
+            result += ")";
+
+            return result;
+        }
     };
 }
 

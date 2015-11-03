@@ -37,6 +37,11 @@ namespace wasm_module { namespace sexpr {
 
         SExpr parse(bool allowExitBeforeEOF = false);
 
+        static SExpr parseString(const std::string& str) {
+            CharacterStream stream(str);
+            SExprParser parser(stream);
+            return parser.parse();
+        }
     };
 
 }}

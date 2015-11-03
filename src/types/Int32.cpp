@@ -22,20 +22,22 @@ namespace wasm_module {
     const std::regex Int32::decNumber("(-|\\+)?[0-9]+");
 
     void Int32::parse(const std::string& literal, void *data) const {
-        int32_t value = 0;
         if (std::regex_match(literal, hexNumber)) {
+            uint32_t value = 0;
             for(std::size_t i = 2; i < literal.size(); i++) {
+                value <<= 4u;
                 char c = literal[i];
                 if (c >= 'a' && c <= 'f') {
-                    value |= c - 'a';
+                    value |= c - 'a' + 10u;
                 } else if (c >= 'A' && c <= 'F') {
-                    value |= c - 'A';
+                    value |= c - 'A' + 10u;
                 } else {
                     value |= c - '0';
                 }
-                value <<= 4u;
             }
+            (*(uint32_t*) data) = value;
         } else if (std::regex_match(literal, decNumber)) {
+            int32_t value = 0;
             bool negative = false;
             for(std::size_t i = 0; i < literal.size(); i++) {
                 char c = literal[i];
@@ -50,10 +52,10 @@ namespace wasm_module {
             }
             if (negative)
                 value = -value;
+            (*(int32_t*) data) = value;
         } else {
             throw InvalidI32Format(literal);
         };
 
-        (*(int32_t*) data) = value;
     }
 }

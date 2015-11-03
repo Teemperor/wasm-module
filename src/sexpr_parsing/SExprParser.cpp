@@ -87,7 +87,6 @@ namespace wasm_module { namespace sexpr {
 
             }
         }
-
     }
 
     SExpr SExprParser::parse(bool allowExitBeforeEOF) {

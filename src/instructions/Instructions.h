@@ -62,6 +62,7 @@ namespace wasm_module {
     DeclInstruction(I32GreaterThanSigned, "i32.gt_s", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32GreaterEqualSigned, "i32.ge_s", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32GreaterThanUnsigned, "i32.gt_u", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32GreaterEqualUnsigned, "i32.ge_u", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32CountLeadingZeroes, "i32.clz", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32CountTrailingZeroes, "i32.ctz", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32PopulationCount, "i32.popcnt", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
@@ -88,6 +89,7 @@ namespace wasm_module {
     DeclInstruction(I64GreaterThanSigned, "i64.gt_s", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64GreaterEqualSigned, "i64.ge_s", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64GreaterThanUnsigned, "i64.gt_u", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
+    DeclInstruction(I64GreaterEqualUnsigned, "i64.ge_u", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64CountLeadingZeroes, "i64.clz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64CountTrailingZeroes, "i64.ctz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
@@ -402,6 +404,7 @@ namespace wasm_module {
 
     class Literal : public Instruction {
 
+        std::string literalValueStr_;
         Variable literalValue_;
     public:
         Variable literalValue() {
@@ -445,6 +448,14 @@ namespace wasm_module {
                 throw std::domain_error("Literal type is void. That should not happen.");
             }
             throw std::domain_error("Unknown literal type");
+        }
+
+
+        virtual std::string dataString() const override {
+            std::string result = name();
+            result += " ";
+            result += literalValueStr_;
+            return result;
         }
 
         virtual const Type* returnType() const override {
