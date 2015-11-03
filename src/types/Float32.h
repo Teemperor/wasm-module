@@ -41,9 +41,7 @@ namespace wasm_module {
         }
 
 
-        virtual void parse(const std::string& literal, void *data) const {
-            (*(float*) data) = (float) std::atof(literal.c_str());
-        }
+        virtual void parse(const std::string& literal, void *data) const;
 
         virtual void parse(binary::ByteStream &stream, void *data) const {
             ((uint8_t *) data)[0] = stream.popChar();
@@ -63,7 +61,7 @@ namespace wasm_module {
             }
         }
 
-        static void setValue(Variable variable, float value) {
+        static void setValue(Variable& variable, float value) {
             if (variable.type() == *instance()) {
                 float *data = (float *) variable.value();
                 (*data) = value;

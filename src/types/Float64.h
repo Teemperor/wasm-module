@@ -67,7 +67,7 @@ namespace wasm_module {
             }
         }
 
-        static void setValue(Variable variable, double value) {
+        static void setValue(Variable& variable, double value) {
             if (variable.type() == *instance()) {
                 double *data = (double *) variable.value();
                 (*data) = value;

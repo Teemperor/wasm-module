@@ -17,4 +17,13 @@
 #include "Float32.h"
 
 namespace wasm_module {
+    void Float32::parse(const std::string& literal, void *data) const {
+        const char* literalC = literal.c_str();
+        char* outPtr = const_cast<char*>(literalC);
+        (*(float*) data) = std::strtof(literalC, &outPtr);
+
+        if (outPtr == literalC) {
+            throw std::domain_error("Couldn't parse " + literal + " as float32");
+        }
+    }
 }

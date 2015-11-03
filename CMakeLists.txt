@@ -80,6 +80,6 @@ endforeach()
 
 if(${Boost_FOUND})
     INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-    add_executable(testsuite-converter testsuite-converter/main.cpp)
-    target_link_libraries(testsuite-converter wasm-module ${Boost_LIBRARIES})
+    add_executable(testsuite_converter testsuite-converter/main.cpp)
+    target_link_libraries(testsuite_converter wasm-module ${Boost_LIBRARIES})
 endif()

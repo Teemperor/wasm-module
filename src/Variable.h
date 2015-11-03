@@ -67,6 +67,14 @@ namespace wasm_module {
         void uint32(uint32_t value);
 
         void int32(int32_t value);
+
+        float float32() const;
+
+        double float64() const;
+
+        void float32(float value);
+
+        void float64(double value);
     };
 }
 

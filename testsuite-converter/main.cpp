@@ -61,6 +61,11 @@ class WastTestTransformer {
 
     void writeAST(std::string directoryPath, int testNumber, SExpr ast, std::string functionName) {
 
+        for (std::size_t i = 0; i < functionName.size(); i++) {
+            if (functionName[i] == '$')
+                functionName[i] = '_';
+        }
+
         boost::filesystem::path directory(directoryPath);
         boost::filesystem::create_directories(directory);
 
@@ -129,7 +134,7 @@ public:
                 expr[0] = SExpr("call");
                 expr[1] = SExpr(functionName);
 
-                writeAST("testsuite/positive/", testNumber, expr, functionName);
+                writeAST("positive/", testNumber, expr, expr[1].value());
             } else if (expr[0].value() == "assert_return") {
                 SExpr invokeExpr = expr[1];
 
@@ -167,7 +172,7 @@ public:
                 ifExpr.addChild();
                 ifExpr.addChild(SExprParser::parseString("(i32.div_s (i32.const 1) (i32.const 0))"));
 
-                writeAST("testsuite/positive/", testNumber, ifExpr, functionName);
+                writeAST("positive/", testNumber, ifExpr, invokeExpr[1].value());
             } else if (expr[0].value() == "assert_return_nan") {
                 // TODO
             } else if (expr[0].value() == "assert_trap") {
@@ -178,9 +183,9 @@ public:
                 expr[0] = SExpr("call");
                 expr[1] = SExpr(functionName);
 
-                writeAST("testsuite/negative/trap/", testNumber, expr, functionName);
+                writeAST("negative/trap/", testNumber, expr, expr[1].value());
             } else if (expr[0].value() == "assert_invalid") {
-                writeSExpr("testsuite/negative/parse/", testNumber, expr[1]);
+                writeSExpr("negative/parse/", testNumber, expr[1]);
             } else if (expr[0].value() == "module") {
                 // TODO
                 testNumber--;
@@ -195,14 +200,24 @@ public:
 int main(int argv, char** argc) {
 
     if (argv <= 1) {
-        std::cerr << "needs path to wast test file as an argument" << std::endl;
+        std::cerr << "testsuite-converter needs at least one path to a wast test file as an argument" << std::endl;
         return 1;
     }
 
-    std::string modulePath = argc[1];
+    for (int i = 1; i < argv; i++) {
+        std::string modulePath = argc[i];
 
-    WastTestTransformer transformer(modulePath);
-    transformer.generateOutput();
+        std::cout << "Processing " << modulePath << std::endl;
+        try {
+
+            WastTestTransformer transformer(modulePath);
+            transformer.generateOutput();
+            std::cout << "Done!" << std::endl;
+        } catch (const std::exception& ex) {
+            std::cerr << "Got exception: " << typeid(ex).name() << " - what(): " << ex.what() << std::endl;
+        }
+
+    }
 
     return 0;
 }

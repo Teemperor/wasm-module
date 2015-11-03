@@ -62,12 +62,10 @@ namespace wasm_module {
     }
 
     void Variable::uint32(uint32_t value) {
-        setType(Int32::instance());
         Int32::setUnsignedValue(*this, value);
     }
 
     void Variable::int32(int32_t value) {
-        setType(Int32::instance());
         Int32::setValue(*this, value);
     }
 
@@ -93,5 +91,21 @@ namespace wasm_module {
 
     Variable Variable::Void() {
         return Variable(Void::instance());
+    }
+
+    float Variable::float32() const {
+        return Float32::getValue(*this);
+    }
+
+    double Variable::float64() const {
+        return Float64::getValue(*this);
+    }
+
+    void Variable::float32(float value) {
+        Float32::setValue(*this, value);
+    }
+
+    void Variable::float64(double value) {
+        Float64::setValue(*this, value);
     }
 }
