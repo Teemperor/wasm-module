@@ -45,9 +45,7 @@ namespace wasm_module {
                         continue;
 
                     value *= 10;
-                    value += c - '0';
-                    if (value > 0)
-                        value = -value;
+                    value -= c - '0';
                 }
                 (*(int32_t*) data) = value;
             } else {
