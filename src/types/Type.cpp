@@ -15,7 +15,14 @@
  */
 
 #include "types/Type.h"
+#include "Void.h"
 
 namespace wasm_module {
 
+    bool Type::typeCompatible(const Type* expectedType, const Type* receivedType) {
+        if (expectedType == Void::instance()) {
+            return true;
+        }
+        return expectedType == receivedType;
+    }
 }

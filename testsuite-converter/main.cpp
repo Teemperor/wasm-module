@@ -59,7 +59,7 @@ class WastTestTransformer {
         module.addChild(mainExpr);
     }
 
-    void writeAST(std::string directoryPath, int testNumber, SExpr ast, std::string functionName) {
+    void writeAST(std::string directoryPath, int testNumber, SExpr ast, std::string functionName, ModuleWrapper& module) {
 
         for (std::size_t i = 0; i < functionName.size(); i++) {
             if (functionName[i] == '$')
@@ -71,7 +71,7 @@ class WastTestTransformer {
 
         directory /= (baseName + std::string("_no") + std::to_string(testNumber)) + std::string("_") + functionName + ".wasm";
 
-        sexpr::SExpr moduleExpr = modules.front().moduleExpr_;
+        sexpr::SExpr moduleExpr = module.moduleExpr_;
 
         addMain(moduleExpr, ast);
 
@@ -134,7 +134,7 @@ public:
                 expr[0] = SExpr("call");
                 expr[1] = SExpr(functionName);
 
-                writeAST("positive/", testNumber, expr, expr[1].value());
+                writeAST("positive/", testNumber, expr, expr[1].value(), wrapper);
             } else if (expr[0].value() == "assert_return") {
                 SExpr invokeExpr = expr[1];
 
@@ -172,7 +172,7 @@ public:
                 ifExpr.addChild();
                 ifExpr.addChild(SExprParser::parseString("(i32.div_s (i32.const 1) (i32.const 0))"));
 
-                writeAST("positive/", testNumber, ifExpr, invokeExpr[1].value());
+                writeAST("positive/", testNumber, ifExpr, invokeExpr[1].value(), wrapper);
             } else if (expr[0].value() == "assert_return_nan") {
                 // TODO
             } else if (expr[0].value() == "assert_trap") {
@@ -183,7 +183,7 @@ public:
                 expr[0] = SExpr("call");
                 expr[1] = SExpr(functionName);
 
-                writeAST("negative/trap/", testNumber, expr, expr[1].value());
+                writeAST("negative/trap/", testNumber, expr, expr[1].value(), wrapper);
             } else if (expr[0].value() == "assert_invalid") {
                 writeSExpr("negative/parse/", testNumber, expr[1]);
             } else if (expr[0].value() == "module") {

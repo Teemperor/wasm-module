@@ -54,6 +54,10 @@ namespace wasm_module {
             return (void *) value_.data();
         }
 
+        const void* value() const {
+            return (const void *) value_.data();
+        }
+
         std::vector<uint8_t> data() {
             return value_;
         }

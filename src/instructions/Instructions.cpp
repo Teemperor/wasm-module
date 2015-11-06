@@ -30,4 +30,15 @@ namespace wasm_module {
         literalValue_ = Variable(type);
         type->parse(value, literalValue_.value());
     }
+
+    LoadStoreInstruction::LoadStoreInstruction(const wasm_module::sexpr::SExpr& expr) {
+        for (const sexpr::SExpr& child : expr.children()) {
+            if (child.hasValue()) {
+                if(child.value().find("offset=") == 0) {
+                    std::string value = child.value().substr(std::string("offset=").size());
+                    offset_ = (uint32_t) std::atol(value.c_str());
+                }
+            }
+        }
+    }
 }

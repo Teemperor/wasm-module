@@ -15,6 +15,7 @@
  */
 
 
+#include <types/Void.h>
 #include "Instruction.h"
 
 namespace wasm_module {

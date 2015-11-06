@@ -40,6 +40,14 @@ namespace wasm_module {
         virtual const Type* returnType() const override { return RETURN_TYPE ; } \
         virtual const std::vector<const Type *>& childrenTypes() const override { static std::vector<const Type *> chTypes_ = CHILDREN ; return chTypes_; }
 
+    #define DeclLoadStoreInstruction(CLASS_NAME, STR, CHILDREN, RETURN_TYPE) class CLASS_NAME : public LoadStoreInstruction { \
+        public: virtual const std::string& name() const override { static std::string name_ = STR ; return name_; } \
+        virtual InstructionId::Value id() const override { return InstructionId:: CLASS_NAME ; } \
+        virtual const Type* returnType() const override { return RETURN_TYPE ; } \
+        virtual const std::vector<const Type *>& childrenTypes() const override { static std::vector<const Type *> chTypes_ = CHILDREN ; return chTypes_; } \
+        CLASS_NAME (const sexpr::SExpr expr) : LoadStoreInstruction(expr) { }
+
+
     DeclInstruction(I32Add, "i32.add", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32Sub, "i32.sub", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32Mul, "i32.mul", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
@@ -80,16 +88,16 @@ namespace wasm_module {
     DeclInstruction(I64ShiftLeft, "i64.shl", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64ShiftRightZeroes, "i64.shr_u", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64ShiftRightSigned, "i64.shr_s", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64Equal, "i64.eq", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64NotEqual, "i64.ne", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64LessThanSigned, "i64.lt_s", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64LessEqualSigned, "i64.le_s", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64LessThanUnsigned, "i64.lt_u", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64LessEqualUnsigned, "i64.le_u", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64GreaterThanSigned, "i64.gt_s", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64GreaterEqualSigned, "i64.ge_s", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64GreaterThanUnsigned, "i64.gt_u", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64GreaterEqualUnsigned, "i64.ge_u", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
+    DeclInstruction(I64Equal, "i64.eq", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64NotEqual, "i64.ne", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64LessThanSigned, "i64.lt_s", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64LessEqualSigned, "i64.le_s", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64LessThanUnsigned, "i64.lt_u", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64LessEqualUnsigned, "i64.le_u", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64GreaterThanSigned, "i64.gt_s", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64GreaterEqualSigned, "i64.ge_s", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64GreaterThanUnsigned, "i64.gt_u", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
+    DeclInstruction(I64GreaterEqualUnsigned, "i64.ge_u", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
     DeclInstruction(I64CountLeadingZeroes, "i64.clz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64CountTrailingZeroes, "i64.ctz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
@@ -98,41 +106,53 @@ namespace wasm_module {
     DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
     DeclInstruction(CallImport, "call_import", {}, Void::instance())};
 
-    DeclInstruction(If, "if", {}, Void::instance())};
+    DeclInstruction(If, "if", {Int32::instance() DeclInstComma Void::instance() DeclInstComma Void::instance()}, Void::instance())};
     DeclInstruction(DoWhile, "do_while", {}, Void::instance())};
     DeclInstruction(Forever, "forever", {}, Void::instance())};
     DeclInstruction(Continue, "continue", {}, Void::instance())};
     DeclInstruction(Break, "break", {}, Void::instance())};
-    DeclInstruction(Return, "return", {}, Void::instance())};
+    DeclInstruction(Return, "return", {Void::instance()}, Void::instance())};
     DeclInstruction(Switch, "switch", {}, Void::instance())};
 
     DeclInstruction(GrowMemory, "grow_memory", {Int32::instance()}, Int32::instance())};
     DeclInstruction(PageSize, "page_size", {}, Int32::instance())};
 
-    DeclInstruction(I32Load8Signed, "i32.load8_s", {Int32::instance()}, Int32::instance())};
-    DeclInstruction(I32Load8Unsigned, "i32.load8_u", {Int32::instance()}, Int32::instance())};
-    DeclInstruction(I32Load16Signed, "i32.load16_s", {Int32::instance()}, Int32::instance())};
-    DeclInstruction(I32Load16Unsigned, "i32.load16_u", {Int32::instance()}, Int32::instance())};
-    DeclInstruction(I32Load, "i32.load", {Int32::instance()}, Int32::instance())};
-    DeclInstruction(I64Load8Signed, "i64.load8_s", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64Load8Unsigned, "i64.load8_u", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64Load16Signed, "i64.load16_s", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64Load16Unsigned, "i64.load16_u", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64Load32Signed, "i64.load32_s", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64Load32Unsigned, "i64.load32_u", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(I64Load, "i64.load", {Int32::instance()}, Int64::instance())};
-    DeclInstruction(F32Load, "f32.load", {Int32::instance()}, Float32::instance())};
-    DeclInstruction(F64Load, "f64.load", {Int32::instance()}, Float64::instance())};
+    class LoadStoreInstruction : public Instruction {
 
-    DeclInstruction(I32Store8, "i32.store8", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
-    DeclInstruction(I32Store16, "i32.store16", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
-    DeclInstruction(I32Store, "i32.store", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
-    DeclInstruction(I64Store8, "i64.store8", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
-    DeclInstruction(I64Store16, "i64.store16", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
-    DeclInstruction(I64Store32, "i64.store32", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
-    DeclInstruction(I64Store, "i64.store", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
-    DeclInstruction(F32Store, "f32.store", {Int32::instance() DeclInstComma Float32::instance()}, Void::instance())};
-    DeclInstruction(F64Store, "f64.store", {Int32::instance() DeclInstComma Float64::instance()}, Void::instance())};
+        uint32_t offset_ = 0;
+
+    public:
+        LoadStoreInstruction(const wasm_module::sexpr::SExpr& expr);
+
+        uint32_t offset() const {
+            return offset_;
+        }
+    };
+
+    DeclLoadStoreInstruction(I32Load8Signed, "i32.load8_s", {Int32::instance()}, Int32::instance())};
+    DeclLoadStoreInstruction(I32Load8Unsigned, "i32.load8_u", {Int32::instance()}, Int32::instance())};
+    DeclLoadStoreInstruction(I32Load16Signed, "i32.load16_s", {Int32::instance()}, Int32::instance())};
+    DeclLoadStoreInstruction(I32Load16Unsigned, "i32.load16_u", {Int32::instance()}, Int32::instance())};
+    DeclLoadStoreInstruction(I32Load, "i32.load", {Int32::instance()}, Int32::instance())};
+    DeclLoadStoreInstruction(I64Load8Signed, "i64.load8_s", {Int32::instance()}, Int64::instance())};
+    DeclLoadStoreInstruction(I64Load8Unsigned, "i64.load8_u", {Int32::instance()}, Int64::instance())};
+    DeclLoadStoreInstruction(I64Load16Signed, "i64.load16_s", {Int32::instance()}, Int64::instance())};
+    DeclLoadStoreInstruction(I64Load16Unsigned, "i64.load16_u", {Int32::instance()}, Int64::instance())};
+    DeclLoadStoreInstruction(I64Load32Signed, "i64.load32_s", {Int32::instance()}, Int64::instance())};
+    DeclLoadStoreInstruction(I64Load32Unsigned, "i64.load32_u", {Int32::instance()}, Int64::instance())};
+    DeclLoadStoreInstruction(I64Load, "i64.load", {Int32::instance()}, Int64::instance())};
+    DeclLoadStoreInstruction(F32Load, "f32.load", {Int32::instance()}, Float32::instance())};
+    DeclLoadStoreInstruction(F64Load, "f64.load", {Int32::instance()}, Float64::instance())};
+
+    DeclLoadStoreInstruction(I32Store8, "i32.store8", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(I32Store16, "i32.store16", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(I32Store, "i32.store", {Int32::instance() DeclInstComma Int32::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(I64Store8, "i64.store8", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(I64Store16, "i64.store16", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(I64Store32, "i64.store32", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(I64Store, "i64.store", {Int32::instance() DeclInstComma Int64::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(F32Store, "f32.store", {Int32::instance() DeclInstComma Float32::instance()}, Void::instance())};
+    DeclLoadStoreInstruction(F64Store, "f64.store", {Int32::instance() DeclInstComma Float64::instance()}, Void::instance())};
 
 
     DeclInstruction(I32Wrap, "i32.wrap/i64", {Int64::instance()}, Int32::instance())};
@@ -154,7 +174,7 @@ namespace wasm_module {
     DeclInstruction(F32ConvertSignedI32, "f32.convert_s/i32", {Int32::instance()}, Float32::instance())};
     DeclInstruction(F32ConvertSignedI64, "f32.convert_s/i64", {Int64::instance()}, Float32::instance())};
     DeclInstruction(F32ConvertUnsignedI32, "f32.convert_u/i32", {Int32::instance()}, Float32::instance())};
-    DeclInstruction(F32ConvertUnsignedI64, "f32.convert_u/i64", {Int32::instance()}, Float32::instance())};
+    DeclInstruction(F32ConvertUnsignedI64, "f32.convert_u/i64", {Int64::instance()}, Float32::instance())};
     DeclInstruction(F32ReinterpretI32, "f32.reinterpret/i32", {Int32::instance()}, Float32::instance())};
 
     DeclInstruction(F64PromoteF32, "f64.promote/f32", {Float32::instance()}, Float64::instance())};
@@ -197,12 +217,12 @@ namespace wasm_module {
     DeclInstruction(F64Floor, "f64.floor", {Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Trunc, "f64.trunc", {Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Nearest, "f64.nearest", {Float64::instance()}, Float64::instance())};
-    DeclInstruction(F64Equal, "f64.eq", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
-    DeclInstruction(F64NotEqual, "f64.ne", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
-    DeclInstruction(F64LesserThan, "f64.lt", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
-    DeclInstruction(F64LesserEqual, "f64.le", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
-    DeclInstruction(F64GreaterThan, "f64.gt", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
-    DeclInstruction(F64GreaterEqual, "f64.ge", {Float64::instance() DeclInstComma Float64::instance()}, Int64::instance())};
+    DeclInstruction(F64Equal, "f64.eq", {Float64::instance() DeclInstComma Float64::instance()}, Int32::instance())};
+    DeclInstruction(F64NotEqual, "f64.ne", {Float64::instance() DeclInstComma Float64::instance()}, Int32::instance())};
+    DeclInstruction(F64LesserThan, "f64.lt", {Float64::instance() DeclInstComma Float64::instance()}, Int32::instance())};
+    DeclInstruction(F64LesserEqual, "f64.le", {Float64::instance() DeclInstComma Float64::instance()}, Int32::instance())};
+    DeclInstruction(F64GreaterThan, "f64.gt", {Float64::instance() DeclInstComma Float64::instance()}, Int32::instance())};
+    DeclInstruction(F64GreaterEqual, "f64.ge", {Float64::instance() DeclInstComma Float64::instance()}, Int32::instance())};
     DeclInstruction(F64Sqrt, "f64.sqrt", {Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Min, "f64.min", {Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Max, "f64.max", {Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
@@ -238,6 +258,10 @@ namespace wasm_module {
 
         virtual const Type* returnType() const override {
             return Void::instance();
+        }
+
+        virtual bool typeCheckChildren() const override {
+            return false;
         }
     };
 
@@ -522,49 +546,9 @@ namespace wasm_module {
         virtual const Type* returnType() const override {
             return functionSignature.returnType();
         }
-    };
 
-    class I32AssertReturn : public Instruction {
-
-    public:
-        virtual const std::vector<const Type*>& childrenTypes() const override {
-            static std::vector<const Type*> chTypes_ = {Int64::instance(), Int64::instance()};;
-            return chTypes_;
-        }
-
-        virtual const std::string& name() const override {
-            static std::string name_ = "print";
-            return name_;
-        }
-
-        virtual const Type* returnType() const override {
-            return Void::instance();
-        }
-
-        virtual InstructionId::Value id() const override {
-            return InstructionId::I32AssertReturn;
-        }
-    };
-
-    class Print : public Instruction {
-    public:
-        virtual const std::vector<const Type*>& childrenTypes() const override {
-            static std::vector<const Type*> chTypes_ = {Int32::instance()};;
-            return chTypes_;
-        }
-
-        virtual const std::string& name() const override {
-            static std::string name_ = "print";
-            return name_;
-        }
-
-        virtual const Type* returnType() const override {
-            return Void::instance();
-        }
-
-
-        virtual InstructionId::Value id() const {
-            return InstructionId::Print;
+        virtual bool typeCheckChildren() const override {
+            return false;
         }
     };
 

@@ -41,9 +41,7 @@ namespace wasm_module {
             return "float64";
         }
 
-        virtual void parse(const std::string& literal, void *data) const {
-            (*(double*) data) = std::atof(literal.c_str());
-        }
+        virtual void parse(const std::string& literal, void *data) const;
 
         virtual void parse(binary::ByteStream &stream, void *data) const {
             ((uint8_t *) data)[0] = stream.popChar();

@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
+#include <limits>
 #include "Float64.h"
 
 namespace wasm_module {
 
+    void Float64::parse(const std::string& literal, void *data) const {
+        if (literal == "-nan") {
+            double value = -std::numeric_limits<double>::quiet_NaN();
+            (*(double*) data) = value;
+            return;
+        }
+        (*(double*) data) = std::atof(literal.c_str());
+    }
 }

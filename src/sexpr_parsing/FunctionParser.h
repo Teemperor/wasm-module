@@ -54,33 +54,50 @@ namespace wasm_module { namespace sexpr {
 
         Instruction* instruction_ = nullptr;
 
+        bool hasDollarPrefix(std::string value) {
+            if (value.empty())
+                return false;
+            return value.at(0) == '$';
+        }
+
+        void addVariable(std::string variableName, std::string typeName) {
+            const Type* type = Types::getByName(typeName);
+
+            namesToIndex_[variableName] = parameters.size() + locals.size();
+            locals.push_back(type);
+        }
+
         void parseLocal(const SExpr& local) {
-            if (local.children().size() == 3) {
+            if (local.children().size() == 3 && hasDollarPrefix(local[1].value())) {
                 std::string variableName = local[1].value();
                 std::string typeName = local[2].value();
 
-                const Type* type = Types::getByName(typeName);
-
-                namesToIndex_[variableName] = parameters.size() + locals.size();
-                locals.push_back(type);
+                addVariable(variableName, typeName);
             } else {
-                throw MalformedLocalStatement(local.toString());
+                for (std::size_t i = 1; i < local.children().size(); i++) {
+                    addVariable(std::to_string(locals.size()), local[i].value());
+                }
             }
         }
 
-        void parseParam(const SExpr& param) {
-            if (param.children().size() == 1) {
-                // empty parameter
-            }
-            else if (param.children().size() == 3) {
-                std::string paramName = param[1].value();
-                std::string typeName = param[2].value();
-                const Type* type = Types::getByName(typeName);
 
-                namesToIndex_[paramName] = parameters.size();
-                parameters.push_back(type);
+        void addParameter(std::string variableName, std::string typeName) {
+            const Type* type = Types::getByName(typeName);
+
+            namesToIndex_[variableName] = parameters.size() + locals.size();
+            parameters.push_back(type);
+        }
+
+        void parseParam(const SExpr& param) {
+            if (param.children().size() == 3 && hasDollarPrefix(param[1].value())) {
+                std::string variableName = param[1].value();
+                std::string typeName = param[2].value();
+
+                addParameter(variableName, typeName);
             } else {
-                throw MalformedLocalStatement(param.toString());
+                for (std::size_t i = 1; i < param.children().size(); i++) {
+                    addVariable(std::to_string(parameters.size()), param[i].value());
+                }
             }
         }
 

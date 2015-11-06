@@ -62,6 +62,7 @@ namespace wasm_module {
             return typeid(*this) != typeid(other);
         }
 
+        static bool typeCompatible(const Type* expectedType, const Type* receivedType);
     };
 
 }

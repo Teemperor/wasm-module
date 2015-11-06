@@ -20,12 +20,16 @@
 
 #include <cstdint>
 #include <vector>
+#include <ExceptionWithMessage.h>
 
 #include "types/Type.h"
 #include "Variable.h"
 #include "InstructionId.h"
 
 namespace wasm_module {
+
+    ExceptionMessage(IncompatibleChildReturnType)
+    ExceptionMessage(IncompatibleNumberOfChildren)
 
     class InstructionState;
 
@@ -41,11 +45,26 @@ namespace wasm_module {
         }
 
         virtual void children(const std::vector<Instruction*>& newChildren) {
+            if (typeCheckChildren()) {
+                if (newChildren.size() != childrenTypes().size()) {
+                    throw IncompatibleNumberOfChildren(name() + " got " + std::to_string(newChildren.size()) + " children, but expected " +  std::to_string(childrenTypes().size()));
+                }
+
+                for (std::size_t i = 0; i < newChildren.size(); i++) {
+                    if (!Type::typeCompatible(childrenTypes()[i], newChildren[i]->returnType())) {
+                        throw IncompatibleChildReturnType(name() + " expected " + childrenTypes()[i]->name() + " but got " + newChildren[i]->returnType()->name());
+                    }
+                }
+            }
             children_ = newChildren;
         }
 
         const std::vector<Instruction *>& children() const {
             return children_;
+        }
+
+        virtual bool typeCheckChildren() const {
+            return true;
         }
 
         virtual const std::string& name() const = 0;
@@ -77,6 +96,7 @@ namespace wasm_module {
 
             return result;
         }
+
     };
 }
 

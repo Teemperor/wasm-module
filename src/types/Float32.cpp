@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+#include <limits>
 #include "Float32.h"
 
 namespace wasm_module {
     void Float32::parse(const std::string& literal, void *data) const {
+        if (literal == "-nan") {
+            float value = -std::numeric_limits<float>::quiet_NaN();
+            (*(float*) data) = value;
+            return;
+        }
+
         const char* literalC = literal.c_str();
         char* outPtr = const_cast<char*>(literalC);
         (*(float*) data) = std::strtof(literalC, &outPtr);

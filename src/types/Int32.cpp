@@ -19,7 +19,7 @@
 namespace wasm_module {
 
     const std::regex Int32::hexNumber("0(x|X)[0-9a-fA-F]{1,8}");
-    const std::regex Int32::decNumber("(-|\\+)?[0-9]+");
+    const std::regex Int32::decNumber("(-)?[0-9]+");
 
     void Int32::parse(const std::string& literal, void *data) const {
         if (std::regex_match(literal, hexNumber)) {
@@ -37,25 +37,30 @@ namespace wasm_module {
             }
             (*(uint32_t*) data) = value;
         } else if (std::regex_match(literal, decNumber)) {
-            int32_t value = 0;
-            bool negative = false;
-            for(std::size_t i = 0; i < literal.size(); i++) {
-                char c = literal[i];
-                if (c == '-') {
-                    negative = true;
-                    continue;
+            if (literal.at(0) == '-') {
+                int32_t value = 0;
+                for(std::size_t i = 0; i < literal.size(); i++) {
+                    char c = literal[i];
+                    if (c == '-')
+                        continue;
+
+                    value *= 10;
+                    value += c - '0';
+                    if (value > 0)
+                        value = -value;
                 }
-                if (c == '+')
-                    continue;
-                value *= 10;
-                value += c - '0';
+                (*(int32_t*) data) = value;
+            } else {
+                uint32_t value = 0;
+                for(std::size_t i = 0; i < literal.size(); i++) {
+                    char c = literal[i];
+                    value *= 10;
+                    value += c - '0';
+                }
+                (*(uint32_t*) data) = value;
             }
-            if (negative)
-                value = -value;
-            (*(int32_t*) data) = value;
         } else {
             throw InvalidI32Format(literal);
-        };
-
+        }
     }
 }

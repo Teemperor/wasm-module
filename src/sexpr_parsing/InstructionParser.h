@@ -36,28 +36,27 @@ namespace wasm_module { namespace sexpr {
         FunctionContext& functionContext_;
 
         Instruction* parse(const SExpr& expr) {
-            if (expr.children().size() != 0) {
+            if (expr.hasChildren()) {
                 if (expr[0].hasValue()) {
                     Instruction* result = InstructionSet::getInstruction(expr[0].value(), expr, moduleContext_, functionContext_);
 
                     std::vector<Instruction*> children;
 
                     for (const SExpr& child : expr.children()) {
-                        if (child.hasChildren())
+                        if (!child.hasValue())
                             children.push_back(parse(child));
                     }
 
                     result->children(children);
 
                     return result;
-
                 } else {
                     Instruction* result = new Block((uint32_t) expr.children().size());
 
                     std::vector<Instruction*> children;
 
                     for (const SExpr& child : expr.children()) {
-                        if (child.hasChildren())
+                        if (!child.hasValue())
                             children.push_back(parse(child));
                     }
 
@@ -66,7 +65,8 @@ namespace wasm_module { namespace sexpr {
                     return result;
                 }
             } else {
-                throw EmptyExpression(expr.toString());
+                Instruction* result = new Block(0);
+                return result;
             }
         }
 

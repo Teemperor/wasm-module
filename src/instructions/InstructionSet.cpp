@@ -52,6 +52,8 @@ namespace wasm_module {
 
     }
 
+#define SExprLoadStoreInstruction(CLASSNAME, INSTRNAME) if(name==INSTRNAME){return new CLASSNAME(expr);}
+
     Instruction *InstructionSet::getInstruction(std::string name, const sexpr::SExpr& expr, ModuleContext &context,
                                                        FunctionContext &functionContext) {
 
@@ -68,7 +70,32 @@ namespace wasm_module {
                 return new SetLocal(expr, functionContext);
             } else if (ends_with(name, ".const")) {
                 return new Literal(expr);
-            } else {
+            }
+            else SExprLoadStoreInstruction(I32Load8Signed, "i32.load8_s")
+            else SExprLoadStoreInstruction(I32Load8Unsigned, "i32.load8_u")
+            else SExprLoadStoreInstruction(I32Load16Signed, "i32.load16_s")
+            else SExprLoadStoreInstruction(I32Load16Unsigned, "i32.load16_u")
+            else SExprLoadStoreInstruction(I32Load, "i32.load")
+            else SExprLoadStoreInstruction(I64Load8Signed, "i64.load8_s")
+            else SExprLoadStoreInstruction(I64Load8Unsigned, "i64.load8_u")
+            else SExprLoadStoreInstruction(I64Load16Signed, "i64.load16_s")
+            else SExprLoadStoreInstruction(I64Load16Unsigned, "i64.load16_u")
+            else SExprLoadStoreInstruction(I64Load32Signed, "i64.load32_s")
+            else SExprLoadStoreInstruction(I64Load32Unsigned, "i64.load32_u")
+            else SExprLoadStoreInstruction(I64Load, "i64.load")
+            else SExprLoadStoreInstruction(F32Load, "f32.load")
+            else SExprLoadStoreInstruction(F64Load, "f64.load")
+
+            else SExprLoadStoreInstruction(I32Store8, "i32.store8")
+            else SExprLoadStoreInstruction(I32Store16, "i32.store16")
+            else SExprLoadStoreInstruction(I32Store, "i32.store")
+            else SExprLoadStoreInstruction(I64Store8, "i64.store8")
+            else SExprLoadStoreInstruction(I64Store16, "i64.store16")
+            else SExprLoadStoreInstruction(I64Store32, "i64.store32")
+            else SExprLoadStoreInstruction(I64Store, "i64.store")
+            else SExprLoadStoreInstruction(F32Store, "f32.store")
+            else SExprLoadStoreInstruction(F64Store, "f64.store")
+            else {
                 throw UnknownInstructionName(name);
             }
         }
@@ -147,32 +174,6 @@ namespace wasm_module {
         else INSTRUCTION(GrowMemory, "grow_memory")
         else INSTRUCTION(PageSize, "page_size")
 
-        else INSTRUCTION(I32Load8Signed, "i32.load8_s")
-        else INSTRUCTION(I32Load8Unsigned, "i32.load8_u")
-        else INSTRUCTION(I32Load16Signed, "i32.load16_s")
-        else INSTRUCTION(I32Load16Unsigned, "i32.load16_u")
-        else INSTRUCTION(I32Load, "i32.load")
-        else INSTRUCTION(I64Load8Signed, "i64.load8_s")
-        else INSTRUCTION(I64Load8Unsigned, "i64.load8_u")
-        else INSTRUCTION(I64Load16Signed, "i64.load16_s")
-        else INSTRUCTION(I64Load16Unsigned, "i64.load16_u")
-        else INSTRUCTION(I64Load32Signed, "i64.load32_s")
-        else INSTRUCTION(I64Load32Unsigned, "i64.load32_u")
-        else INSTRUCTION(I64Load, "i64.load")
-        else INSTRUCTION(F32Load, "f32.load")
-        else INSTRUCTION(F64Load, "f64.load")
-
-        else INSTRUCTION(I32Store8, "i32.store8")
-        else INSTRUCTION(I32Store16, "i32.store16")
-        else INSTRUCTION(I32Store, "i32.store")
-        else INSTRUCTION(I64Store8, "i64.store8")
-        else INSTRUCTION(I64Store16, "i64.store16")
-        else INSTRUCTION(I64Store32, "i64.store32")
-        else INSTRUCTION(I64Store, "i64.store")
-        else INSTRUCTION(F32Store, "f32.store")
-        else INSTRUCTION(F64Store, "f64.store")
-
-
         else INSTRUCTION(I32Wrap, "i32.wrap/i64")
         else INSTRUCTION(I32TruncSignedF32, "i32.trunc_s/f32")
         else INSTRUCTION(I32TruncSignedF64, "i32.trunc_s/f64")
@@ -244,7 +245,6 @@ namespace wasm_module {
         else INSTRUCTION(F64Sqrt, "f64.sqrt")
         else INSTRUCTION(F64Min, "f64.min")
         else INSTRUCTION(F64Max, "f64.max")
-        else INSTRUCTION(I32AssertReturn, "i32.assert_return")
         else {
             return nullptr;
         }

@@ -80,7 +80,12 @@ namespace wasm_module { namespace sexpr {
             if (memoryExpr.children().size() >= 2) {
                 uint32_t startMem = (uint32_t) std::atoll(memoryExpr[1].value().c_str());
                 uint32_t maxMem = std::numeric_limits<uint32_t>::max();
-                bool hasMaxValue = memoryExpr.children()[2].hasValue();
+                bool hasMaxValue = false;
+
+                if (memoryExpr.children().size() >= 3) {
+                    hasMaxValue = memoryExpr[2].hasValue();
+                }
+
                 if (hasMaxValue) {
                     maxMem = (uint32_t) std::atoll(memoryExpr[2].value().c_str());
                 }

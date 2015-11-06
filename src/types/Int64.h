@@ -77,7 +77,7 @@ namespace wasm_module {
 
         virtual void parse(const std::string& literal, void *data) const;
 
-        static void setValue(Variable variable, int64_t value) {
+        static void setValue(Variable& variable, int64_t value) {
             if (variable.type() == *instance()) {
                 int64_t *data = (int64_t *) variable.value();
                 (*data) = value;
@@ -86,7 +86,7 @@ namespace wasm_module {
             }
         }
 
-        static void setUnsignedValue(Variable variable, uint64_t value) {
+        static void setUnsignedValue(Variable& variable, uint64_t value) {
             if (variable.type() == *instance()) {
                 uint64_t *data = (uint64_t *) variable.value();
                 (*data) = value;
