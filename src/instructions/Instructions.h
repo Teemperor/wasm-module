@@ -73,7 +73,7 @@ namespace wasm_module {
     DeclInstruction(I32GreaterEqualUnsigned, "i32.ge_u", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32CountLeadingZeroes, "i32.clz", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32CountTrailingZeroes, "i32.ctz", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
-    DeclInstruction(I32PopulationCount, "i32.popcnt", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32PopulationCount, "i32.popcnt", {Int32::instance()}, Int32::instance())};
 
     DeclInstruction(I64Add, "i64.add", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64Sub, "i64.sub", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
@@ -100,7 +100,7 @@ namespace wasm_module {
     DeclInstruction(I64GreaterEqualUnsigned, "i64.ge_u", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
     DeclInstruction(I64CountLeadingZeroes, "i64.clz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
     DeclInstruction(I64CountTrailingZeroes, "i64.ctz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
+    DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance()}, Int64::instance())};
 
     DeclInstruction(AddressOf, "address_of", {}, Void::instance())};
     DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
