@@ -71,8 +71,8 @@ namespace wasm_module {
     DeclInstruction(I32GreaterEqualSigned, "i32.ge_s", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32GreaterThanUnsigned, "i32.gt_u", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
     DeclInstruction(I32GreaterEqualUnsigned, "i32.ge_u", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
-    DeclInstruction(I32CountLeadingZeroes, "i32.clz", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
-    DeclInstruction(I32CountTrailingZeroes, "i32.ctz", {Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32CountLeadingZeroes, "i32.clz", {Int32::instance()}, Int32::instance())};
+    DeclInstruction(I32CountTrailingZeroes, "i32.ctz", {Int32::instance()}, Int32::instance())};
     DeclInstruction(I32PopulationCount, "i32.popcnt", {Int32::instance()}, Int32::instance())};
 
     DeclInstruction(I64Add, "i64.add", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
@@ -98,15 +98,14 @@ namespace wasm_module {
     DeclInstruction(I64GreaterEqualSigned, "i64.ge_s", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
     DeclInstruction(I64GreaterThanUnsigned, "i64.gt_u", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
     DeclInstruction(I64GreaterEqualUnsigned, "i64.ge_u", {Int64::instance() DeclInstComma Int64::instance()}, Int32::instance())};
-    DeclInstruction(I64CountLeadingZeroes, "i64.clz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
-    DeclInstruction(I64CountTrailingZeroes, "i64.ctz", {Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
+    DeclInstruction(I64CountLeadingZeroes, "i64.clz", {Int64::instance()}, Int64::instance())};
+    DeclInstruction(I64CountTrailingZeroes, "i64.ctz", {Int64::instance()}, Int64::instance())};
     DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance()}, Int64::instance())};
 
     DeclInstruction(AddressOf, "address_of", {}, Void::instance())};
     DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
     DeclInstruction(CallImport, "call_import", {}, Void::instance())};
 
-    DeclInstruction(If, "if", {Int32::instance() DeclInstComma Void::instance() DeclInstComma Void::instance()}, Void::instance())};
     DeclInstruction(DoWhile, "do_while", {}, Void::instance())};
     DeclInstruction(Forever, "forever", {}, Void::instance())};
     DeclInstruction(Continue, "continue", {}, Void::instance())};
@@ -241,6 +240,9 @@ namespace wasm_module {
             }
         }
         Block(uint32_t children) : amountOfChildren(children) {
+            for (uint32_t i = 0; i < amountOfChildren; i++) {
+                childrenTypes_.push_back(Void::instance());
+            }
         }
 
         virtual const std::string& name() const {
@@ -257,11 +259,43 @@ namespace wasm_module {
         }
 
         virtual const Type* returnType() const override {
+            if (children().empty())
+                return Void::instance();
+            return children().back()->returnType();
+        }
+
+        virtual bool typeCheckChildren() const override {
+            return true;
+        }
+    };
+
+    class If : public Instruction {
+
+    public:
+        virtual const std::string& name() const {
+            static std::string name_ = "if";
+            return name_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::If;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type *> chTypes_ = {Int32::instance(), Void::instance(), Void::instance()} ; return chTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            if (children().size() != 3)
+                throw std::domain_error("'If' without child instructions has no return type");
+            if (children()[1]->returnType() == children()[1]->returnType()) {
+                return children()[1]->returnType();
+            }
             return Void::instance();
         }
 
         virtual bool typeCheckChildren() const override {
-            return false;
+            return true;
         }
     };
 
@@ -510,6 +544,21 @@ namespace wasm_module {
 
     class Call : public Instruction {
 
+        std::string functionName;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext &context) {
+            if (context.functionTable().hasFunctionSignature(functionName)) {
+                functionSignature = context.functionTable().getFunctionSignature(functionName);
+                moduleName = context.name();
+            } else {
+                auto& import = context.getImport(functionName);
+                functionSignature = import.signature();
+                moduleName = import.module();
+            }
+        }
+
     public:
         std::string moduleName;
         FunctionSignature functionSignature;
@@ -520,14 +569,7 @@ namespace wasm_module {
         }
 
         Call(const sexpr::SExpr& expr, ModuleContext &context) {
-            if (context.functionTable().hasFunctionSignature(expr[1].value())) {
-                functionSignature = context.functionTable().getFunctionSignature(expr[1].value());
-                moduleName = context.name();
-            } else {
-                auto& import = context.getImport(expr[1].value());
-                functionSignature = import.signature();
-                moduleName = import.module();
-            }
+            functionName = expr[1].value();
         }
 
         virtual InstructionId::Value id() const {

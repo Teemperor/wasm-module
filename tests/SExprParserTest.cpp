@@ -27,8 +27,8 @@ using namespace wasm_module;
 using namespace wasm_module::sexpr;
 
 int main() {
-    std::string str = ";This is a comment\n"
-            "(module (memory \"langes wort\" 0 1))\n"
+    std::string str = ";This is a comment\n (; this is a silly comment in brackets ;)"
+            "(module ;inline comment ; (memory \"langes wort\" 0 1))\n"
             ";This is another comment\n"
             "\t(module)";
 

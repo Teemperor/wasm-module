@@ -28,6 +28,8 @@
 
 namespace wasm_module {
 
+    class ModuleContext;
+
     ExceptionMessage(IncompatibleChildReturnType)
     ExceptionMessage(IncompatibleNumberOfChildren)
 
@@ -37,6 +39,12 @@ namespace wasm_module {
 
         std::vector<Instruction *> children_;
 
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext &context) {
+
+        }
+
     public:
         virtual ~Instruction() {
             for (Instruction *child : children()) {
@@ -45,18 +53,25 @@ namespace wasm_module {
         }
 
         virtual void children(const std::vector<Instruction*>& newChildren) {
+            children_ = newChildren;
+        }
+
+        void triggerSecondStepEvaluate(ModuleContext &context) {
+            for(Instruction* instruction : children_) {
+                instruction->triggerSecondStepEvaluate(context);
+            }
             if (typeCheckChildren()) {
-                if (newChildren.size() != childrenTypes().size()) {
-                    throw IncompatibleNumberOfChildren(name() + " got " + std::to_string(newChildren.size()) + " children, but expected " +  std::to_string(childrenTypes().size()));
+                if (children_.size() != childrenTypes().size()) {
+                    throw IncompatibleNumberOfChildren(name() + " got " + std::to_string(children_.size()) + " children, but expected " +  std::to_string(childrenTypes().size()));
                 }
 
-                for (std::size_t i = 0; i < newChildren.size(); i++) {
-                    if (!Type::typeCompatible(childrenTypes()[i], newChildren[i]->returnType())) {
-                        throw IncompatibleChildReturnType(name() + " expected " + childrenTypes()[i]->name() + " but got " + newChildren[i]->returnType()->name());
+                for (std::size_t i = 0; i < children_.size(); i++) {
+                    if (!Type::typeCompatible(childrenTypes()[i], children_[i]->returnType())) {
+                        throw IncompatibleChildReturnType(name() + " expected " + childrenTypes()[i]->name() + " but got " + children_[i]->returnType()->name());
                     }
                 }
             }
-            children_ = newChildren;
+            secondStepEvaluate(context);
         }
 
         const std::vector<Instruction *>& children() const {

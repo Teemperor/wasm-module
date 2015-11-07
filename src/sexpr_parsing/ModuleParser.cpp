@@ -37,6 +37,9 @@ namespace wasm_module { namespace sexpr {
                     throw UnknownModuleChild(typeName);
                 }
             }
+            for (Function* function : module_->functions()) {
+                function->mainInstruction()->triggerSecondStepEvaluate(module_->context());
+            }
         }
 
         void ModuleParser::parseImport(const SExpr& importExpr) {

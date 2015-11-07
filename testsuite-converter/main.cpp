@@ -107,8 +107,10 @@ public:
         mainExpr = sexpr::SExprParser(stream).parse(true);
 
         for (const SExpr& expr : mainExpr.children()) {
-            if (expr[0].value() == "module") {
-                modules.push_back(ModuleWrapper(expr));
+            if (expr.hasChildren()) {
+                if (expr[0].value() == "module") {
+                    modules.push_back(ModuleWrapper(expr));
+                }
             }
         }
     }
@@ -126,6 +128,8 @@ public:
     void generateOutput() {
         int testNumber = 1;
         for (SExpr expr : mainExpr.children()) {
+            if (!expr.hasChildren())
+                continue;
             if (expr[0].value() == "invoke") {
                 ModuleWrapper& wrapper = getModule(expr[1].value());
 
@@ -150,40 +154,46 @@ public:
 
                 std::string dataType;
 
-                if (expr[2][0].value() == "i32.const") {
-                    dataType = "i32";
-                } else if (expr[2][0].value() == "i64.const") {
-                    dataType = "i64";
-                } else if (expr[2][0].value() == "f32.const") {
-                    dataType = "f32";
-                } else if (expr[2][0].value() == "f64.const") {
-                    dataType = "f64";
+                if (expr.children().size() <= 2) {
+                    std::cout << "warning - can't handle this assert_return: " << expr.toString() << std::endl;
                 } else {
-                    std::cerr << expr[2][0].value() << std::endl;
-                    throw UnknownAssertValue();
+                    if (expr[2][0].value() == "i32.const") {
+                        dataType = "i32";
+                    } else if (expr[2][0].value() == "i64.const") {
+                        dataType = "i64";
+                    } else if (expr[2][0].value() == "f32.const") {
+                        dataType = "f32";
+                    } else if (expr[2][0].value() == "f64.const") {
+                        dataType = "f64";
+                    } else {
+                        std::cerr << expr[2][0].value() << std::endl;
+                        throw UnknownAssertValue();
+                    }
+
+                    SExpr eqExpr;
+                    eqExpr.addChild(dataType + ".eq");
+                    eqExpr.addChild(invokeExpr);
+                    eqExpr.addChild(expr[2]);
+
+                    ifExpr.addChild(eqExpr);
+                    ifExpr.addChild();
+                    ifExpr.addChild(SExprParser::parseString("(i32.div_s (i32.const 1) (i32.const 0))"));
+
+                    writeAST("positive/", testNumber, ifExpr, invokeExpr[1].value(), wrapper);
                 }
 
-                SExpr eqExpr;
-                eqExpr.addChild(dataType + ".eq");
-                eqExpr.addChild(invokeExpr);
-                eqExpr.addChild(expr[2]);
-
-                ifExpr.addChild(eqExpr);
-                ifExpr.addChild();
-                ifExpr.addChild(SExprParser::parseString("(i32.div_s (i32.const 1) (i32.const 0))"));
-
-                writeAST("positive/", testNumber, ifExpr, invokeExpr[1].value(), wrapper);
             } else if (expr[0].value() == "assert_return_nan") {
                 // TODO
             } else if (expr[0].value() == "assert_trap") {
-                ModuleWrapper& wrapper = getModule(expr[1].value());
+                SExpr invoke = expr[1];
+                ModuleWrapper& wrapper = getModule(invoke[1].value());
 
-                std::string functionName = wrapper.getExport(expr[1].value());
+                std::string functionName = wrapper.getExport(invoke[1].value());
 
-                expr[0] = SExpr("call");
-                expr[1] = SExpr(functionName);
+                invoke[0] = SExpr("call");
+                invoke[1] = SExpr(functionName);
 
-                writeAST("negative/trap/", testNumber, expr, expr[1].value(), wrapper);
+                writeAST("negative/trap/", testNumber, expr, invoke[1].value(), wrapper);
             } else if (expr[0].value() == "assert_invalid") {
                 writeSExpr("negative/parse/", testNumber, expr[1]);
             } else if (expr[0].value() == "module") {

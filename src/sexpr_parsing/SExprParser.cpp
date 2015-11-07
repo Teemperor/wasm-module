@@ -32,21 +32,54 @@ namespace wasm_module { namespace sexpr {
             }
 
             if (stream_.peekChar() == ';') {
+                stream_.popChar();
+                if (stream_.reachedEnd()) {
+                    return;
+                }
+                // check again for the double semicolon comments
+                if (stream_.peekChar() == ';') {
+                    stream_.popChar();
+                }
+
                 while (true) {
                     if (stream_.reachedEnd()) {
                         return;
                     }
-                    if (stream_.popChar() == '\n') {
+                    if (stream_.peekChar() == '\n') {
+                        stream_.popChar();
                         break;
                     }
+                    stream_.popChar();
                 }
                 continue;
             }
 
 
+
             if (stream_.peekChar() == '(') {
                 stream_.popChar();
-                parseValues(parent.addChild(), false);
+                if (stream_.peekChar() == ';') {
+                    stream_.popChar();
+
+                    bool foundSemicolon = false;
+
+                    while (true) {
+                        if (stream_.peekChar() == ';') {
+                            stream_.popChar();
+                            foundSemicolon = true;
+                        } else if (stream_.peekChar() == ')') {
+                            stream_.popChar();
+                            if (foundSemicolon)
+                                break;
+                        } else {
+                            foundSemicolon = false;
+                            stream_.popChar();
+                        }
+                    }
+                    continue;
+                } else {
+                    parseValues(parent.addChild(), false);
+                }
             } else if (stream_.peekChar() == '"') {
 
                 stream_.popChar();
