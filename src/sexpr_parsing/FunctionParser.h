@@ -147,11 +147,15 @@ namespace wasm_module { namespace sexpr {
                     throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
                 }
 
+                if (expr.children().size() == 0 || !expr[0].hasValue())
+                    continue;
+
                 const std::string& typeName = expr[0].value();
 
                 if (typeName == "param") {
                     parseParam(expr);
                 }
+
             }
             for(unsigned i = 2; i < funcExpr.children().size(); i++) {
                 const SExpr& expr = funcExpr[i];
@@ -159,6 +163,9 @@ namespace wasm_module { namespace sexpr {
                 if (expr.hasValue()) {
                     throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
                 }
+
+                if (expr.children().size() == 0 || !expr[0].hasValue())
+                    continue;
 
                 const std::string& typeName = expr[0].value();
 
@@ -172,6 +179,9 @@ namespace wasm_module { namespace sexpr {
                 if (expr.hasValue()) {
                     throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
                 }
+
+                if (expr.children().size() == 0 || !expr[0].hasValue())
+                    continue;
 
                 const std::string& typeName = expr[0].value();
 
@@ -191,11 +201,17 @@ namespace wasm_module { namespace sexpr {
                     throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
                 }
 
-                const std::string& typeName = expr[0].value();
-
-                if (typeName != "local" && typeName != "param" && typeName != "result") {
+                if (expr.children().size() == 0 || !expr[0].hasValue()) {
                     instructionExprs.push_back(&expr);
+                } else {
+                    const std::string& typeName = expr[0].value();
+
+                    if (typeName != "local" && typeName != "param" && typeName != "result") {
+                        instructionExprs.push_back(&expr);
+                    }
                 }
+
+
             }
             parseInstructions(instructionExprs);
             function_ = new Function(functionContext_, instruction_);

@@ -36,7 +36,7 @@ namespace wasm_module { namespace sexpr {
         FunctionContext& functionContext_;
 
         Instruction* parse(const SExpr& expr) {
-            if (expr.hasChildren()) {
+            if (expr.children().size() != 0) {
                 if (expr[0].hasValue()) {
                     Instruction* result = InstructionSet::getInstruction(expr[0].value(), expr, moduleContext_, functionContext_);
 

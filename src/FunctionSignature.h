@@ -63,6 +63,14 @@ namespace wasm_module {
         bool isExported() const {
             return isExported_;
         }
+
+        bool operator<(const FunctionSignature& other) const {
+            if (name_ < other.name())
+                return true;
+            if (returnType_ < other.returnType_)
+                return true;
+
+        }
     };
 
 }

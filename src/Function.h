@@ -41,9 +41,10 @@ namespace wasm_module {
      */
         Instruction *mainInstruction_;
         Module* module_ = nullptr;
+        bool variadic_ = false;
 
     public:
-        Function(FunctionContext &context, Instruction *mainInstruction);
+        Function(FunctionContext &context, Instruction *mainInstruction, bool variadic = false);
 
         virtual ~Function();
 
@@ -59,6 +60,10 @@ namespace wasm_module {
 
         void module(Module* module) {
             this->module_ = module;
+        }
+
+        bool variadic() const {
+            return variadic_;
         }
     };
 

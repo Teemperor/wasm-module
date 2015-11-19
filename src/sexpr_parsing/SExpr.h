@@ -76,7 +76,7 @@ namespace wasm_module { namespace sexpr {
         }
 
         bool hasChildren() const {
-            return !children_.empty();
+            return !hasValue();
         }
 
         bool hasValue() const {

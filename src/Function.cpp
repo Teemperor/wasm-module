@@ -21,8 +21,8 @@
 
 namespace wasm_module {
 
-    Function::Function(FunctionContext &context, Instruction *mainInstruction)
-            : FunctionContext(context), mainInstruction_(mainInstruction) {
+    Function::Function(FunctionContext &context, Instruction *mainInstruction, bool variadic)
+            : FunctionContext(context), mainInstruction_(mainInstruction), variadic_(variadic) {
     }
 
     Function::~Function() {

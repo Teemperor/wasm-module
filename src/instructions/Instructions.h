@@ -104,7 +104,6 @@ namespace wasm_module {
 
     DeclInstruction(AddressOf, "address_of", {}, Void::instance())};
     DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
-    DeclInstruction(CallImport, "call_import", {}, Void::instance())};
 
     DeclInstruction(DoWhile, "do_while", {}, Void::instance())};
     DeclInstruction(Forever, "forever", {}, Void::instance())};
@@ -434,7 +433,7 @@ namespace wasm_module {
 
     public:
         NativeInstruction(std::function<Variable(std::vector<Variable>)> internalFunction, const Type* returnType, std::vector<const Type*> parameterTypes)
-                : internalFunction_(internalFunction), parameterTypes_(parameterTypes)
+                : internalFunction_(internalFunction), parameterTypes_(parameterTypes), returnType_(returnType)
         {
         }
 
@@ -548,15 +547,9 @@ namespace wasm_module {
 
     protected:
 
-        virtual void secondStepEvaluate(ModuleContext &context) {
-            if (context.functionTable().hasFunctionSignature(functionName)) {
-                functionSignature = context.functionTable().getFunctionSignature(functionName);
-                moduleName = context.name();
-            } else {
-                auto& import = context.getImport(functionName);
-                functionSignature = import.signature();
-                moduleName = import.module();
-            }
+        virtual void secondStepEvaluate(ModuleContext& context) {
+            functionSignature = context.functionTable().getFunctionSignature(functionName);
+            moduleName = context.name();
         }
 
     public:
@@ -578,6 +571,58 @@ namespace wasm_module {
 
         virtual const std::string& name() const override {
             static std::string name_ = "call";
+            return name_;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            return functionSignature.parameters();
+        }
+
+        virtual const Type* returnType() const override {
+            return functionSignature.returnType();
+        }
+
+        virtual bool typeCheckChildren() const override {
+            return false;
+        }
+
+
+        virtual std::string dataString() const {
+            return name() + " " + functionName;
+        }
+    };
+
+    class CallImport : public Instruction {
+
+        std::string functionName;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext &context) {
+            auto& import = context.getImport(functionName);
+            functionSignature = import.signature();
+            moduleName = import.module();
+        }
+
+    public:
+        std::string moduleName;
+        FunctionSignature functionSignature;
+
+        CallImport(binary::ByteStream &stream, ModuleContext &context) {
+            functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
+            moduleName = context.name();
+        }
+
+        CallImport(const sexpr::SExpr& expr, ModuleContext &context) {
+            functionName = expr[1].value();
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::CallImport;
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "call_import";
             return name_;
         }
 

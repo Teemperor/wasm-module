@@ -28,7 +28,14 @@ namespace wasm_module {
     class IncompatibleType : public std::exception {
     };
 
+    class Type;
+
     class Type {
+
+        template <typename A, typename B, typename U = std::less<const Type*>>
+        bool ptrless(A a, B b, U u = U()) const {
+            return u(a, b);
+        }
 
     protected:
         Type() {
@@ -55,11 +62,16 @@ namespace wasm_module {
         virtual std::size_t size() const = 0;
 
         bool operator==(const Type &other) const {
-            return typeid(*this) == typeid(other);
+            return this == &other;
         }
 
         bool operator!=(const Type &other) const {
-            return typeid(*this) != typeid(other);
+            return this != &other;
+        }
+
+
+        bool operator<(const Type& other) const {
+            return ptrless(this, &other);
         }
 
         static bool typeCompatible(const Type* expectedType, const Type* receivedType);

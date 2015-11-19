@@ -21,6 +21,9 @@ public:
     SExpr moduleExpr_;
     std::map<std::string, std::string> exports;
 
+    SExpr positiveExpr_;
+    std::vector<SExpr> negativeExprs_;
+
     ModuleWrapper(const SExpr& moduleExpr) {
         moduleExpr_ = moduleExpr;
 
@@ -37,6 +40,48 @@ public:
         }
     }
 
+    bool hasPositiveChecks() {
+        return positiveExpr_.hasChildren();
+    }
+
+    void addPositiveCheck(const SExpr& expr) {
+        positiveExpr_.addChild(expr);
+    }
+
+    void addNegativeCheck(const SExpr& expr) {
+        negativeExprs_.push_back(expr);
+    }
+
+    void addMain(SExpr& module, const SExpr& mainContent) {
+        SExpr mainExpr;
+        mainExpr.addChild("func");
+        mainExpr.addChild("main");
+        mainExpr.addChild(mainContent);
+        module.addChild(mainExpr);
+    }
+
+    SExpr getPositiveTestSource() {
+        SExpr result = moduleExpr_;
+
+        addMain(result, positiveExpr_);
+
+        return result;
+    }
+
+    std::vector<SExpr> getNegativeSources() {
+        std::vector<SExpr> result;
+        result.reserve(negativeExprs_.size());
+
+        for (const SExpr& expr : negativeExprs_) {
+            SExpr output = moduleExpr_;
+            addMain(output, expr);
+            result.push_back(output);
+        }
+
+        return result;
+    }
+
+
     bool hasExport(std::string expo) {
         return exports.find(expo) != exports.end();
     }
@@ -51,50 +96,21 @@ class WastTestTransformer {
     std::vector<ModuleWrapper> modules;
     sexpr::SExpr mainExpr;
 
-    void addMain(SExpr& module, const SExpr& mainContent) {
-        SExpr mainExpr;
-        mainExpr.addChild("func");
-        mainExpr.addChild("main");
-        mainExpr.addChild(mainContent);
-        module.addChild(mainExpr);
-    }
-
-    void writeAST(std::string directoryPath, int testNumber, SExpr ast, std::string functionName, ModuleWrapper& module) {
-
-        for (std::size_t i = 0; i < functionName.size(); i++) {
-            if (functionName[i] == '$')
-                functionName[i] = '_';
-        }
+    void writeSExpr(std::string directoryPath, const SExpr& sexpr, std::string fileName) {
 
         boost::filesystem::path directory(directoryPath);
         boost::filesystem::create_directories(directory);
 
-        directory /= (baseName + std::string("_no") + std::to_string(testNumber)) + std::string("_") + functionName + ".wasm";
+        boost::filesystem::path absolutePath = directory / (fileName + ".wasm");
 
-        sexpr::SExpr moduleExpr = module.moduleExpr_;
+        std::ofstream out(absolutePath.string());
 
-        addMain(moduleExpr, ast);
-
-        std::ofstream out(directory.string());
-
-        out << moduleExpr.toString();
-        out.close();
-    }
-
-    void writeSExpr(std::string directoryPath, int testNumber, const SExpr& expr) {
-        boost::filesystem::path directory(directoryPath);
-        boost::filesystem::create_directories(directory);
-
-        directory /= (baseName + std::string("_no") + std::to_string(testNumber)) + ".wasm";
-
-        std::ofstream out(directory.string());
-
-        out << expr.toString();
+        out << sexpr.toString();
         out.close();
     }
 
 public:
-    WastTestTransformer(std::string wastPath) {
+    WastTestTransformer(const std::string& wastPath) {
         boost::filesystem::path p(wastPath);
 
         baseName = p.stem().string();
@@ -125,29 +141,29 @@ public:
         throw NoModuleWithExport();
     }
 
+    ModuleWrapper& invokeToCall(SExpr&invoke) {
+        ModuleWrapper& wrapper = getModule(invoke[1].value());
+
+        std::string functionName = wrapper.getExport(invoke[1].value());
+
+        invoke[0] = SExpr("call");
+        invoke[1] = SExpr(functionName);
+
+        return wrapper;
+    }
+
     void generateOutput() {
         int testNumber = 1;
         for (SExpr expr : mainExpr.children()) {
             if (!expr.hasChildren())
                 continue;
             if (expr[0].value() == "invoke") {
-                ModuleWrapper& wrapper = getModule(expr[1].value());
-
-                std::string functionName = wrapper.getExport(expr[1].value());
-
-                expr[0] = SExpr("call");
-                expr[1] = SExpr(functionName);
-
-                writeAST("positive/", testNumber, expr, expr[1].value(), wrapper);
+                ModuleWrapper& wrapper = invokeToCall(expr);
+                wrapper.addPositiveCheck(expr);
             } else if (expr[0].value() == "assert_return") {
                 SExpr invokeExpr = expr[1];
 
-                ModuleWrapper& wrapper = getModule(invokeExpr[1].value());
-
-                std::string functionName = wrapper.getExport(invokeExpr[1].value());
-
-                invokeExpr[0] = SExpr("call");
-                invokeExpr[1] = SExpr(functionName);
+                ModuleWrapper& wrapper = invokeToCall(invokeExpr);
 
                 SExpr ifExpr;
                 ifExpr.addChild("if");
@@ -179,7 +195,7 @@ public:
                     ifExpr.addChild();
                     ifExpr.addChild(SExprParser::parseString("(i32.div_s (i32.const 1) (i32.const 0))"));
 
-                    writeAST("positive/", testNumber, ifExpr, invokeExpr[1].value(), wrapper);
+                    wrapper.addPositiveCheck(ifExpr);
                 }
 
             } else if (expr[0].value() == "assert_return_nan") {
@@ -193,9 +209,9 @@ public:
                 invoke[0] = SExpr("call");
                 invoke[1] = SExpr(functionName);
 
-                writeAST("negative/trap/", testNumber, expr, invoke[1].value(), wrapper);
+                //writeAST("negative/trap/", testNumber, expr, invoke[1].value(), wrapper);
             } else if (expr[0].value() == "assert_invalid") {
-                writeSExpr("negative/parse/", testNumber, expr[1]);
+                writeSExpr("negative/parse/", expr, baseName + std::to_string(testNumber));
             } else if (expr[0].value() == "module") {
                 // TODO
                 testNumber--;
@@ -204,7 +220,14 @@ public:
             }
             testNumber++;
         }
+
+        for(ModuleWrapper& moduleWrapper : modules) {
+            SExpr output = moduleWrapper.getPositiveTestSource();
+            writeSExpr("positive/", output, baseName);
+        }
+
     }
+
 };
 
 int main(int argv, char** argc) {

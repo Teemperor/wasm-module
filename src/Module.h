@@ -84,11 +84,15 @@ namespace wasm_module {
 
         void addFunction(std::string name, const Type* returnType, std::vector<const Type*> parameterTypes, std::function<Variable(std::vector<Variable>)> givenFunction);
 
+        void addVariadicFunction(std::string name, const Type *returnType,
+                                 std::function<bool(std::vector<const Type *>)> parameters,
+                                 std::function<Variable(std::vector<Variable>)> givenFunction);
+
         std::vector<Section *> sections() {
             return sections_;
         }
 
-        Function& getFunction(std::string functionName) {
+        Function& getFunction(const std::string& functionName) {
             for (Function* function : functions_) {
                 if (function->name() == functionName) {
                     return *function;
@@ -98,7 +102,7 @@ namespace wasm_module {
         }
 
         bool hasImport(const std::string& moduleImport) {
-            context_.hasImport(moduleImport);
+            return context_.hasImport(moduleImport);
         }
 
         void addImport(const ModuleImport& moduleImport) {

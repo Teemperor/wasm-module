@@ -21,7 +21,11 @@ using namespace wasm_module;
 
 int main() {
     Module module;
-    module.addFunction("testFunction", Int32::instance(), {Int32::instance()}, [](std::vector<Variable> parameters) {
-        return parameters[0];
-    });
+    module.addVariadicFunction("testFunction", Int32::instance(),
+                               [](std::vector<const Type *>){
+                                   return true;
+                               },
+                               [](std::vector<Variable> parameters) {
+                                   return parameters[0];
+                               });
 }

@@ -62,7 +62,8 @@ namespace wasm_module { namespace sexpr {
                     const SExpr& subExpr = importExpr[i];
 
                     if (subExpr[0].value() == "param") {
-                        parameters.push_back(Types::getByName(subExpr[1].value()));
+                        for (std::size_t i = 1; i < subExpr.children().size(); i++)
+                            parameters.push_back(Types::getByName(subExpr[i].value()));
                     } else if (subExpr[0].value() == "return") {
                         if (returnType != Void::instance()) {
                             throw MultipleReturnTypesInImport(importExpr.toString());
