@@ -16,6 +16,7 @@
 
 #include <limits>
 #include "Float32.h"
+#include <stdexcept>
 
 namespace wasm_module {
     void Float32::parse(const std::string& literal, void *data) const {
