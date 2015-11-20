@@ -166,7 +166,7 @@ public:
                 ModuleWrapper& wrapper = invokeToCall(invokeExpr);
 
                 SExpr ifExpr;
-                ifExpr.addChild("if");
+                ifExpr.addChild("if_else");
 
                 std::string dataType;
 

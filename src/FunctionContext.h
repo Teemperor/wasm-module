@@ -41,17 +41,17 @@ namespace wasm_module {
         FunctionContext() {
         }
 
-        FunctionContext(std::string name, const Type*returnType, std::vector<const Type*> parameterTypes,
+        FunctionContext(std::string module, std::string name, const Type*returnType, std::vector<const Type*> parameterTypes,
                         std::vector<const Type*> locals, bool exported)
-                : locals_(locals), FunctionSignature(name, returnType, parameterTypes, exported) {
+                : locals_(locals), FunctionSignature(module, name, returnType, parameterTypes, exported) {
 
         }
 
-        std::vector<const Type*> pureLocals() {
+        const std::vector<const Type*>& pureLocals() const {
             return locals_;
         }
 
-        std::vector<const Type*> locals() {
+        std::vector<const Type*> locals() const {
             std::vector<const Type*> result;
 
             for (const Type* type : parameters()) {
@@ -68,7 +68,7 @@ namespace wasm_module {
             namesToIndizes_ = map;
         }
 
-        uint32_t variableNameToIndex(const std::string& name) {
+        uint32_t variableNameToIndex(const std::string& name) const {
             auto iter = namesToIndizes_.find(name);
             if (iter != namesToIndizes_.end()) {
                 return iter->second;

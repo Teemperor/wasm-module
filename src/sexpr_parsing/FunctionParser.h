@@ -138,13 +138,17 @@ namespace wasm_module { namespace sexpr {
             if (funcExpr.children().size() < 2) {
                 throw MissingFunctionName(funcExpr.toString());
             }
-            functionName_ = funcExpr[1].value();
+            if (funcExpr[1].hasValue()) {
+                functionName_ = funcExpr[1].value();
+            } else {
+                functionName_ = std::to_string(context.mainFunctionTable().size());
+            }
 
-            for(unsigned i = 2; i < funcExpr.children().size(); i++) {
+            for(unsigned i = 1; i < funcExpr.children().size(); i++) {
                 const SExpr& expr = funcExpr[i];
 
                 if (expr.hasValue()) {
-                    throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
+                    continue;
                 }
 
                 if (expr.children().size() == 0 || !expr[0].hasValue())
@@ -157,11 +161,11 @@ namespace wasm_module { namespace sexpr {
                 }
 
             }
-            for(unsigned i = 2; i < funcExpr.children().size(); i++) {
+            for(unsigned i = 1; i < funcExpr.children().size(); i++) {
                 const SExpr& expr = funcExpr[i];
 
                 if (expr.hasValue()) {
-                    throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
+                    continue;
                 }
 
                 if (expr.children().size() == 0 || !expr[0].hasValue())
@@ -173,11 +177,11 @@ namespace wasm_module { namespace sexpr {
                     parseLocal(expr);
                 }
             }
-            for(unsigned i = 2; i < funcExpr.children().size(); i++) {
+            for(unsigned i = 1; i < funcExpr.children().size(); i++) {
                 const SExpr& expr = funcExpr[i];
 
                 if (expr.hasValue()) {
-                    throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
+                    continue;
                 }
 
                 if (expr.children().size() == 0 || !expr[0].hasValue())
@@ -190,7 +194,7 @@ namespace wasm_module { namespace sexpr {
                 }
             }
 
-            functionContext_ = FunctionContext(functionName_, returnType, parameters, locals, false);
+            functionContext_ = FunctionContext(context_.name(), functionName_, returnType, parameters, locals, false);
             functionContext_.setVariableNameToIndexMap(namesToIndex_);
 
             std::vector<const SExpr*> instructionExprs;

@@ -34,7 +34,7 @@ namespace wasm_module { namespace binary {
         void parse() {
             uint32_t numberOfFunctions = stream.popULEB128();
             for (uint32_t i = 0; i < numberOfFunctions; i++) {
-                functionTable.addFunctionSignature(FunctionSignature());
+                // TODO fix this: functionTable.addFunctionSignature(FunctionSignature());
             }
         }
 

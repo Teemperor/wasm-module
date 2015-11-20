@@ -22,7 +22,6 @@
 #include "OpcodeTable.h"
 #include "FunctionTable.h"
 #include "GlobalTable.h"
-#include "ModuleImport.h"
 
 namespace wasm_module {
 
@@ -31,10 +30,11 @@ namespace wasm_module {
 
     class ModuleContext {
 
-        std::map<std::string, ModuleImport> importsByImportName_;
         OpcodeTable opcodeTable_;
         TypeTable typeTable_;
-        FunctionTable functionTable_;
+        FunctionTable mainFunctionTable_;
+        FunctionTable importedFunctionTable_;
+
         GlobalTable globalTable_;
         std::string name_;
 
@@ -45,34 +45,10 @@ namespace wasm_module {
 
         ModuleContext(OpcodeTable &opcodeTable, TypeTable &typeTable, FunctionTable &functionTable,
                       GlobalTable &globalTable)
-                : opcodeTable_(opcodeTable), typeTable_(typeTable), functionTable_(functionTable),
+                : opcodeTable_(opcodeTable), typeTable_(typeTable), mainFunctionTable_(functionTable),
                   globalTable_(globalTable) {
             name_ = "UnknownModule" + std::to_string(rand());
 
-        }
-
-        void addImport(const ModuleImport& moduleImport) {
-            if (importsByImportName_.find(moduleImport.importName()) == importsByImportName_.end()) {
-                importsByImportName_[moduleImport.importName()] = moduleImport;
-            } else {
-                throw AlreadyImportWithName(moduleImport.importName());
-            }
-        }
-
-        bool hasImport(const std::string& importName) const {
-            auto iter = importsByImportName_.find(importName);
-
-            return iter != importsByImportName_.end();
-        }
-
-        const ModuleImport& getImport(const std::string& importName) const {
-            auto iter = importsByImportName_.find(importName);
-
-            if (iter != importsByImportName_.end()) {
-                return iter->second;
-            } else {
-                throw NoImportWithName(importName);
-            }
         }
 
         const std::string& name() const {
@@ -92,8 +68,12 @@ namespace wasm_module {
             return typeTable_;
         }
 
-        FunctionTable &functionTable() {
-            return functionTable_;
+        FunctionTable& mainFunctionTable() {
+            return mainFunctionTable_;
+        }
+
+        FunctionTable& importedFunctionTable() {
+            return importedFunctionTable_;
         }
 
         GlobalTable &globalTable() {

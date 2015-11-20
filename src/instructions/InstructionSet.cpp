@@ -70,6 +70,8 @@ namespace wasm_module {
                 return new GetLocal(expr, functionContext);
             } else if (name == "set_local") {
                 return new SetLocal(expr, functionContext);
+            }  else if (name == "has_feature") {
+                return new HasFeature(expr);
             } else if (ends_with(name, ".const")) {
                 return new Literal(expr);
             }
@@ -165,6 +167,7 @@ namespace wasm_module {
         else INSTRUCTION(CallIndirect, "call_indirect")
 
         else INSTRUCTION(If, "if")
+        else INSTRUCTION(IfElse, "if_else")
         else INSTRUCTION(DoWhile, "do_while")
         else INSTRUCTION(Forever, "forever")
         else INSTRUCTION(Continue, "continue")

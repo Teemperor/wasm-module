@@ -26,7 +26,6 @@ add_library(wasm-module
     src/types/Type.cpp
     src/TypeTable.cpp
     src/ModuleContext.cpp
-    src/ModuleImport.cpp
     src/HeapData.cpp
     src/HeapSegment.cpp
 
@@ -57,7 +56,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-)
+        src/Utils.cpp src/Utils.h)
 
 
 ####################

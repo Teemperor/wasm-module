@@ -86,6 +86,7 @@ namespace InstructionId {
         Call,
         Block,
         If,
+        IfElse,
         DoWhile,
         Forever,
         Continue,
@@ -191,6 +192,8 @@ namespace InstructionId {
         F64Sqrt,
         F64Min,
         F64Max,
+
+        HasFeature,
 
         NativeInstruction,
 

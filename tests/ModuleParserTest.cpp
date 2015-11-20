@@ -47,7 +47,7 @@ int main() {
 
     Module& module = *ModuleParser::parse(expr[0]);
 
-    module.getImport("$print_i32");
+    module.importedFunctionTable().hasFunctionSignature("$print_i32");
 
     delete &module;
 }

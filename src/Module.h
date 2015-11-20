@@ -77,14 +77,22 @@ namespace wasm_module {
                 functionsToDelete_.push_back(function);
         }
 
+        FunctionTable& mainFunctionTable() {
+            return context().mainFunctionTable();
+        }
+
+
+        FunctionTable& importedFunctionTable() {
+            return context().importedFunctionTable();
+        }
 
         ModuleContext& context() {
             return context_;
         }
 
-        void addFunction(std::string name, const Type* returnType, std::vector<const Type*> parameterTypes, std::function<Variable(std::vector<Variable>)> givenFunction);
+        void addFunction(std::string functionName, const Type* returnType, std::vector<const Type*> parameterTypes, std::function<Variable(std::vector<Variable>)> givenFunction);
 
-        void addVariadicFunction(std::string name, const Type *returnType,
+        void addVariadicFunction(std::string functionName, const Type *returnType,
                                  std::function<bool(std::vector<const Type *>)> parameters,
                                  std::function<Variable(std::vector<Variable>)> givenFunction);
 
@@ -99,18 +107,6 @@ namespace wasm_module {
                 }
             }
             throw NoFunctionWithName(functionName + " in module " + name());
-        }
-
-        bool hasImport(const std::string& moduleImport) {
-            return context_.hasImport(moduleImport);
-        }
-
-        void addImport(const ModuleImport& moduleImport) {
-            context_.addImport(moduleImport);
-        }
-
-        const ModuleImport& getImport(const std::string& importName) const {
-            return context_.getImport(importName);
         }
 
         const std::string& name() const {

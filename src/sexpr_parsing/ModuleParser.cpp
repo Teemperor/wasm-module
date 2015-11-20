@@ -31,7 +31,7 @@ namespace wasm_module { namespace sexpr {
                     parseMemory(expr);
                 } else if (typeName == "func") {
                     Function* function = &FunctionParser::parse(expr, module_->context());
-                    module_->context().functionTable().addFunctionSignature(*function);
+                    module_->context().mainFunctionTable().addFunctionSignature(*function, function->name());
                     module_->addFunction(function, true);
                 } else {
                     throw UnknownModuleChild(typeName);
@@ -75,8 +75,7 @@ namespace wasm_module { namespace sexpr {
                     }
                 }
 
-                ModuleImport moduleImport(importName, moduleName, FunctionSignature(functionName, returnType, parameters, true));
-                module_->addImport(moduleImport);
+                module_->importedFunctionTable().addFunctionSignature(FunctionSignature(module_->name(), functionName, returnType, parameters, true), importName);
             }
         }
 

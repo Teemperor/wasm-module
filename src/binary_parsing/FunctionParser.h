@@ -51,7 +51,7 @@ namespace wasm_module { namespace binary {
                 uint32_t typeData = stream.popULEB128();
                 typeOfLocals.push_back(context_.typeTable().getType(typeData));
             }
-            functionContext = FunctionContext(functionSignature_.name(), functionSignature_.returnType(),
+            functionContext = FunctionContext(context_.name(), functionSignature_.name(), functionSignature_.returnType(),
                                               functionSignature_.parameters(), typeOfLocals,
                                               functionSignature_.isExported());
 

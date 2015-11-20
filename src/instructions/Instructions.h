@@ -27,6 +27,7 @@
 #include <sexpr_parsing/SExpr.h>
 #include <ModuleContext.h>
 #include <functional>
+#include <Utils.h>
 #include "Instruction.h"
 #include "InstructionId.h"
 
@@ -281,6 +282,33 @@ namespace wasm_module {
         }
 
         virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type *> chTypes_ = {Int32::instance(), Void::instance()} ; return chTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            if (children().size() != 2)
+                throw std::domain_error("'If' without child instructions has no return type");
+            return children()[1]->returnType();
+        }
+
+        virtual bool typeCheckChildren() const override {
+            return true;
+        }
+    };
+
+    class IfElse : public Instruction {
+
+    public:
+        virtual const std::string& name() const {
+            static std::string name_ = "if_else";
+            return name_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::IfElse;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
             static std::vector<const Type *> chTypes_ = {Int32::instance(), Void::instance(), Void::instance()} ; return chTypes_;
         }
 
@@ -402,7 +430,13 @@ namespace wasm_module {
         }
 
         GetLocal(const sexpr::SExpr& expr, FunctionContext &context) {
-            localIndex = context.variableNameToIndex(expr[1].value());
+            std::string localIdentifier = expr[1].value();
+
+            if (Utils::hasDollarPrefix(localIdentifier)) {
+                localIndex = context.variableNameToIndex(localIdentifier);
+            } else {
+                localIndex = Utils::strToSizeT(localIdentifier);
+            }
             returnType_ = context.locals().at(localIndex);
         }
 
@@ -539,6 +573,43 @@ namespace wasm_module {
         }
     };
 
+    class HasFeature : public Instruction {
+
+        std::string featureName_;
+
+    public:
+        std::string featureName() {
+            return featureName_;
+        }
+
+        HasFeature(const sexpr::SExpr& expr) {
+            featureName_ = expr[1].value();
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_;
+            return chTypes_;
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "has_feature";
+            return name_;
+        }
+
+
+        virtual std::string dataString() const override {
+            return name();
+        }
+
+        virtual const Type* returnType() const override {
+            return Int32::instance();
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::HasFeature;
+        }
+    };
+
     class Module;
 
     class Call : public Instruction {
@@ -548,7 +619,7 @@ namespace wasm_module {
     protected:
 
         virtual void secondStepEvaluate(ModuleContext& context) {
-            functionSignature = context.functionTable().getFunctionSignature(functionName);
+            functionSignature = context.mainFunctionTable().getFunctionSignature(functionName);
             moduleName = context.name();
         }
 
@@ -557,7 +628,7 @@ namespace wasm_module {
         FunctionSignature functionSignature;
 
         Call(binary::ByteStream &stream, ModuleContext &context) {
-            functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
+            functionSignature = context.mainFunctionTable().getFunctionSignature(stream.popULEB128());
             moduleName = context.name();
         }
 
@@ -594,27 +665,35 @@ namespace wasm_module {
 
     class CallImport : public Instruction {
 
+        std::size_t functionIndex;
         std::string functionName;
 
     protected:
 
         virtual void secondStepEvaluate(ModuleContext &context) {
-            auto& import = context.getImport(functionName);
-            functionSignature = import.signature();
-            moduleName = import.module();
+            if (context.name().empty()) {
+                functionSignature = context.importedFunctionTable().getFunctionSignature(functionIndex);
+            } else {
+                functionSignature = context.importedFunctionTable().getFunctionSignature(functionName);
+            }
         }
 
     public:
-        std::string moduleName;
         FunctionSignature functionSignature;
 
         CallImport(binary::ByteStream &stream, ModuleContext &context) {
-            functionSignature = context.functionTable().getFunctionSignature(stream.popULEB128());
-            moduleName = context.name();
+            functionSignature = context.importedFunctionTable().getFunctionSignature(stream.popULEB128());
         }
 
         CallImport(const sexpr::SExpr& expr, ModuleContext &context) {
-            functionName = expr[1].value();
+            std::string argument = expr[1].value();
+
+            if (Utils::hasDollarPrefix(argument)) {
+                functionName = expr[1].value();
+            } else {
+                functionIndex = Utils::strToSizeT(argument);
+            }
+
         }
 
         virtual InstructionId::Value id() const {

@@ -31,6 +31,7 @@ namespace wasm_module {
      */
     class FunctionSignature {
 
+        std::string moduleName_;
         std::string name_;
         const Type* returnType_ = Void::instance();
         std::vector<const Type*> parameterTypes_;
@@ -38,12 +39,11 @@ namespace wasm_module {
 
     public:
         FunctionSignature() {
-
         }
 
-        FunctionSignature(std::string name, const Type* returnType,
+        FunctionSignature(std::string module, std::string name, const Type* returnType,
                           std::vector<const Type*> parameterTypes, bool exported)
-                : name_(name), returnType_(returnType), parameterTypes_(parameterTypes),
+                : moduleName_(module), name_(name), returnType_(returnType), parameterTypes_(parameterTypes),
                   isExported_(exported) {
         }
 
@@ -55,9 +55,12 @@ namespace wasm_module {
             return parameterTypes_;
         }
 
-
         const std::string& name() const {
             return name_;
+        }
+
+        const std::string& module() const {
+            return moduleName_;
         }
 
         bool isExported() const {

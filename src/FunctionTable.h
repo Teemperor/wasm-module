@@ -34,35 +34,40 @@ namespace wasm_module {
     class FunctionTable {
 
         std::vector<FunctionSignature> functions_;
-        std::map<std::string, unsigned> functionsByName_;
+        std::map<std::string, std::size_t> functionsByAlias_;
 
     public:
         FunctionTable() {
         }
 
-        void addFunctionSignature(FunctionSignature signature) {
-            functionsByName_[signature.name()] = (unsigned int) functions_.size();
+        void addFunctionSignature(FunctionSignature signature, std::string alias) {
+            functionsByAlias_[alias] = functions_.size();
             functions_.push_back(signature);
         }
 
-        bool hasFunctionSignature(const std::string& name) const {
-            auto iter = functionsByName_.find(name);
-            return iter != functionsByName_.end();
+
+        bool hasFunctionSignature(const std::string& alias) const {
+            auto iter = functionsByAlias_.find(alias);
+            return iter != functionsByAlias_.end();
         }
 
-        FunctionSignature getFunctionSignature(const std::string& name) {
-            auto iter = functionsByName_.find(name);
-            if (iter != functionsByName_.end()) {
+        const FunctionSignature& getFunctionSignature(const std::string& alias) {
+            auto iter = functionsByAlias_.find(alias);
+            if (iter != functionsByAlias_.end()) {
                 return getFunctionSignature(iter->second);
             } else {
-                throw UnknownFunctionName(name);
+                throw UnknownFunctionName(alias);
             }
         }
 
-        FunctionSignature getFunctionSignature(uint32_t localFunctionId) {
-            if (localFunctionId > functions_.size())
+        const FunctionSignature& getFunctionSignature(std::size_t localFunctionId) {
+            if (localFunctionId >= functions_.size())
                 throw UnknownLocalFunctionId(std::to_string(localFunctionId));
-            return functions_[localFunctionId];
+            return functions_.at(localFunctionId);
+        }
+
+        std::size_t size() const {
+            return functions_.size();
         }
     };
 

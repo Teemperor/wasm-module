@@ -51,9 +51,9 @@ namespace wasm_module { namespace binary {
                 }
 
                 uint32_t offset = stream.popULEB128();
-                FunctionSignature signature = FunctionSignature(functionName, returnType, parameters, exported);
+                FunctionSignature signature = FunctionSignature(context.name(), functionName, returnType, parameters, exported);
                 signatures.push_back(signature);
-                context.functionTable().addFunctionSignature(signature);
+                context.mainFunctionTable().addFunctionSignature(signature, signature.name());
             }
 
             for (int i = 0; i < numberOfFunctions; i++) {

@@ -19,9 +19,9 @@
 
 namespace wasm_module {
 
-    void Module::addFunction(std::string name, const Type* returnType, std::vector<const Type*> parameterTypes,
+    void Module::addFunction(std::string functionName, const Type* returnType, std::vector<const Type*> parameterTypes,
                              std::function<Variable(std::vector<Variable>)> givenFunction) {
-        FunctionContext context(name, returnType, parameterTypes, {}, false);
+        FunctionContext context(name(), functionName, returnType, parameterTypes, {}, false);
         Function* function = new Function(context, new NativeInstruction(givenFunction, returnType, parameterTypes));
         function->module(this);
         functions_.push_back(function);
@@ -39,10 +39,10 @@ namespace wasm_module {
         }
     }
 
-    void Module::addVariadicFunction(std::string name, const Type *returnType,
+    void Module::addVariadicFunction(std::string functionName, const Type *returnType,
                                      std::function<bool(std::vector<const Type *>)> parameters,
                                      std::function<Variable(std::vector<Variable>)> givenFunction) {
-        FunctionContext context(name, returnType, {}, {}, false);
+        FunctionContext context(name(), functionName, returnType, {}, {}, false);
         Function* function = new Function(context, new NativeInstruction(givenFunction, returnType, {}), true);
         function->module(this);
         functions_.push_back(function);
