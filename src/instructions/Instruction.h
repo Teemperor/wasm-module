@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <vector>
 #include <ExceptionWithMessage.h>
+#include <functional>
 
 #include "types/Type.h"
 #include "Variable.h"
@@ -29,36 +30,45 @@
 namespace wasm_module {
 
     class ModuleContext;
+    class FunctionContext;
 
     ExceptionMessage(IncompatibleChildReturnType)
     ExceptionMessage(IncompatibleNumberOfChildren)
+    ExceptionMessage(InstructionHasNoParent)
 
     class InstructionState;
 
     class Instruction {
 
         std::vector<Instruction *> children_;
+        const Instruction* parent_ = nullptr;
 
     protected:
 
-        virtual void secondStepEvaluate(ModuleContext &context) {
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
 
         }
 
     public:
         virtual ~Instruction() {
-            for (Instruction *child : children()) {
+            for (Instruction* child : children()) {
                 delete child;
             }
         }
 
         virtual void children(const std::vector<Instruction*>& newChildren) {
+            for(Instruction* instruction : children_) {
+                delete instruction;
+            }
             children_ = newChildren;
+            for (Instruction* instruction : children_) {
+                instruction->parent(this);
+            }
         }
 
-        void triggerSecondStepEvaluate(ModuleContext &context) {
+        void triggerSecondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
             for(Instruction* instruction : children_) {
-                instruction->triggerSecondStepEvaluate(context);
+                instruction->triggerSecondStepEvaluate(context, functionContext);
             }
             if (typeCheckChildren()) {
                 if (children_.size() != childrenTypes().size()) {
@@ -71,7 +81,22 @@ namespace wasm_module {
                     }
                 }
             }
-            secondStepEvaluate(context);
+            secondStepEvaluate(context, functionContext);
+        }
+
+        void foreachChild(const std::function<void(Instruction* instruction)>& lambda) {
+            for (Instruction* child : children()) {
+                child->foreachChild(lambda);
+            }
+            lambda(this);
+        }
+
+        void foreachParent(const std::function<bool(const Instruction* instruction)>& lambda) const {
+            if (lambda(this)) {
+                if (hasParent()) {
+                    parent()->foreachParent(lambda);
+                }
+            }
         }
 
         const std::vector<Instruction *>& children() const {
@@ -112,6 +137,31 @@ namespace wasm_module {
             return result;
         }
 
+        virtual uint32_t labelCount() const {
+            return 0;
+        }
+
+        virtual bool hasLabelName(const std::string& str) const {
+            return false;
+        }
+
+        virtual uint32_t labelIndex(const std::string& str) const {
+            return 0;
+        }
+
+        const Instruction* parent() const {
+            if (!hasParent())
+                throw InstructionHasNoParent(this->toSExprString());
+            return parent_;
+        }
+
+        void parent(const Instruction* newParent) {
+            parent_ = newParent;
+        }
+
+        bool hasParent() const {
+            return parent_ != nullptr;
+        }
     };
 }
 

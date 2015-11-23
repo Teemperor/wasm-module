@@ -108,4 +108,8 @@ namespace wasm_module {
     void Variable::float64(double value) {
         Float64::setValue(*this, value);
     }
+
+    bool Variable::isVoid() const {
+        return type_ == Void::instance();
+    }
 }

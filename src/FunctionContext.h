@@ -23,6 +23,7 @@
 #include "ExceptionWithMessage.h"
 #include <vector>
 #include <unordered_map>
+#include <map>
 
 namespace wasm_module {
 

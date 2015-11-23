@@ -41,4 +41,54 @@ namespace wasm_module {
             }
         }
     }
+
+    void Loop::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+        if (!children().empty()) {
+            returnType_ = children().back()->returnType();
+        }
+    }
+
+    void Block::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+        if (!children().empty()) {
+            returnType_ = children().back()->returnType();
+        }
+    }
+
+    void BranchIf::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+        if (!labelName_.empty()) {
+            bool foundTarget = false;
+            foreachParent([&](const Instruction *instruction) {
+                if (instruction->hasLabelName(labelName_)) {
+                    branchLabel_ += instruction->labelIndex(labelName_);
+                    foundTarget = true;
+                    return false;
+                } else {
+                    branchLabel_ += instruction->labelCount();
+                    return true;
+                }
+            });
+            if (!foundTarget) {
+                throw CantFindBranchTarget("Can't find branch target: " + labelName_);
+            }
+        }
+    }
+
+    void Branch::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+        if (!labelName_.empty()) {
+            bool foundTarget = false;
+            foreachParent([&](const Instruction *instruction) {
+                if (instruction->hasLabelName(labelName_)) {
+                    branchLabel_ += instruction->labelIndex(labelName_);
+                    foundTarget = true;
+                    return false;
+                } else {
+                    branchLabel_ += instruction->labelCount();
+                    return true;
+                }
+            });
+            if (!foundTarget) {
+                throw CantFindBranchTarget("Can't find branch target: " + labelName_);
+            }
+        }
+    }
 }

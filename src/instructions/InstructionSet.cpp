@@ -70,8 +70,18 @@ namespace wasm_module {
                 return new GetLocal(expr, functionContext);
             } else if (name == "set_local") {
                 return new SetLocal(expr, functionContext);
-            }  else if (name == "has_feature") {
+            } else if (name == "has_feature") {
                 return new HasFeature(expr);
+            } else if (name == "label") {
+                return new Label(expr, functionContext);
+            } else if (name == "loop") {
+                return new Loop(expr, functionContext);
+            } else if (name == "block") {
+                return new Block(expr, functionContext);
+            } else if (name == "br") {
+                return new Branch(expr, functionContext);
+            } else if (name == "br_if") {
+                return new BranchIf(expr, functionContext);
             } else if (ends_with(name, ".const")) {
                 return new Literal(expr);
             }
@@ -168,12 +178,7 @@ namespace wasm_module {
 
         else INSTRUCTION(If, "if")
         else INSTRUCTION(IfElse, "if_else")
-        else INSTRUCTION(DoWhile, "do_while")
-        else INSTRUCTION(Forever, "forever")
-        else INSTRUCTION(Continue, "continue")
-        else INSTRUCTION(Break, "break")
         else INSTRUCTION(Return, "return")
-        else INSTRUCTION(Switch, "switch")
 
         else INSTRUCTION(GrowMemory, "grow_memory")
         else INSTRUCTION(PageSize, "page_size")
@@ -249,6 +254,7 @@ namespace wasm_module {
         else INSTRUCTION(F64Sqrt, "f64.sqrt")
         else INSTRUCTION(F64Min, "f64.min")
         else INSTRUCTION(F64Max, "f64.max")
+        else INSTRUCTION(Unreachable, "unreachable")
         else {
             return nullptr;
         }

@@ -38,7 +38,7 @@ namespace wasm_module { namespace sexpr {
                 }
             }
             for (Function* function : module_->functions()) {
-                function->mainInstruction()->triggerSecondStepEvaluate(module_->context());
+                function->mainInstruction()->triggerSecondStepEvaluate(module_->context(), *function);
             }
         }
 

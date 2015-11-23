@@ -29,6 +29,7 @@ namespace wasm_module {
 
     class Variable {
         const wasm_module::Type *type_;
+        // TODO make this an 8 byte array, not a vector that uses dynamic memory
         std::vector<uint8_t> value_;
 
         void setType(const wasm_module::Type* type);
@@ -79,6 +80,8 @@ namespace wasm_module {
         void float32(float value);
 
         void float64(double value);
+
+        bool isVoid() const;
     };
 }
 

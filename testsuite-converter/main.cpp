@@ -193,7 +193,7 @@ public:
 
                     ifExpr.addChild(eqExpr);
                     ifExpr.addChild();
-                    ifExpr.addChild(SExprParser::parseString("(i32.div_s (i32.const 1) (i32.const 0))"));
+                    ifExpr.addChild(SExprParser::parseString("(unreachable)"));
 
                     wrapper.addPositiveCheck(ifExpr);
                 }

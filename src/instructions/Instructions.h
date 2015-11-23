@@ -106,12 +106,7 @@ namespace wasm_module {
     DeclInstruction(AddressOf, "address_of", {}, Void::instance())};
     DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
 
-    DeclInstruction(DoWhile, "do_while", {}, Void::instance())};
-    DeclInstruction(Forever, "forever", {}, Void::instance())};
-    DeclInstruction(Continue, "continue", {}, Void::instance())};
-    DeclInstruction(Break, "break", {}, Void::instance())};
     DeclInstruction(Return, "return", {Void::instance()}, Void::instance())};
-    DeclInstruction(Switch, "switch", {}, Void::instance())};
 
     DeclInstruction(GrowMemory, "grow_memory", {Int32::instance()}, Int32::instance())};
     DeclInstruction(PageSize, "page_size", {}, Int32::instance())};
@@ -226,48 +221,8 @@ namespace wasm_module {
     DeclInstruction(F64Min, "f64.min", {Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
     DeclInstruction(F64Max, "f64.max", {Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
 
-    class Block : public Instruction {
-
-        uint32_t amountOfChildren;
-
-        std::vector<const Type *> childrenTypes_;
-
-    public:
-        Block(binary::ByteStream &stream) {
-            amountOfChildren = stream.popULEB128();
-            for (uint32_t i = 0; i < amountOfChildren; i++) {
-                childrenTypes_.push_back(Void::instance());
-            }
-        }
-        Block(uint32_t children) : amountOfChildren(children) {
-            for (uint32_t i = 0; i < amountOfChildren; i++) {
-                childrenTypes_.push_back(Void::instance());
-            }
-        }
-
-        virtual const std::string& name() const {
-            static std::string name_ = "block";
-            return name_;
-        }
-
-        virtual InstructionId::Value id() const {
-            return InstructionId::Block;
-        }
-
-        virtual const std::vector<const Type*>& childrenTypes() const override {
-            return childrenTypes_;
-        }
-
-        virtual const Type* returnType() const override {
-            if (children().empty())
-                return Void::instance();
-            return children().back()->returnType();
-        }
-
-        virtual bool typeCheckChildren() const override {
-            return true;
-        }
-    };
+    DeclInstruction(Unreachable, "unreachable", {}, Void::instance())};
+    DeclInstruction(Nop, "nop", {}, Void::instance())};
 
     class If : public Instruction {
 
@@ -287,7 +242,7 @@ namespace wasm_module {
 
         virtual const Type* returnType() const override {
             if (children().size() != 2)
-                throw std::domain_error("'If' without child instructions has no return type");
+                throw std::domain_error("'if' without child instructions has no return type");
             return children()[1]->returnType();
         }
 
@@ -314,7 +269,7 @@ namespace wasm_module {
 
         virtual const Type* returnType() const override {
             if (children().size() != 3)
-                throw std::domain_error("'If' without child instructions has no return type");
+                throw std::domain_error("'if_else' without child instructions has no return type");
             if (children()[1]->returnType() == children()[1]->returnType()) {
                 return children()[1]->returnType();
             }
@@ -323,62 +278,6 @@ namespace wasm_module {
 
         virtual bool typeCheckChildren() const override {
             return true;
-        }
-    };
-
-    class Comma : public Instruction {
-    public:
-        virtual const std::vector<const Type*>& childrenTypes() const override {
-            static std::vector<const Type*> chTypes_ = {Void::instance(), Void::instance()};
-            return chTypes_;
-        }
-
-        virtual const std::string& name() const override {
-            static std::string name_ = "comma";
-            return name_;
-        }
-
-        virtual const Type* returnType() const override {
-            return children().at(1)->returnType();
-        }
-
-        virtual InstructionId::Value id() const {
-            return InstructionId::Comma;
-        }
-    };
-
-    class Conditional : public Instruction {
-
-        const Type* returnType_ = Void::instance();
-
-    public:
-        virtual const std::vector<const Type*>& childrenTypes() const override {
-            static std::vector<const Type*> chTypes_ = {Int32::instance(), Void::instance(), Void::instance()};
-            return chTypes_;
-        }
-
-        virtual void children(const std::vector<Instruction*>& newChildren) override {
-            Instruction::children(newChildren);
-            const Type* newReturnType_ = newChildren.at(1)->returnType();
-            if (newReturnType_ != newChildren.at(2)->returnType()) {
-                throw std::domain_error(
-                        std::string("Then and else child of conditional operation have different return types: ")
-                        + newReturnType_->name() + " and " + newChildren.at(2)->name());
-            }
-            returnType_ = newReturnType_;
-        }
-
-        virtual const std::string& name() const override {
-            static std::string name_ = "conditional";
-            return name_;
-        }
-
-        virtual const Type* returnType() const override {
-            return returnType_;
-        }
-
-        virtual InstructionId::Value id() const {
-            return InstructionId::Conditional;
         }
     };
 
@@ -391,12 +290,12 @@ namespace wasm_module {
 
         SetLocal(binary::ByteStream &stream, FunctionContext &functionContext) {
             localIndex = stream.popULEB128();
-            expectedType = {functionContext.pureLocals().at(localIndex)};
+            expectedType = {functionContext.locals().at(localIndex)};
         }
 
         SetLocal(const sexpr::SExpr& expr, FunctionContext &context) {
             localIndex = context.variableNameToIndex(expr[1].value());
-            expectedType = {context.pureLocals().at(localIndex)};
+            expectedType = {context.locals().at(localIndex)};
         }
 
         virtual const std::string& name() const override {
@@ -435,7 +334,7 @@ namespace wasm_module {
             if (Utils::hasDollarPrefix(localIdentifier)) {
                 localIndex = context.variableNameToIndex(localIdentifier);
             } else {
-                localIndex = Utils::strToSizeT(localIdentifier);
+                localIndex = (uint32_t) Utils::strToSizeT(localIdentifier);
             }
             returnType_ = context.locals().at(localIndex);
         }
@@ -456,6 +355,305 @@ namespace wasm_module {
 
         virtual InstructionId::Value id() const {
             return InstructionId::GetLocal;
+        }
+    };
+
+
+    class Block : public Instruction {
+
+        const Type* returnType_ = Void::instance();
+
+        std::vector<const Type *> childrenTypes_;
+
+        std::string labelName_;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);
+
+    public:
+        Block(binary::ByteStream &stream) {
+            uint32_t amountOfChildren = stream.popULEB128();
+            for (uint32_t i = 0; i < amountOfChildren; i++) {
+                childrenTypes_.push_back(Void::instance());
+            }
+        }
+
+        Block(const sexpr::SExpr& expr, FunctionContext &context) {
+            if (expr.children().size() >= 2 && expr[1].hasValue()) {
+                labelName_ = expr[1].value();
+            }
+            for (const sexpr::SExpr& subexpr : expr.children()) {
+                if (subexpr.hasChildren()) {
+                    childrenTypes_.push_back(Void::instance());
+                }
+            }
+        }
+
+        Block(uint32_t amountOfChildren) {
+            for (uint32_t i = 0; i < amountOfChildren; i++) {
+                childrenTypes_.push_back(Void::instance());
+            }
+        }
+
+        virtual const std::string& name() const {
+            static std::string name_ = "block";
+            return name_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::Block;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            return childrenTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            return returnType_;
+        }
+
+        virtual bool typeCheckChildren() const override {
+            return true;
+        }
+
+        virtual uint32_t labelCount() const override {
+            return 1;
+        }
+
+        virtual bool hasLabelName(const std::string& str) const {
+            return str == labelName_;
+        }
+    };
+
+    class Loop : public Instruction {
+
+        const Type* returnType_ = Void::instance();
+
+        std::vector<const Type*> chTypes_;
+
+        std::string startLabelName_, endLabelName_;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);
+
+    public:
+
+        Loop(const sexpr::SExpr& expr, FunctionContext &context) {
+            if (expr.children().size() >= 2 && expr[1].hasValue()) {
+                startLabelName_ = expr[1].value();
+            }
+            if (expr.children().size() >= 3 && expr[2].hasValue()) {
+                endLabelName_ = expr[2].value();
+            }
+
+            for (const sexpr::SExpr& subexpr : expr.children()) {
+                if (subexpr.hasChildren()) {
+                    chTypes_.push_back(Void::instance());
+                }
+            }
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "loop";
+            return name_;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            return chTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            return returnType_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::Loop;
+        }
+
+        virtual uint32_t labelCount() const override {
+            return 1; // TODO this is just for ml-proto compat, increase to two somewhen
+        }
+
+        virtual bool hasLabelName(const std::string& str) const {
+            return str == startLabelName_ || str == endLabelName_;
+        }
+
+        virtual uint32_t labelIndex(const std::string& str) const {
+            if (str == startLabelName_)
+                return 0;
+            if (str == endLabelName_)
+                return 1;
+            throw std::domain_error("labelIndex(\"" + str + "\") can't be executed on this loop instruction.");
+        }
+    };
+
+
+    class Label : public Instruction {
+
+        const Type* returnType_ = Void::instance();
+        std::string labelName_;
+
+    public:
+
+        Label(const sexpr::SExpr& expr, FunctionContext &context) {
+            if (expr.children().size() >= 2 && expr[1].hasValue()) {
+                labelName_ = expr[1].value();
+            }
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "label";
+            return name_;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_ = {Void::instance()};
+            return chTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            return returnType_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::Label;
+        }
+
+        virtual uint32_t labelCount() const override {
+            return 1;
+        }
+
+        virtual bool hasLabelName(const std::string& str) const {
+            return str == labelName_;
+        }
+    };
+
+    ExceptionMessage(CantFindBranchTarget);
+
+    class Branch : public Instruction {
+
+        std::string labelName_;
+        uint32_t branchLabel_ = 0;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);
+
+    public:
+
+        Branch(const sexpr::SExpr& expr, FunctionContext &context) {
+            labelName_ = expr[1].value();
+            if (!Utils::hasDollarPrefix(labelName_)) {
+                branchLabel_ = (uint32_t) Utils::strToSizeT(labelName_);
+                labelName_.clear();
+            }
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "br";
+            return name_;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_ = {Void::instance()};
+            return chTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            return Void::instance();
+        }
+
+        virtual InstructionId::Value id() const override {
+            return InstructionId::Branch;
+        }
+
+        virtual void children(const std::vector<Instruction*>& newChildren) override {
+            if (newChildren.empty()) {
+                Instruction::children({new Nop()});
+            } else {
+                Instruction::children(newChildren);
+            }
+        }
+
+        virtual std::string dataString() const override {
+            std::string result = name();
+            result += " ";
+            if (labelName_.empty())
+                result += std::to_string(branchLabel_);
+            else
+                result += labelName_;
+            return result;
+        }
+
+        using Instruction::children;
+
+        uint32_t branchLabel() const {
+            return branchLabel_;
+        }
+    };
+
+
+    class BranchIf : public Instruction {
+
+        uint32_t branchLabel_ = 0;
+        std::string labelName_;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);
+
+    public:
+
+        BranchIf(const sexpr::SExpr& expr, FunctionContext &context) {
+            labelName_ = expr[1].value();
+            if (!Utils::hasDollarPrefix(labelName_)) {
+                branchLabel_ = (uint32_t) Utils::strToSizeT(labelName_);
+                labelName_.clear();
+            }
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "br_if";
+            return name_;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_ = {Int32::instance(), Void::instance()};
+            return chTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            return Void::instance();
+        }
+
+        virtual InstructionId::Value id() const override {
+            return InstructionId::BranchIf;
+        }
+
+        virtual std::string dataString() const override {
+            std::string result = name();
+            result += " ";
+            if (labelName_.empty())
+                result += std::to_string(branchLabel_);
+            else
+                result += labelName_;
+            return result;
+        }
+
+        virtual void children(const std::vector<Instruction*>& newChildren) override {
+            if (newChildren.size() == 1) {
+                Instruction::children({newChildren.at(0), new Nop()});
+            } else {
+                Instruction::children(newChildren);
+            }
+        }
+
+        using Instruction::children;
+
+        uint32_t branchLabel() const {
+            return branchLabel_;
         }
     };
 
@@ -618,7 +816,7 @@ namespace wasm_module {
 
     protected:
 
-        virtual void secondStepEvaluate(ModuleContext& context) {
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) override {
             functionSignature = context.mainFunctionTable().getFunctionSignature(functionName);
             moduleName = context.name();
         }
@@ -670,7 +868,7 @@ namespace wasm_module {
 
     protected:
 
-        virtual void secondStepEvaluate(ModuleContext &context) {
+        virtual void secondStepEvaluate(ModuleContext &context, FunctionContext& functionContext) override {
             if (context.name().empty()) {
                 functionSignature = context.importedFunctionTable().getFunctionSignature(functionIndex);
             } else {

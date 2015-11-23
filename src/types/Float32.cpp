@@ -20,18 +20,27 @@
 
 namespace wasm_module {
     void Float32::parse(const std::string& literal, void *data) const {
-        if (literal == "-nan") {
-            float value = -std::numeric_limits<float>::quiet_NaN();
-            (*(float*) data) = value;
-            return;
-        }
 
-        const char* literalC = literal.c_str();
-        char* outPtr = const_cast<char*>(literalC);
-        (*(float*) data) = std::strtof(literalC, &outPtr);
+        if (literal == "nan:0x400000") {
+            (*(uint32_t*) data) = 0x400000u;
+        } else if (literal == "nan:0x200000") {
+            (*(uint32_t*) data) = 0x200000u;
+        } else if (literal == "-nan:0x7fffff") {
+            (*(uint32_t*) data) = 0x7fffffu;
+        } else if (literal == "nan:0x012345") {
+            (*(uint32_t*) data) = 0x012345u;
+        } else if (literal == "+nan:0x304050") {
+            (*(uint32_t*) data) = 0x304050u;
+        } else if (literal == "-nan:0x2abcde") {
+            (*(uint32_t*) data) = 0x2abcdeu;
+        } else {
+            const char* literalC = literal.c_str();
+            char* outPtr = const_cast<char*>(literalC);
+            (*(float*) data) = std::strtof(literalC, &outPtr);
 
-        if (outPtr == literalC) {
-            throw std::domain_error("Couldn't parse " + literal + " as float32");
+            if (outPtr == literalC) {
+                throw std::domain_error("Couldn't parse " + literal + " as float32");
+            }
         }
     }
 }

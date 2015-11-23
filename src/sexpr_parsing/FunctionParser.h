@@ -75,11 +75,10 @@ namespace wasm_module { namespace sexpr {
                 addVariable(variableName, typeName);
             } else {
                 for (std::size_t i = 1; i < local.children().size(); i++) {
-                    addVariable(std::to_string(locals.size()), local[i].value());
+                    addVariable(std::to_string(parameters.size() + locals.size()), local[i].value());
                 }
             }
         }
-
 
         void addParameter(std::string variableName, std::string typeName) {
             const Type* type = Types::getByName(typeName);
@@ -96,7 +95,7 @@ namespace wasm_module { namespace sexpr {
                 addParameter(variableName, typeName);
             } else {
                 for (std::size_t i = 1; i < param.children().size(); i++) {
-                    addVariable(std::to_string(parameters.size()), param[i].value());
+                    addVariable(std::to_string(parameters.size() + locals.size()), param[i].value());
                 }
             }
         }
@@ -130,7 +129,6 @@ namespace wasm_module { namespace sexpr {
                     children.push_back(newInstruction);
                 }
                 instruction_->children(children);
-
             }
         }
 

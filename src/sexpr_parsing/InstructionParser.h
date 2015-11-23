@@ -65,8 +65,7 @@ namespace wasm_module { namespace sexpr {
                     return result;
                 }
             } else {
-                Instruction* result = new Block(0);
-                return result;
+                return new Nop();
             }
         }
 

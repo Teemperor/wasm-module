@@ -74,8 +74,6 @@ namespace InstructionId {
         I64CountTrailingZeroes,
         I64PopulationCount,
 
-        Comma,
-        Conditional,
         I32Const,
         I64Const,
         F32Const,
@@ -87,12 +85,11 @@ namespace InstructionId {
         Block,
         If,
         IfElse,
-        DoWhile,
-        Forever,
-        Continue,
-        Break,
         Return,
-        Switch,
+        Label,
+        Loop,
+        Branch,
+        BranchIf,
 
         GetLocal,
         SetLocal,
@@ -194,12 +191,10 @@ namespace InstructionId {
         F64Max,
 
         HasFeature,
+        Unreachable,
+        Nop,
 
         NativeInstruction,
-
-        I32AssertReturn,
-
-        Print
     };
 }
 
