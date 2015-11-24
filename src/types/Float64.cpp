@@ -20,7 +20,6 @@
 
 namespace wasm_module {
 
-
     bool Float64::tryParseNan(const std::string& literal, void *data) const {
         if (literal == "nan" || literal == "+nan") {
             (*(uint64_t*) data) = 0x7ff8000000000000ul;
@@ -47,7 +46,7 @@ namespace wasm_module {
 
         Int64::instance()->parse(value, data);
         if (negative)
-            (*(uint64_t*) data) |= 0x8ff0000000000000ul;
+            (*(uint64_t*) data) |= 0xfff0000000000000ul;
         else
             (*(uint64_t*) data) |= 0x7ff0000000000000ul;
         return true;
@@ -57,7 +56,6 @@ namespace wasm_module {
         if (tryParseNan(literal, data)) {
             // nothing to do
         } else {
-
             const char* literalC = literal.c_str();
             char* outPtr = const_cast<char*>(literalC);
             (*(double*) data) = std::strtod(literalC, &outPtr);

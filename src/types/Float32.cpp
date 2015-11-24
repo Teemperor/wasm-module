@@ -30,6 +30,7 @@ namespace wasm_module {
             (*(uint32_t*) data) = 0xffc00000;
             return true;
         }
+
         bool negative = false;
 
         std::string value = literal;
