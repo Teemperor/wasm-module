@@ -36,14 +36,43 @@ namespace wasm_module {
 
         void setType(const wasm_module::Type* type);
 
-    public:
-        Variable();
         Variable(uint32_t value);
         Variable(int32_t value);
         Variable(uint64_t value);
         Variable(int64_t value);
         Variable(float value);
         Variable(double value);
+
+    public:
+        Variable();
+
+        static Variable createBool(bool value) {
+            return createUInt32(value == true ? 1u : 0u);
+        }
+
+        static Variable createUInt32(uint32_t value) {
+            return Variable(value);
+        }
+
+        static Variable createInt32(int32_t value) {
+            return Variable(value);
+        }
+
+        static Variable createUInt64(uint64_t value) {
+            return Variable(value);
+        }
+
+        static Variable createInt64(int64_t value) {
+            return Variable(value);
+        }
+
+        static Variable createFloat32(float value) {
+            return Variable(value);
+        }
+
+        static Variable createFloat64(double value) {
+            return Variable(value);
+        }
 
         static Variable Void();
 
