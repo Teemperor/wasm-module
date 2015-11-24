@@ -28,9 +28,11 @@ namespace wasm_module {
     class InvalidDataSize : public std::exception {};
 
     class Variable {
+
+        static const std::size_t size_ = 8;
+
         const wasm_module::Type *type_;
-        // TODO make this an 8 byte array, not a vector that uses dynamic memory
-        std::vector<uint8_t> value_;
+        uint8_t value_[size_];
 
         void setType(const wasm_module::Type* type);
 
@@ -52,16 +54,14 @@ namespace wasm_module {
         }
 
         void* value() {
-            return (void *) value_.data();
+            return (void *) value_;
         }
 
         const void* value() const {
-            return (const void *) value_.data();
+            return (const void *) value_;
         }
 
-        std::vector<uint8_t> data() {
-            return value_;
-        }
+        std::vector<uint8_t> data();
 
         void setValue(std::vector<uint8_t> newData);
 

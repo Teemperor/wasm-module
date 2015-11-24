@@ -35,7 +35,7 @@ namespace wasm_module {
     void Variable::setValue(std::vector<uint8_t> newData) {
         if (newData.size() != type_->size())
             throw InvalidDataSize();
-        value_ = newData;
+        memcpy(value_, newData.data(), size_);
     }
 
     uint32_t Variable::uint32() const {
@@ -58,7 +58,6 @@ namespace wasm_module {
 
     void Variable::setType(const wasm_module::Type* type) {
         type_ = type;
-        value_.resize(type->size());
     }
 
     void Variable::uint32(uint32_t value) {
@@ -111,5 +110,12 @@ namespace wasm_module {
 
     bool Variable::isVoid() const {
         return type_ == Void::instance();
+    }
+
+    std::vector<uint8_t> Variable::data() {
+        std::vector<uint8_t> result;
+        result.resize(size_);
+        memcpy(result.data(), value_, size_);
+        return result;
     }
 }
