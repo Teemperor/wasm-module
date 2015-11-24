@@ -25,6 +25,8 @@ namespace wasm_module {
 
     class Float32 : public Type {
 
+        bool tryParseNan(const std::string& literal, void *data) const;
+
     protected:
         Float32() {
         }

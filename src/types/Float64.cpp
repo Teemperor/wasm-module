@@ -16,15 +16,55 @@
 
 #include <limits>
 #include "Float64.h"
+#include "Int64.h"
 
 namespace wasm_module {
 
-    void Float64::parse(const std::string& literal, void *data) const {
-        if (literal == "-nan") {
-            double value = -std::numeric_limits<double>::quiet_NaN();
-            (*(double*) data) = value;
-            return;
+
+    bool Float64::tryParseNan(const std::string& literal, void *data) const {
+        if (literal == "nan" || literal == "+nan") {
+            (*(uint64_t*) data) = 0x7ff8000000000000ul;
+            return true;
         }
-        (*(double*) data) = std::atof(literal.c_str());
+        if (literal == "-nan") {
+            (*(uint64_t*) data) = 0xfff8000000000000ul;
+            return true;
+        }
+
+        bool negative = false;
+
+        std::string value = literal;
+        if (literal.substr(0, 4) == "nan:") {
+            value = value.substr(4);
+        } else if (literal.substr(0, 5) == "+nan:") {
+            value = value.substr(5);
+        } else if (literal.substr(0, 5) == "-nan:") {
+            value = value.substr(5);
+            negative = true;
+        } else {
+            return false;
+        }
+
+        Int64::instance()->parse(value, data);
+        if (negative)
+            (*(uint64_t*) data) |= 0x8ff0000000000000ul;
+        else
+            (*(uint64_t*) data) |= 0x7ff0000000000000ul;
+        return true;
+    }
+
+    void Float64::parse(const std::string& literal, void *data) const {
+        if (tryParseNan(literal, data)) {
+            // nothing to do
+        } else {
+
+            const char* literalC = literal.c_str();
+            char* outPtr = const_cast<char*>(literalC);
+            (*(double*) data) = std::strtod(literalC, &outPtr);
+
+            if (outPtr == literalC) {
+                throw std::domain_error("Couldn't parse " + literal + " as float32");
+            }
+        }
     }
 }

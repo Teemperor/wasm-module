@@ -16,23 +16,45 @@
 
 #include <limits>
 #include "Float32.h"
+#include "Int32.h"
 #include <stdexcept>
 
 namespace wasm_module {
-    void Float32::parse(const std::string& literal, void *data) const {
 
-        if (literal == "nan:0x400000") {
-            (*(uint32_t*) data) = 0x400000u;
-        } else if (literal == "nan:0x200000") {
-            (*(uint32_t*) data) = 0x200000u;
-        } else if (literal == "-nan:0x7fffff") {
-            (*(uint32_t*) data) = 0x7fffffu;
-        } else if (literal == "nan:0x012345") {
-            (*(uint32_t*) data) = 0x012345u;
-        } else if (literal == "+nan:0x304050") {
-            (*(uint32_t*) data) = 0x304050u;
-        } else if (literal == "-nan:0x2abcde") {
-            (*(uint32_t*) data) = 0x2abcdeu;
+    bool Float32::tryParseNan(const std::string& literal, void *data) const {
+        if (literal == "nan" || literal == "+nan") {
+            (*(uint32_t*) data) = 0x7fc00000u;
+            return true;
+        }
+        if (literal == "-nan") {
+            (*(uint32_t*) data) = 0xffc00000;
+            return true;
+        }
+        bool negative = false;
+
+        std::string value = literal;
+        if (literal.substr(0, 4) == "nan:") {
+            value = value.substr(4);
+        } else if (literal.substr(0, 5) == "+nan:") {
+            value = value.substr(5);
+        } else if (literal.substr(0, 5) == "-nan:") {
+            value = value.substr(5);
+            negative = true;
+        } else {
+            return false;
+        }
+
+        Int32::instance()->parse(value, data);
+        if (negative)
+            (*(uint32_t*) data) |= 0xff800000u;
+        else
+            (*(uint32_t*) data) |= 0x7f800000u;
+        return true;
+    }
+
+    void Float32::parse(const std::string& literal, void *data) const {
+        if (tryParseNan(literal, data)) {
+            // nothing to do
         } else {
             const char* literalC = literal.c_str();
             char* outPtr = const_cast<char*>(literalC);
