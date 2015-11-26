@@ -165,8 +165,6 @@ public:
 
                 ModuleWrapper& wrapper = invokeToCall(invokeExpr);
 
-                SExpr ifExpr;
-                ifExpr.addChild("if_else");
 
                 std::string dataType;
 
@@ -186,16 +184,35 @@ public:
                         throw UnknownAssertValue();
                     }
 
-                    SExpr eqExpr;
-                    eqExpr.addChild(dataType + ".eq");
-                    eqExpr.addChild(invokeExpr);
-                    eqExpr.addChild(expr[2]);
+                    if (dataType[0] == 'i') {
+                        SExpr ifExpr;
+                        ifExpr.addChild("if_else");
 
-                    ifExpr.addChild(eqExpr);
-                    ifExpr.addChild();
-                    ifExpr.addChild(SExprParser::parseString("(unreachable)"));
+                        SExpr eqExpr;
+                        eqExpr.addChild(dataType + ".eq");
+                        eqExpr.addChild(invokeExpr);
+                        eqExpr.addChild(expr[2]);
 
-                    wrapper.addPositiveCheck(ifExpr);
+                        ifExpr.addChild(eqExpr);
+                        ifExpr.addChild();
+                        ifExpr.addChild(SExprParser::parseString("(unreachable)"));
+                        wrapper.addPositiveCheck(ifExpr);
+                    } else {
+                        if (dataType == "f32") {
+                            SExpr ifExpr = SExprParser::parseString("(if_else (i32.eq (i32.reinterpret/f32) (i32.reinterpret/f32)) () (unreachable) )");
+                            ifExpr[0][1][1].addChild(invokeExpr);
+                            ifExpr[0][1][2].addChild(expr[2]);
+                            wrapper.addPositiveCheck(ifExpr);
+                        } else if (dataType == "f64") {
+                            SExpr ifExpr = SExprParser::parseString("(if_else (i64.eq (i64.reinterpret/f64) (i64.reinterpret/f64)) () (unreachable) )");
+                            ifExpr[0][1][1].addChild(invokeExpr);
+                            ifExpr[0][1][2].addChild(expr[2]);
+                            wrapper.addPositiveCheck(ifExpr);
+                        } else {
+                            assert(false);
+                        }
+                    }
+
                 }
 
             } else if (expr[0].value() == "assert_return_nan") {
