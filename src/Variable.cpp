@@ -114,8 +114,8 @@ namespace wasm_module {
 
     std::vector<uint8_t> Variable::data() {
         std::vector<uint8_t> result;
-        result.resize(size_);
-        memcpy(result.data(), value_, size_);
+        result.resize(type_->size());
+        memcpy(result.data(), value_, type_->size());
         return result;
     }
 }
