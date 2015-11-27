@@ -99,7 +99,7 @@ namespace wasm_module { namespace sexpr {
                     if (segmentExpr.children().size() >= 3) {
                         uint32_t offset = (uint32_t) std::atoll(segmentExpr[1].value().c_str());
                         // todo char to uint8_t is maybe compiler specific
-                        std::vector<uint8_t> segmentData(segmentExpr[2].value().begin(), segmentExpr[2].value().begin());
+                        std::vector<uint8_t> segmentData(segmentExpr[2].value().begin(), segmentExpr[2].value().end());
 
                         HeapSegment segment(offset, segmentData);
                         data.addNextSegment(segment);

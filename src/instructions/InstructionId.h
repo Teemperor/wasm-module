@@ -96,6 +96,7 @@ namespace InstructionId {
 
         GrowMemory,
         PageSize,
+        MemorySize,
 
         I32Load8Signed,
         I32Load8Unsigned,
