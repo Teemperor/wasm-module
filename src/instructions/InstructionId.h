@@ -154,6 +154,8 @@ namespace InstructionId {
         F32Select,
         F64Select,
 
+        TableSwitch,
+
         F32Add,
         F32Sub,
         F32Mul,

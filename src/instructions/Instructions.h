@@ -17,7 +17,6 @@
 #ifndef WASMINT_INSTRUCTIONS_H
 #define WASMINT_INSTRUCTIONS_H
 
-
 #include <types/Void.h>
 #include <types/Int32.h>
 #include <types/Int64.h>
@@ -775,6 +774,40 @@ namespace wasm_module {
             throw std::domain_error("Unknown literal type");
         }
     };
+
+    class TableSwitch : public Instruction {
+
+        const Type* returnType_ = Void::instance();
+
+    public:
+        TableSwitch() {
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            static std::vector<const Type*> chTypes_;
+            return chTypes_;
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "tableswitch";
+            return name_;
+        }
+
+
+        virtual std::string dataString() const override {
+            std::string result = name();
+            return result;
+        }
+
+        virtual const Type* returnType() const override {
+            return returnType_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::TableSwitch;
+        }
+    };
+
 
     class HasFeature : public Instruction {
 
