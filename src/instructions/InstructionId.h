@@ -149,6 +149,11 @@ namespace InstructionId {
         F64ConvertUnsignedI64,
         F64ReinterpretI64,
 
+        I32Select,
+        I64Select,
+        F32Select,
+        F64Select,
+
         F32Add,
         F32Sub,
         F32Mul,

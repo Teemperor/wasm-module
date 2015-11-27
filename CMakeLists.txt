@@ -56,7 +56,7 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-        src/Utils.cpp src/Utils.h)
+        src/Utils.cpp src/Utils.h src/instructions/UnreachableValidator.cpp src/instructions/UnreachableValidator.h)
 
 
 ####################

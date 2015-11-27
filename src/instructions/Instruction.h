@@ -66,23 +66,7 @@ namespace wasm_module {
             }
         }
 
-        void triggerSecondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
-            for(Instruction* instruction : children_) {
-                instruction->triggerSecondStepEvaluate(context, functionContext);
-            }
-            if (typeCheckChildren()) {
-                if (children_.size() != childrenTypes().size()) {
-                    throw IncompatibleNumberOfChildren(name() + " got " + std::to_string(children_.size()) + " children, but expected " +  std::to_string(childrenTypes().size()));
-                }
-
-                for (std::size_t i = 0; i < children_.size(); i++) {
-                    if (!Type::typeCompatible(childrenTypes()[i], children_[i]->returnType())) {
-                        throw IncompatibleChildReturnType(name() + " expected " + childrenTypes()[i]->name() + " but got " + children_[i]->returnType()->name());
-                    }
-                }
-            }
-            secondStepEvaluate(context, functionContext);
-        }
+        void triggerSecondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);
 
         void foreachChild(const std::function<void(Instruction* instruction)>& lambda) {
             for (Instruction* child : children()) {

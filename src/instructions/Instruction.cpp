@@ -17,7 +17,29 @@
 
 #include <types/Void.h>
 #include "Instruction.h"
+#include "UnreachableValidator.h"
 
 namespace wasm_module {
 
+    void Instruction::triggerSecondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+        for(Instruction* instruction : children_) {
+            instruction->triggerSecondStepEvaluate(context, functionContext);
+        }
+        if (typeCheckChildren()) {
+            if (children_.size() != childrenTypes().size()) {
+                throw IncompatibleNumberOfChildren(name() + " got " + std::to_string(children_.size()) + " children, but expected " +  std::to_string(childrenTypes().size()));
+            }
+
+            for (std::size_t i = 0; i < children_.size(); i++) {
+                // skip type check if the given child instruction will certainly terminate this program
+                if (UnreachableValidator::willExecuteUnreachable(children_[i])) {
+                    continue;
+                }
+                if (!Type::typeCompatible(childrenTypes()[i], children_[i]->returnType())) {
+                    throw IncompatibleChildReturnType(name() + " expected " + childrenTypes()[i]->name() + " but got " + children_[i]->returnType()->name());
+                }
+            }
+        }
+        secondStepEvaluate(context, functionContext);
+    }
 }

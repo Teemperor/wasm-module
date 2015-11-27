@@ -179,6 +179,10 @@ namespace wasm_module {
     DeclInstruction(F64ConvertUnsignedI64, "f64.convert_u/i64", {Int64::instance()}, Float64::instance())};
     DeclInstruction(F64ReinterpretI64, "f64.reinterpret/i64", {Int64::instance()}, Float64::instance())};
 
+    DeclInstruction(I32Select, "i32.select", {Int32::instance() DeclInstComma Int32::instance() DeclInstComma Int32::instance()}, Int32::instance())};
+    DeclInstruction(I64Select, "i64.select", {Int32::instance() DeclInstComma Int64::instance() DeclInstComma Int64::instance()}, Int64::instance())};
+    DeclInstruction(F32Select, "f32.select", {Int32::instance() DeclInstComma Float32::instance() DeclInstComma Float32::instance()}, Float32::instance())};
+    DeclInstruction(F64Select, "f64.select", {Int32::instance() DeclInstComma Float64::instance() DeclInstComma Float64::instance()}, Float64::instance())};
 
     DeclInstruction(F32Add, "f32.add", {Float32::instance() DeclInstComma Float32::instance()}, Float32::instance())};
     DeclInstruction(F32Sub, "f32.sub", {Float32::instance() DeclInstComma Float32::instance()}, Float32::instance())};
