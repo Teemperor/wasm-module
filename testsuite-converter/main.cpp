@@ -8,6 +8,7 @@
 #include <map>
 #include <list>
 #include <boost/filesystem.hpp>
+#include <iomanip>
 
 using namespace wasm_module;
 using namespace wasm_module::sexpr;
@@ -238,9 +239,21 @@ public:
             testNumber++;
         }
 
+        int i = 1;
         for(ModuleWrapper& moduleWrapper : modules) {
+
             SExpr output = moduleWrapper.getPositiveTestSource();
-            writeSExpr("positive/", output, baseName);
+
+            std::stringstream basenameSuffix;
+            basenameSuffix << "";
+
+            if (modules.size() != 1) {
+                basenameSuffix << "_" << std::setw((int) log10(modules.size()) + 1) << std::setfill('0') << std::to_string(i);
+            }
+            std::string suffix = basenameSuffix.str();
+
+            writeSExpr("positive/", output, baseName + suffix);
+            i++;
         }
 
     }
