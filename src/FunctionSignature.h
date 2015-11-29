@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <types/Void.h>
+#include <stdexcept>
 
 #include "types/Type.h"
 #include "Variable.h"
@@ -35,16 +36,20 @@ namespace wasm_module {
         std::string name_;
         const Type* returnType_ = Void::instance();
         std::vector<const Type*> parameterTypes_;
-        bool isExported_ = false;
+        bool variadic_ = true;
 
     public:
         FunctionSignature() {
         }
 
         FunctionSignature(std::string module, std::string name, const Type* returnType,
-                          std::vector<const Type*> parameterTypes, bool exported)
+                          std::vector<const Type*> parameterTypes)
                 : moduleName_(module), name_(name), returnType_(returnType), parameterTypes_(parameterTypes),
-                  isExported_(exported) {
+                  variadic_(false) {
+        }
+
+        FunctionSignature(std::string module, std::string name, const Type* returnType)
+                : moduleName_(module), name_(name), returnType_(returnType), variadic_(true) {
         }
 
         const Type* returnType() const {
@@ -63,16 +68,26 @@ namespace wasm_module {
             return moduleName_;
         }
 
-        bool isExported() const {
-            return isExported_;
-        }
-
         bool operator<(const FunctionSignature& other) const {
             if (name_ < other.name())
                 return true;
             if (returnType_ < other.returnType_)
                 return true;
+            return false;
+        }
 
+        bool variadic() const {
+            return variadic_;
+        }
+
+        FunctionSignature makeNonVariadic(std::vector<const Type*> parameterTypes) const {
+            if (!variadic()) {
+                throw std::domain_error("makeNonVariadic() can only be called on variadic functions. Current function is " + moduleName_ + "::" + name_);
+            }
+
+            FunctionSignature result(moduleName_, name_, returnType_, parameterTypes);
+
+            return result;
         }
     };
 

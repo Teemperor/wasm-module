@@ -102,6 +102,10 @@ namespace wasm_module {
 
         void int32(int32_t value);
 
+        int64_t int64() const;
+
+        uint64_t uint64() const;
+
         float float32() const;
 
         double float64() const;

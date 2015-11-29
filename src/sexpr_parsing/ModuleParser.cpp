@@ -75,7 +75,7 @@ namespace wasm_module { namespace sexpr {
                     }
                 }
 
-                module_->importedFunctionTable().addFunctionSignature(FunctionSignature(module_->name(), functionName, returnType, parameters, true), importName);
+                module_->importedFunctionTable().addFunctionSignature(FunctionSignature(moduleName, functionName, returnType, parameters), importName);
             }
         }
 

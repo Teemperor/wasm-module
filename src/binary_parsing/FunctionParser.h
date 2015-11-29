@@ -52,8 +52,7 @@ namespace wasm_module { namespace binary {
                 typeOfLocals.push_back(context_.typeTable().getType(typeData));
             }
             functionContext = FunctionContext(context_.name(), functionSignature_.name(), functionSignature_.returnType(),
-                                              functionSignature_.parameters(), typeOfLocals,
-                                              functionSignature_.isExported());
+                                              functionSignature_.parameters(), typeOfLocals);
 
             mainInstruction = parseInstruction();
         }

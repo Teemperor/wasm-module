@@ -192,7 +192,7 @@ namespace wasm_module { namespace sexpr {
                 }
             }
 
-            functionContext_ = FunctionContext(context_.name(), functionName_, returnType, parameters, locals, false);
+            functionContext_ = FunctionContext(context_.name(), functionName_, returnType, parameters, locals);
             functionContext_.setVariableNameToIndexMap(namesToIndex_);
 
             std::vector<const SExpr*> instructionExprs;

@@ -42,10 +42,13 @@ namespace wasm_module {
         FunctionContext() {
         }
 
-        FunctionContext(std::string module, std::string name, const Type*returnType, std::vector<const Type*> parameterTypes,
-                        std::vector<const Type*> locals, bool exported)
-                : locals_(locals), FunctionSignature(module, name, returnType, parameterTypes, exported) {
+        FunctionContext(std::string module, std::string name, const Type* returnType, std::vector<const Type*> parameterTypes,
+                        std::vector<const Type*> locals)
+                : locals_(locals), FunctionSignature(module, name, returnType, parameterTypes) {
+        }
 
+        FunctionContext(std::string module, std::string name, const Type* returnType, std::vector<const Type*> locals)
+                : locals_(locals), FunctionSignature(module, name, returnType) {
         }
 
         const std::vector<const Type*>& pureLocals() const {

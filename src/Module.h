@@ -93,7 +93,6 @@ namespace wasm_module {
         void addFunction(std::string functionName, const Type* returnType, std::vector<const Type*> parameterTypes, std::function<Variable(std::vector<Variable>)> givenFunction);
 
         void addVariadicFunction(std::string functionName, const Type *returnType,
-                                 std::function<bool(std::vector<const Type *>)> parameters,
                                  std::function<Variable(std::vector<Variable>)> givenFunction);
 
         std::vector<Section *> sections() {

@@ -36,12 +36,11 @@ namespace wasm_module {
 
     class Function : public FunctionContext {
 
-    /**
-     * The AST of this function which contains all instructions of this function.
-     */
+        /**
+         * The AST of this function which contains all instructions of this function.
+         */
         Instruction *mainInstruction_;
         Module* module_ = nullptr;
-        bool variadic_ = false;
 
     public:
         Function(FunctionContext &context, Instruction *mainInstruction, bool variadic = false);
@@ -62,9 +61,6 @@ namespace wasm_module {
             this->module_ = module;
         }
 
-        bool variadic() const {
-            return variadic_;
-        }
     };
 
 }

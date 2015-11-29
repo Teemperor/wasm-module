@@ -118,4 +118,12 @@ namespace wasm_module {
         memcpy(result.data(), value_, type_->size());
         return result;
     }
+
+    int64_t Variable::int64() const {
+        return Int64::getValue(*this);
+    }
+
+    uint64_t Variable::uint64() const {
+        return Int64::getUnsignedValue(*this);
+    }
 }
