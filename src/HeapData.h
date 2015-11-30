@@ -22,7 +22,7 @@ namespace wasm_module {
         }
 
         void addNextSegment(const HeapSegment& segment) {
-            if (segment.end() >= startSize_) {
+            if (segment.end() > startSize_) {
                 throw NotFittingHeapSegment(
                         "Segment needs a memory size of at least " +
                                 std::to_string(segment.offset() + segment.data().size()));

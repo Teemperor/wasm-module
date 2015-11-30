@@ -19,98 +19,214 @@
 
 
 namespace wasm_module { namespace sexpr {
-
-
-        ModuleParser::ModuleParser(const SExpr& moduleExpr) {
-            for(unsigned i = 1; i < moduleExpr.children().size(); i++) {
-                const SExpr& expr = moduleExpr[i];
-                const std::string& typeName = expr[0].value();
-                if (typeName == "import") {
-                    parseImport(expr);
-                } else if (typeName == "memory") {
-                    parseMemory(expr);
-                } else if (typeName == "func") {
-                    Function* function = &FunctionParser::parse(expr, module_->context());
-                    module_->context().mainFunctionTable().addFunctionSignature(*function, function->name());
-                    module_->addFunction(function, true);
-                } else {
-                    throw UnknownModuleChild(typeName);
-                }
-            }
-            for (Function* function : module_->functions()) {
-                function->mainInstruction()->triggerSecondStepEvaluate(module_->context(), *function);
+    ModuleParser::ModuleParser(const SExpr& moduleExpr) {
+        for(unsigned i = 1; i < moduleExpr.children().size(); i++) {
+            const SExpr& expr = moduleExpr[i];
+            const std::string& typeName = expr[0].value();
+            if (typeName == "import") {
+                parseImport(expr);
+            } else if (typeName == "memory") {
+                parseMemory(expr);
+            } else if (typeName == "table") {
+                parseFunctionTypeTable(expr);
+            } else if (typeName == "type") {
+                parseFunctionType(expr);
+            } else if (typeName == "func") {
+                Function* function = &FunctionParser::parse(expr, module_->context());
+                module_->context().mainFunctionTable().addFunctionSignature(*function, function->name());
+                module_->addFunction(function, true);
+            } else {
+                throw UnknownModuleChild(typeName);
             }
         }
+        for (Function* function : module_->functions()) {
+            function->mainInstruction()->triggerSecondStepEvaluate(module_->context(), *function);
+        }
+    }
 
-        void ModuleParser::parseImport(const SExpr& importExpr) {
-            if (importExpr.children().size() < 4) {
+    void ModuleParser::parseImport(const SExpr& importExpr) {
+        if (importExpr.children().size() < 4) {
+            throw MalformedImportStatement(importExpr.toString());
+        } else {
+            if (importExpr[0] != "import") {
                 throw MalformedImportStatement(importExpr.toString());
-            } else {
-                if (importExpr[0] != "import") {
-                    throw MalformedImportStatement(importExpr.toString());
-                }
+            }
 
-                std::string importName = importExpr[1].value();
-                std::string moduleName = importExpr[2].value();
-                std::string functionName = importExpr[3].value();
+            std::string importName = importExpr[1].value();
+            std::string moduleName = importExpr[2].value();
+            std::string functionName = importExpr[3].value();
 
-                const Type* returnType = Void::instance();
+            const Type* returnType = Void::instance();
 
-                std::vector<const Type*> parameters;
+            std::vector<const Type*> parameters;
 
-                for (uint32_t i = 4; i < importExpr.children().size(); i++) {
-                    const SExpr& subExpr = importExpr[i];
+            for (uint32_t i = 4; i < importExpr.children().size(); i++) {
+                const SExpr& subExpr = importExpr[i];
 
-                    if (subExpr[0].value() == "param") {
-                        for (std::size_t i = 1; i < subExpr.children().size(); i++)
-                            parameters.push_back(Types::getByName(subExpr[i].value()));
-                    } else if (subExpr[0].value() == "return") {
-                        if (returnType != Void::instance()) {
-                            throw MultipleReturnTypesInImport(importExpr.toString());
-                        }
-
-                        returnType = Types::getByName(subExpr[1].value());
-                    } else {
-                        throw UnknownImportExpressionChild(subExpr.value());
+                if (subExpr[0].value() == "param") {
+                    for (std::size_t i = 1; i < subExpr.children().size(); i++)
+                        parameters.push_back(Types::getByName(subExpr[i].value()));
+                } else if (subExpr[0].value() == "return") {
+                    if (returnType != Void::instance()) {
+                        throw MultipleReturnTypesInImport(importExpr.toString());
                     }
-                }
 
-                module_->importedFunctionTable().addFunctionSignature(FunctionSignature(moduleName, functionName, returnType, parameters), importName);
+                    returnType = Types::getByName(subExpr[1].value());
+                } else {
+                    throw UnknownImportExpressionChild(subExpr.value());
+                }
+            }
+
+            module_->importedFunctionTable().addFunctionSignature(FunctionSignature(moduleName, functionName, returnType, parameters), importName);
+        }
+    }
+
+    void ModuleParser::parseMemory(const SExpr&memoryExpr) {
+        if (memoryExpr.children().size() >= 2) {
+            uint32_t startMem = (uint32_t) std::atoll(memoryExpr[1].value().c_str());
+            uint32_t maxMem = std::numeric_limits<uint32_t>::max();
+            bool hasMaxValue = false;
+
+            if (memoryExpr.children().size() >= 3) {
+                hasMaxValue = memoryExpr[2].hasValue();
+            }
+
+            if (hasMaxValue) {
+                maxMem = (uint32_t) std::atoll(memoryExpr[2].value().c_str());
+            }
+            HeapData data(startMem, maxMem);
+
+            for(uint32_t childNum = hasMaxValue ? 3 : 2; childNum < memoryExpr.children().size(); childNum++) {
+                const SExpr& segmentExpr = memoryExpr[childNum];
+                if (segmentExpr.children().size() >= 3) {
+                    uint32_t offset = (uint32_t) std::atoll(segmentExpr[1].value().c_str());
+                    // TODO char to uint8_t is maybe compiler specific
+                    std::vector<uint8_t> segmentData = decodeEscapedString(segmentExpr[2].value());
+
+                    HeapSegment segment(offset, segmentData);
+                    data.addNextSegment(segment);
+                } else {
+                    throw MalformedMemoryStatement("Not enough children for a valid segment statement (needs at least 3): " + segmentExpr.toString());
+                }
+            }
+
+            module_->heapData(data);
+        } else {
+            throw MalformedMemoryStatement("Not enough children for a valid memory statement (needs at least 3): " + memoryExpr.toString());
+        }
+    }
+
+    void ModuleParser::parseFunctionType(const SExpr& functionTypeExpr) {
+        if (functionTypeExpr.children().size() == 1 || functionTypeExpr.children().size() > 3) {
+            throw std::domain_error("Malformed function type expr (wrong number of child expressions): " + functionTypeExpr.toString());
+        }
+
+        std::string alias;
+        const Type* returnType = Void::instance();
+        std::vector<const Type*> parameters;
+
+        sexpr::SExpr funcExpr;
+        if (functionTypeExpr[1].hasChildren()) {
+            funcExpr = functionTypeExpr[1];
+        } else {
+            funcExpr = functionTypeExpr[2];
+            alias = functionTypeExpr[1].value();
+        }
+
+        if (funcExpr[0].value() != "func") {
+            throw std::domain_error("Malformed func statement: " + funcExpr.toString());
+        }
+
+        bool foundResultStatement = false;
+
+        for (std::size_t i = 1; i < funcExpr.children().size(); i++) {
+            const SExpr& expr = funcExpr[1];
+
+            if (expr.children().size() == 0) {
+                throw std::domain_error("Malformed func statement: " + funcExpr.toString());
+            }
+
+            if (expr[0].value() == "param") {
+                if (expr.children().size() > 2) {
+                    throw std::domain_error("Malformed result statement: " + funcExpr.toString());
+                } else if (expr.children().size() == 1) {
+                    // void param: (param)
+                } else {
+                    parameters.push_back(Types::getByName(expr[1].value()));
+                }
+            } else if (expr[0].value() == "result") {
+                if (foundResultStatement) {
+                    throw std::domain_error("Multiple result statements in func statement: " + funcExpr.toString());
+                }
+                foundResultStatement = true;
+
+                if (expr.children().size() > 2) {
+                    throw std::domain_error("Malformed result statement: " + funcExpr.toString());
+                } else if (expr.children().size() == 1) {
+                    // void result: (result)
+                } else {
+                    returnType = Types::getByName(expr[1].value());
+                }
+            } else {
+                throw std::domain_error("Unknown expression in func statement: " + funcExpr.toString());
             }
         }
 
-        void ModuleParser::parseMemory(const SExpr&memoryExpr) {
-            if (memoryExpr.children().size() >= 2) {
-                uint32_t startMem = (uint32_t) std::atoll(memoryExpr[1].value().c_str());
-                uint32_t maxMem = std::numeric_limits<uint32_t>::max();
-                bool hasMaxValue = false;
+        if (alias.empty())
+            module_->functionTypeTable().addFunctionType(FunctionType(returnType, parameters));
+        else
+            module_->functionTypeTable().addFunctionType(FunctionType(returnType, parameters), alias);
 
-                if (memoryExpr.children().size() >= 3) {
-                    hasMaxValue = memoryExpr[2].hasValue();
-                }
+    }
 
-                if (hasMaxValue) {
-                    maxMem = (uint32_t) std::atoll(memoryExpr[2].value().c_str());
-                }
-                HeapData data(startMem, maxMem);
-
-                for(uint32_t childNum = hasMaxValue ? 3 : 2; childNum < memoryExpr.children().size(); childNum++) {
-                    const SExpr& segmentExpr = memoryExpr[childNum];
-                    if (segmentExpr.children().size() >= 3) {
-                        uint32_t offset = (uint32_t) std::atoll(segmentExpr[1].value().c_str());
-                        // todo char to uint8_t is maybe compiler specific
-                        std::vector<uint8_t> segmentData(segmentExpr[2].value().begin(), segmentExpr[2].value().end());
-
-                        HeapSegment segment(offset, segmentData);
-                        data.addNextSegment(segment);
-                    } else {
-                        throw MalformedMemoryStatement("Not enough children for a valid segment statement (needs at least 3): " + segmentExpr.toString());
-                    }
-                }
-
-                module_->heapData(data);
+    void ModuleParser::parseFunctionTypeTable(const SExpr& functionTypeTableExpr) {
+        for (std::size_t i = 1; i < functionTypeTableExpr.children().size(); i++) {
+            std::string aliasName = functionTypeTableExpr[i].value();
+            if (Utils::hasDollarPrefix(aliasName)) {
+                module_->functionTypeTable().addAlias(aliasName, i - 1);
             } else {
-                throw MalformedMemoryStatement("Not enough children for a valid memory statement (needs at least 3): " + memoryExpr.toString());
+                throw std::domain_error("Malformed function type alias: " + aliasName);
             }
         }
-    }}
+    }
+
+    std::vector<uint8_t> ModuleParser::decodeEscapedString(const std::string& str) const {
+        std::vector<uint8_t> result;
+        result.reserve(str.size());
+        for (std::size_t i = 0; i < str.size(); i++) {
+            char c = str[i];
+            if (c == '\\') {
+                if (i + 2 < str.size()) {
+                    result.push_back(decodeHexEscape(str[i + 1], str[i + 2]));
+                    i += 2;
+                } else {
+                    throw InvalidHexEncoding("Unfinished hexadecimal byte encoding at end of string " + str);
+                }
+            } else {
+                result.push_back((uint8_t) c);
+            }
+        }
+        return result;
+    }
+
+    uint8_t ModuleParser::decodeHexEscape(char c1, char c2) const {
+        uint8_t result = hexToUint8(c1);
+        result <<= 4;
+        result |= hexToUint8(c2);
+        return result;
+
+    }
+
+    uint8_t ModuleParser::hexToUint8(char character) const {
+        if (character >= 'A' && character <= 'F') {
+            return (uint8_t) ((character - 'A') + 10);
+        }
+        if (character >= 'a' && character <= 'f') {
+            return (uint8_t) ((character - 'a') + 10);
+        }
+        if (character >= '0' && character <= '9') {
+            return (uint8_t) (character - '0');
+        }
+        throw InvalidHexEncoding("No hexadecimal character: " + std::to_string(character));
+    }
+}}

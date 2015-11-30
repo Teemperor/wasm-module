@@ -132,18 +132,47 @@ public:
         }
     }
 
-    ModuleWrapper& getModule(std::string exportName) {
-        for(ModuleWrapper& moduleWrapper : modules) {
-            if (moduleWrapper.hasExport(exportName)) {
-                return moduleWrapper;
-            }
+    int countStringOccurencesInString(const std::string& hay, const std::string& needle) {
+        if (needle == "")
+            return 0;
+
+        int occurrences = 0;
+        std::string::size_type start = 0;
+
+        while ((start = hay.find(needle, start)) != std::string::npos) {
+            ++occurrences;
+            start += needle.length();
         }
-        std::cerr << exportName << std::endl;
-        throw NoModuleWithExport();
+        return occurrences;
     }
 
-    ModuleWrapper& invokeToCall(SExpr&invoke) {
-        ModuleWrapper& wrapper = getModule(invoke[1].value());
+    ModuleWrapper& getModule(const std::string& exportName, const std::string& expectedReturnType) {
+        std::vector<ModuleWrapper*> possibleResults;
+        for(ModuleWrapper& moduleWrapper : modules) {
+            if (moduleWrapper.hasExport(exportName)) {
+                possibleResults.push_back(&moduleWrapper);
+            }
+        }
+
+        if (possibleResults.empty()) {
+            std::cerr << "Couldn't find any module that exports: " << exportName << std::endl;
+            throw NoModuleWithExport();
+        } else {
+            ModuleWrapper* bestMatch = possibleResults.front();
+            int amountOfDataTypeOccurences = -1;
+            for (ModuleWrapper* module : possibleResults) {
+                int occurrences = countStringOccurencesInString(module->moduleExpr_.toString(), expectedReturnType);
+                if (occurrences > amountOfDataTypeOccurences) {
+                    bestMatch = module;
+                    amountOfDataTypeOccurences = occurrences;
+                }
+            }
+            return *bestMatch;
+        }
+    }
+
+    ModuleWrapper& invokeToCall(SExpr&invoke, std::string dataType = "") {
+        ModuleWrapper& wrapper = getModule(invoke[1].value(), dataType);
 
         std::string functionName = wrapper.getExport(invoke[1].value());
 
@@ -164,13 +193,11 @@ public:
             } else if (expr[0].value() == "assert_return") {
                 SExpr invokeExpr = expr[1];
 
-                ModuleWrapper& wrapper = invokeToCall(invokeExpr);
-
 
                 std::string dataType;
 
                 if (expr.children().size() <= 2) {
-                    std::cout << "warning - can't handle this assert_return: " << expr.toString() << std::endl;
+                    std::cerr << "warning - can't handle this assert_return: " << expr.toString() << std::endl;
                 } else {
                     if (expr[2][0].value() == "i32.const") {
                         dataType = "i32";
@@ -184,6 +211,8 @@ public:
                         std::cerr << expr[2][0].value() << std::endl;
                         throw UnknownAssertValue();
                     }
+
+                    ModuleWrapper& wrapper = invokeToCall(invokeExpr, dataType);
 
                     if (dataType[0] == 'i') {
                         SExpr ifExpr;
@@ -220,7 +249,7 @@ public:
                 // TODO
             } else if (expr[0].value() == "assert_trap") {
                 SExpr invoke = expr[1];
-                ModuleWrapper& wrapper = getModule(invoke[1].value());
+                ModuleWrapper& wrapper = getModule(invoke[1].value(), "");
 
                 std::string functionName = wrapper.getExport(invoke[1].value());
 

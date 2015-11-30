@@ -20,6 +20,8 @@ namespace wasm_module { namespace sexpr {
 
         std::string SExpr::toString(unsigned int intend) const {
             if (hasValue()) {
+                if (value_.empty())
+                    return "\"\"";
                 return value_;
             } else {
                 std::stringstream result;
@@ -43,5 +45,24 @@ namespace wasm_module { namespace sexpr {
                 result << ")";
                 return result.str();
             }
+        }
+
+        SExpr &SExpr::operator[](std::size_t i) {
+            if (!hasChildren())
+                throw SExprHasNoChildren(toString());
+            if (i >= children_.size()) {
+                throw SExprChildrenRangeError("Tried accessing child with out of bounds index " + std::to_string(i) + ". Expression is: " + toString());
+            }
+
+            return children_.at(i);
+        }
+
+        const SExpr &SExpr::operator[](std::size_t i) const {
+            if (!hasChildren())
+                throw SExprHasNoChildren(toString());
+            if (i >= children_.size()) {
+                throw SExprChildrenRangeError("Tried accessing child with out of bounds index " + std::to_string(i) + " " + toString());
+            }
+            return children().at(i);
         }
     }}

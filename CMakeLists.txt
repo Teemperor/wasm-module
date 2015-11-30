@@ -28,11 +28,15 @@ add_library(wasm-module
     src/ModuleContext.cpp
     src/HeapData.cpp
     src/HeapSegment.cpp
+    src/Utils.cpp
+    src/FunctionTypeTable.cpp
+    src/FunctionType.cpp
 
     src/instructions/InstructionSet.cpp
     src/instructions/Instruction.cpp
     src/instructions/InstructionId.cpp
     src/instructions/Instructions.cpp
+    src/instructions/UnreachableValidator.cpp
 
     src/types/Int32.cpp
     src/types/Int64.cpp
@@ -56,7 +60,8 @@ add_library(wasm-module
     src/sexpr_parsing/FunctionParser.cpp
     src/sexpr_parsing/Types.cpp
     src/sexpr_parsing/InstructionParser.cpp
-        src/Utils.cpp src/Utils.h src/instructions/UnreachableValidator.cpp src/instructions/UnreachableValidator.h)
+
+)
 
 
 ####################

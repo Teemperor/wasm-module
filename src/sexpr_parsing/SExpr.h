@@ -20,20 +20,20 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <ExceptionWithMessage.h>
 
 namespace wasm_module { namespace sexpr {
 
     class SExprIsFull : public std::exception {
     };
 
-    class SExprHasNoValue : public std::exception {
-    };
-
-    class SExprHasNoChildren : public std::exception {
-    };
+    ExceptionMessage(SExprHasNoValue)
+    ExceptionMessage(SExprHasNoChildren)
+    ExceptionMessage(SExprChildrenRangeError)
 
     class SExpr {
 
+        bool hasValue_ = false;
         std::string value_;
 
         std::vector<SExpr> children_;
@@ -42,11 +42,11 @@ namespace wasm_module { namespace sexpr {
         SExpr() {
         }
 
-        SExpr(std::string value) : value_(value) {
+        SExpr(std::string value) : value_(value), hasValue_(true) {
         }
 
         SExpr &addChild() {
-            if (!value_.empty())
+            if (hasValue())
                 throw SExprIsFull();
 
             children_.push_back(SExpr());
@@ -54,7 +54,7 @@ namespace wasm_module { namespace sexpr {
         }
 
         SExpr& addChild(const std::string& value) {
-            if (!value_.empty())
+            if (hasValue())
                 throw SExprIsFull();
 
             children_.push_back(SExpr(value));
@@ -62,7 +62,7 @@ namespace wasm_module { namespace sexpr {
         }
 
         SExpr& addChild(const SExpr& expr) {
-            if (!value_.empty())
+            if (hasValue())
                 throw SExprIsFull();
 
             children_.push_back(expr);
@@ -71,7 +71,7 @@ namespace wasm_module { namespace sexpr {
 
         SExpr &lastChild() {
             if (!hasChildren())
-                throw SExprHasNoChildren();
+                throw SExprHasNoChildren(toString());
             return children_.back();
         }
 
@@ -80,12 +80,12 @@ namespace wasm_module { namespace sexpr {
         }
 
         bool hasValue() const {
-            return !value_.empty();
+            return hasValue_;
         }
 
         void insertChild(const SExpr& child, std::size_t pos) {
             if (hasValue())
-                throw SExprHasNoChildren();
+                throw SExprHasNoChildren(toString());
             children_.insert(children_.begin() + pos, child);
         }
 
@@ -95,28 +95,20 @@ namespace wasm_module { namespace sexpr {
 
         const std::string &value() const {
             if (!hasValue()) {
-                throw SExprHasNoValue();
+                throw SExprHasNoValue(toString());
             }
             return value_;
         }
 
         const std::vector<SExpr> &children() const {
             if (!hasChildren())
-                throw SExprHasNoChildren();
+                throw SExprHasNoChildren(toString());
             return children_;
         }
 
-        const SExpr& operator[](std::size_t i) const {
-            if (!hasChildren())
-                throw SExprHasNoChildren();
-            return children().at(i);
-        }
+        const SExpr& operator[](std::size_t i) const;
 
-        SExpr& operator[](std::size_t i) {
-            if (!hasChildren())
-                throw SExprHasNoChildren();
-            return children_.at(i);
-        }
+        SExpr& operator[](std::size_t i);
 
         bool operator!=(const std::string& otherValue) const {
             return value() != otherValue;

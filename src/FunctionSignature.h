@@ -24,19 +24,17 @@
 
 #include "types/Type.h"
 #include "Variable.h"
+#include "../FunctionType.h"
 
 namespace wasm_module {
 
     /**
      * Contains all information that are relevant to an caller of the given function.
      */
-    class FunctionSignature {
+    class FunctionSignature : public FunctionType {
 
         std::string moduleName_;
         std::string name_;
-        const Type* returnType_ = Void::instance();
-        std::vector<const Type*> parameterTypes_;
-        bool variadic_ = true;
 
     public:
         FunctionSignature() {
@@ -44,20 +42,11 @@ namespace wasm_module {
 
         FunctionSignature(std::string module, std::string name, const Type* returnType,
                           std::vector<const Type*> parameterTypes)
-                : moduleName_(module), name_(name), returnType_(returnType), parameterTypes_(parameterTypes),
-                  variadic_(false) {
+                : FunctionType(returnType, parameterTypes), moduleName_(module), name_(name) {
         }
 
         FunctionSignature(std::string module, std::string name, const Type* returnType)
-                : moduleName_(module), name_(name), returnType_(returnType), variadic_(true) {
-        }
-
-        const Type* returnType() const {
-            return returnType_;
-        }
-
-        const std::vector<const Type*>& parameters() const {
-            return parameterTypes_;
+                : FunctionType(returnType), moduleName_(module), name_(name) {
         }
 
         const std::string& name() const {
@@ -71,24 +60,11 @@ namespace wasm_module {
         bool operator<(const FunctionSignature& other) const {
             if (name_ < other.name())
                 return true;
-            if (returnType_ < other.returnType_)
+            if (returnType() < other.returnType())
                 return true;
             return false;
         }
 
-        bool variadic() const {
-            return variadic_;
-        }
-
-        FunctionSignature makeNonVariadic(std::vector<const Type*> parameterTypes) const {
-            if (!variadic()) {
-                throw std::domain_error("makeNonVariadic() can only be called on variadic functions. Current function is " + moduleName_ + "::" + name_);
-            }
-
-            FunctionSignature result(moduleName_, name_, returnType_, parameterTypes);
-
-            return result;
-        }
     };
 
 }

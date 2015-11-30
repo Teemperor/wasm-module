@@ -26,6 +26,7 @@
 #include "FunctionContext.h"
 #include "Function.h"
 #include "HeapData.h"
+#include "FunctionTypeTable.h"
 #include <vector>
 #include <functional>
 
@@ -40,6 +41,8 @@ namespace wasm_module {
         std::vector<std::string> requiredModules_;
         std::vector<Function*> functions_;
         std::vector<Function*> functionsToDelete_;
+
+        FunctionTypeTable functionTypeTable_;
 
         HeapData heapData_;
 
@@ -81,9 +84,12 @@ namespace wasm_module {
             return context().mainFunctionTable();
         }
 
-
         FunctionTable& importedFunctionTable() {
             return context().importedFunctionTable();
+        }
+
+        FunctionTypeTable& functionTypeTable() {
+            return functionTypeTable_;
         }
 
         ModuleContext& context() {

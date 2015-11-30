@@ -31,10 +31,19 @@ namespace wasm_module { namespace sexpr {
     ExceptionMessage(MultipleReturnTypesInImport)
 
     ExceptionMessage(MalformedMemoryStatement)
+    ExceptionMessage(InvalidHexEncoding)
 
     class ModuleParser {
 
         Module* module_  = new Module();
+
+        uint8_t hexToUint8(char character) const;
+        uint8_t decodeHexEscape(char c1, char c2) const;
+
+        std::vector<uint8_t> decodeEscapedString(const std::string& str) const;
+
+        void parseFunctionType(const SExpr& functionTypeExpr);
+        void parseFunctionTypeTable(const SExpr& functionTypeTableExpr);
 
         void parseImport(const SExpr& importExpr);
 
