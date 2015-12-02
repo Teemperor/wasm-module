@@ -22,6 +22,7 @@
 #include "OpcodeTable.h"
 #include "FunctionTable.h"
 #include "GlobalTable.h"
+#include "FunctionTypeTable.h"
 
 namespace wasm_module {
 
@@ -34,6 +35,7 @@ namespace wasm_module {
         TypeTable typeTable_;
         FunctionTable mainFunctionTable_;
         FunctionTable importedFunctionTable_;
+        FunctionTypeTable functionTypeTable_;
 
         GlobalTable globalTable_;
         std::string name_;
@@ -74,6 +76,10 @@ namespace wasm_module {
 
         FunctionTable& importedFunctionTable() {
             return importedFunctionTable_;
+        }
+
+        FunctionTypeTable& functionTypeTable() {
+            return functionTypeTable_;
         }
 
         GlobalTable &globalTable() {

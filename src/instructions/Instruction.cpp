@@ -18,6 +18,7 @@
 #include <types/Void.h>
 #include "Instruction.h"
 #include "UnreachableValidator.h"
+#include "InstructionAddress.h"
 
 namespace wasm_module {
 
@@ -41,5 +42,26 @@ namespace wasm_module {
             }
         }
         secondStepEvaluate(context, functionContext);
+    }
+
+    InstructionAddress Instruction::getAddress(const std::string& moduleName, const std::string& functionName) const {
+        std::vector<size_t> childrenIndizes;
+
+        const Instruction* childInstruction = this;
+        foreachParent([&](const Instruction* instruction) {
+            childrenIndizes.push_back(instruction->getChildIndex(childInstruction));
+            childInstruction = instruction;
+            return true;
+        });
+
+        return InstructionAddress(moduleName, functionName, childrenIndizes);
+    }
+
+    std::size_t Instruction::getChildIndex(const Instruction* instruction) const {
+        for (size_t i = 0; i < children().size(); i++) {
+            if (children()[i] == instruction)
+                return i;
+        }
+        throw std::domain_error("getChildIndex(instr) ");
     }
 }

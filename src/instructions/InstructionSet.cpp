@@ -66,6 +66,8 @@ namespace wasm_module {
                 return new Call(expr, context);
             } else if (name == "call_import") {
                 return new CallImport(expr, context);
+            } else if (name == "call_indirect") {
+                return new CallIndirect(expr, context);
             } else if (name == "get_local") {
                 return new GetLocal(expr, functionContext);
             } else if (name == "set_local") {
@@ -174,7 +176,6 @@ namespace wasm_module {
         else INSTRUCTION(I64PopulationCount, "i64.popcnt")
 
         else INSTRUCTION(AddressOf, "address_of")
-        else INSTRUCTION(CallIndirect, "call_indirect")
 
         else INSTRUCTION(If, "if")
         else INSTRUCTION(IfElse, "if_else")

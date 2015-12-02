@@ -18,6 +18,7 @@
 
 #include "Function.h"
 #include <instructions/Instruction.h>
+#include <instructions/InstructionAddress.h>
 
 namespace wasm_module {
 
@@ -29,4 +30,14 @@ namespace wasm_module {
         delete mainInstruction_;
     }
 
+    Instruction* Function::instruction(const InstructionAddress& address) const {
+        if (address.functionName() != name()) {
+            throw std::domain_error("Given address describes instruction in function " + address.functionName() + " but current function name is " + name());
+        }
+        Instruction* result = mainInstruction_;
+        for(std::size_t i = address.childrenIndized().size(); i > 0; i--) {
+            result = result->children().at(address.childrenIndized()[i - 1]);
+        }
+        return result;
+    }
 }

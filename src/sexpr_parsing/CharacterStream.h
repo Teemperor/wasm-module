@@ -34,7 +34,7 @@ namespace wasm_module { namespace sexpr {
         CharacterStream() {
         }
 
-        CharacterStream(std::string value) : value_(value) {
+        CharacterStream(const std::string& value) : value_(value) {
             trimWhitespace();
         }
 

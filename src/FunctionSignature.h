@@ -24,7 +24,7 @@
 
 #include "types/Type.h"
 #include "Variable.h"
-#include "../FunctionType.h"
+#include "FunctionType.h"
 
 namespace wasm_module {
 

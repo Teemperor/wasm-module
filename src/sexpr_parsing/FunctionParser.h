@@ -24,6 +24,7 @@
 #include "Types.h"
 #include "InstructionParser.h"
 #include <unordered_map>
+#include <FunctionType.h>
 
 namespace wasm_module { namespace sexpr {
 
@@ -32,8 +33,11 @@ namespace wasm_module { namespace sexpr {
     ExceptionMessage(MalformedLocalStatement);
     ExceptionMessage(MalformedParamStatement);
     ExceptionMessage(MalformedResultStatement);
+    ExceptionMessage(MalformedTypeStatement);
     ExceptionMessage(MultipleReturnTypes);
     ExceptionMessage(VariableDeclarationAfterFunctionBody);
+    ExceptionMessage(MultipleFunctionTypesDefined);
+    ExceptionMessage(FunctionSignatureDoesntMatchType);
 
     class FunctionParser {
 
@@ -43,6 +47,10 @@ namespace wasm_module { namespace sexpr {
         std::vector<const Type*> parameters;
 
         std::unordered_map<std::string, uint32_t> namesToIndex_;
+
+        bool hasOwnSignature = false;
+        bool hasFunctionTypeDefined = false;
+        FunctionType functionType_;
 
         FunctionContext functionContext_;
 
@@ -88,6 +96,7 @@ namespace wasm_module { namespace sexpr {
         }
 
         void parseParam(const SExpr& param) {
+            hasOwnSignature = true;
             if (param.children().size() == 3 && hasDollarPrefix(param[1].value())) {
                 std::string variableName = param[1].value();
                 std::string typeName = param[2].value();
@@ -101,7 +110,7 @@ namespace wasm_module { namespace sexpr {
         }
 
         void parseResult(const SExpr& result) {
-
+            hasOwnSignature = true;
             if (result.children().size() == 2) {
                 std::string resultTypeName = result[1].value();
                 const Type* newReturnType = Types::getByName(resultTypeName);
@@ -117,18 +126,37 @@ namespace wasm_module { namespace sexpr {
             }
         }
 
-        void parseInstructions(std::vector<const SExpr*>& instructionExprs) {
+        void parseInstructions(const sexpr::SExpr& expr, const std::vector<std::size_t>& instructionExprs) {
             if (instructionExprs.size() == 1) {
-                instruction_ = InstructionParser::parse(*instructionExprs.front(), context_, functionContext_);
+                instruction_ = InstructionParser::parse(expr[instructionExprs.front()], context_, functionContext_);
             } else {
 
                 instruction_ = new Block((uint32_t) instructionExprs.size());
                 std::vector<Instruction*> children;
-                for (const SExpr* expr : instructionExprs) {
-                    Instruction* newInstruction = InstructionParser::parse(*expr, context_, functionContext_);
+                for (std::size_t i : instructionExprs) {
+                    const sexpr::SExpr& subExpr = expr[i];
+                    Instruction* newInstruction = InstructionParser::parse(subExpr, context_, functionContext_);
                     children.push_back(newInstruction);
                 }
                 instruction_->children(children);
+            }
+        }
+
+        void parseType(const SExpr& result) {
+            if (hasFunctionTypeDefined) {
+                throw MultipleFunctionTypesDefined(result.toString());
+            }
+            if (result.children().size() == 2) {
+                std::string typeId = result[1].value();
+                if (Utils::hasDollarPrefix(typeId)) {
+                    functionType_ = context_.functionTypeTable().getType(typeId);
+                } else {
+                    std::size_t typeIndex = Utils::strToSizeT(typeId);
+                    functionType_ = context_.functionTypeTable().getType(typeIndex);
+                }
+                hasFunctionTypeDefined = true;
+            } else {
+                throw MalformedResultStatement(result.toString());
             }
         }
 
@@ -141,6 +169,8 @@ namespace wasm_module { namespace sexpr {
             } else {
                 functionName_ = std::to_string(context.mainFunctionTable().size());
             }
+
+            std::vector<std::size_t> instructionExprs;
 
             for(unsigned i = 1; i < funcExpr.children().size(); i++) {
                 const SExpr& expr = funcExpr[i];
@@ -156,66 +186,32 @@ namespace wasm_module { namespace sexpr {
 
                 if (typeName == "param") {
                     parseParam(expr);
-                }
-
-            }
-            for(unsigned i = 1; i < funcExpr.children().size(); i++) {
-                const SExpr& expr = funcExpr[i];
-
-                if (expr.hasValue()) {
-                    continue;
-                }
-
-                if (expr.children().size() == 0 || !expr[0].hasValue())
-                    continue;
-
-                const std::string& typeName = expr[0].value();
-
-                if (typeName == "local") {
+                } else if (typeName == "local") {
                     parseLocal(expr);
+                } else if (typeName == "result") {
+                    parseResult(expr);
+                } else if (typeName == "type") {
+                    parseType(expr);
+                } else {
+                    instructionExprs.push_back(i);
                 }
             }
-            for(unsigned i = 1; i < funcExpr.children().size(); i++) {
-                const SExpr& expr = funcExpr[i];
 
-                if (expr.hasValue()) {
-                    continue;
-                }
-
-                if (expr.children().size() == 0 || !expr[0].hasValue())
-                    continue;
-
-                const std::string& typeName = expr[0].value();
-
-                if (typeName == "result") {
-                    parseResult(expr);
-                }
+            if (hasFunctionTypeDefined && !hasOwnSignature) {
+                returnType = functionType_.returnType();
+                parameters = functionType_.parameters();
             }
 
             functionContext_ = FunctionContext(context_.name(), functionName_, returnType, parameters, locals);
             functionContext_.setVariableNameToIndexMap(namesToIndex_);
 
-            std::vector<const SExpr*> instructionExprs;
-            for(unsigned i = 2; i < funcExpr.children().size(); i++) {
-                const SExpr& expr = funcExpr[i];
-
-                if (expr.hasValue()) {
-                    throw UnexpectedTokenInFunction(std::string("Got '") + expr.value() + "' in Expression: " + expr.value());
+            if (hasFunctionTypeDefined) {
+                if (!functionType_.compatibleWith(functionContext_)) {
+                    throw FunctionSignatureDoesntMatchType("Expected " + functionType_.toString() + " signature in this function: " + funcExpr.toString());
                 }
-
-                if (expr.children().size() == 0 || !expr[0].hasValue()) {
-                    instructionExprs.push_back(&expr);
-                } else {
-                    const std::string& typeName = expr[0].value();
-
-                    if (typeName != "local" && typeName != "param" && typeName != "result") {
-                        instructionExprs.push_back(&expr);
-                    }
-                }
-
-
             }
-            parseInstructions(instructionExprs);
+
+            parseInstructions(funcExpr, instructionExprs);
             function_ = new Function(functionContext_, instruction_);
         }
 

@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+#include <iostream>
 #include "ModuleParser.h"
 #include "FunctionParser.h"
+#include "SExprParser.h"
 
 
 namespace wasm_module { namespace sexpr {
     ModuleParser::ModuleParser(const SExpr& moduleExpr) {
+        if (moduleExpr[0].value() != "module") {
+            throw std::domain_error("First child of a module expression needs to be \"module\"");
+        }
+
         for(unsigned i = 1; i < moduleExpr.children().size(); i++) {
             const SExpr& expr = moduleExpr[i];
             const std::string& typeName = expr[0].value();
@@ -60,24 +66,56 @@ namespace wasm_module { namespace sexpr {
 
             std::vector<const Type*> parameters;
 
+            bool hasOwnSignature = false;
+            bool hasFunctionType = false;
+            FunctionType functionType;
+
+
             for (uint32_t i = 4; i < importExpr.children().size(); i++) {
                 const SExpr& subExpr = importExpr[i];
 
                 if (subExpr[0].value() == "param") {
-                    for (std::size_t i = 1; i < subExpr.children().size(); i++)
-                        parameters.push_back(Types::getByName(subExpr[i].value()));
-                } else if (subExpr[0].value() == "return") {
+                    hasOwnSignature = true;
+                    for (std::size_t j = 1; j < subExpr.children().size(); j++)
+                        parameters.push_back(Types::getByName(subExpr[j].value()));
+                } else if (subExpr[0].value() == "result") {
+                    hasOwnSignature = true;
                     if (returnType != Void::instance()) {
                         throw MultipleReturnTypesInImport(importExpr.toString());
                     }
 
                     returnType = Types::getByName(subExpr[1].value());
+                } else if (subExpr[0].value() == "type") {
+                    if (hasFunctionType) {
+                        throw std::domain_error("Function declaration has multiple function types associated: " + importExpr.toString());
+                    }
+                    hasFunctionType = true;
+                    std::string typeValue = subExpr[1].value();
+
+                    if (Utils::hasDollarPrefix(typeValue)) {
+                        functionType = module_->context().functionTypeTable().getType(typeValue);
+                    } else {
+                        functionType = module_->context().functionTypeTable().getType(Utils::strToSizeT(typeValue));
+                    }
+
+                    returnType = functionType.returnType();
+                    parameters = functionType.parameters();
                 } else {
-                    throw UnknownImportExpressionChild(subExpr.value());
+                    throw UnknownImportExpressionChild(subExpr.toString());
                 }
             }
 
-            module_->importedFunctionTable().addFunctionSignature(FunctionSignature(moduleName, functionName, returnType, parameters), importName);
+            if (hasOwnSignature && hasFunctionType) {
+                if (!functionType.compatibleWith(FunctionType(returnType, parameters))) {
+                    throw std::domain_error("Function declaration signature doesn't match given function type: " + importExpr.toString());
+                }
+            }
+
+            if (hasFunctionType) {
+                module_->importedFunctionTable().addFunctionSignature(FunctionSignature(moduleName, functionName, functionType.returnType(), functionType.parameters()), importName);
+            } else {
+                module_->importedFunctionTable().addFunctionSignature(FunctionSignature(moduleName, functionName, returnType, parameters), importName);
+            }
         }
     }
 
@@ -129,8 +167,8 @@ namespace wasm_module { namespace sexpr {
         if (functionTypeExpr[1].hasChildren()) {
             funcExpr = functionTypeExpr[1];
         } else {
-            funcExpr = functionTypeExpr[2];
             alias = functionTypeExpr[1].value();
+            funcExpr = functionTypeExpr[2];
         }
 
         if (funcExpr[0].value() != "func") {
@@ -140,19 +178,19 @@ namespace wasm_module { namespace sexpr {
         bool foundResultStatement = false;
 
         for (std::size_t i = 1; i < funcExpr.children().size(); i++) {
-            const SExpr& expr = funcExpr[1];
+            const SExpr& expr = funcExpr[i];
 
             if (expr.children().size() == 0) {
                 throw std::domain_error("Malformed func statement: " + funcExpr.toString());
             }
 
             if (expr[0].value() == "param") {
-                if (expr.children().size() > 2) {
-                    throw std::domain_error("Malformed result statement: " + funcExpr.toString());
+                if (expr.children().size() > 1) {
+                    for (std::size_t j = 1; j < expr.children().size(); j++) {
+                        parameters.push_back(Types::getByName(expr[j].value()));
+                    }
                 } else if (expr.children().size() == 1) {
                     // void param: (param)
-                } else {
-                    parameters.push_back(Types::getByName(expr[1].value()));
                 }
             } else if (expr[0].value() == "result") {
                 if (foundResultStatement) {
@@ -229,4 +267,15 @@ namespace wasm_module { namespace sexpr {
         }
         throw InvalidHexEncoding("No hexadecimal character: " + std::to_string(character));
     }
-}}
+
+        Module *ModuleParser::parse(const std::string& str) {
+            CharacterStream stream(str);
+
+            SExprParser parser(stream);
+
+            SExpr expr = parser.parse();
+
+            ModuleParser moduleParser(expr);
+            return moduleParser.getParsedModule();
+        }
+    }}

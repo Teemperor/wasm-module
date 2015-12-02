@@ -62,6 +62,7 @@ namespace wasm_module { namespace sexpr {
             return parser.getParsedModule();
         }
 
+        static Module* parse(const std::string& str);
     };
 
 }}

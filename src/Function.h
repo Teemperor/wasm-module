@@ -61,6 +61,8 @@ namespace wasm_module {
             this->module_ = module;
         }
 
+        Instruction* instruction(const InstructionAddress& address) const;
+
     };
 
 }

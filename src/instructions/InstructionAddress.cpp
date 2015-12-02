@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-#include <types/Void.h>
-#include "FunctionType.h"
+#include "InstructionAddress.h"
 
-std::string wasm_module::FunctionType::toString() const {
-    std::string result;
-    result += "((result";
-    if (returnType() != Void::instance()) {
-        result += returnType()->name();
-    }
-    result += ") ";
+wasm_module::InstructionAddress::InstructionAddress(const std::string& moduleName, const std::string& functionName, const std::vector<std::size_t>& childrenIndizes)
+    : moduleName_(moduleName), functionName_(functionName), childrenIndizes_(childrenIndizes) {
 
-    for (const Type* type : parameters()) {
-        result += "(param ";
-        result += type->name();
-        result += ") ";
-    }
-    result.resize(result.size() - 1);
-    result += ")";
-    return result;
 }

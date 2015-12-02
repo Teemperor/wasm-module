@@ -7,8 +7,8 @@
 
 #include <vector>
 #include <map>
-#include "../FunctionType.h"
 #include "ExceptionWithMessage.h"
+#include "FunctionType.h"
 
 namespace wasm_module {
 

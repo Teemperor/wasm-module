@@ -12,56 +12,56 @@ find_package(Boost COMPONENTS system filesystem)
 include_directories (src)
 
 add_library(wasm-module
-    src/ExceptionWithMessage.cpp
-    src/Module.cpp
-    src/Section.cpp
-    src/FunctionContext.cpp
-    src/FunctionSignature.cpp
-    src/FunctionTable.cpp
-    src/OpcodeTable.cpp
-    src/Variable.cpp
-    src/Global.cpp
-    src/GlobalTable.cpp
-    src/Function.cpp
-    src/types/Type.cpp
-    src/TypeTable.cpp
-    src/ModuleContext.cpp
-    src/HeapData.cpp
-    src/HeapSegment.cpp
-    src/Utils.cpp
-    src/FunctionTypeTable.cpp
-    src/FunctionType.cpp
+        src/ExceptionWithMessage.cpp
+        src/Module.cpp
+        src/Section.cpp
+        src/FunctionContext.cpp
+        src/FunctionSignature.cpp
+        src/FunctionTable.cpp
+        src/OpcodeTable.cpp
+        src/Variable.cpp
+        src/Global.cpp
+        src/GlobalTable.cpp
+        src/Function.cpp
+        src/types/Type.cpp
+        src/TypeTable.cpp
+        src/ModuleContext.cpp
+        src/HeapData.cpp
+        src/HeapSegment.cpp
+        src/Utils.cpp
+        src/FunctionTypeTable.cpp
+        src/FunctionType.cpp
 
-    src/instructions/InstructionSet.cpp
-    src/instructions/Instruction.cpp
-    src/instructions/InstructionId.cpp
-    src/instructions/Instructions.cpp
-    src/instructions/UnreachableValidator.cpp
+        src/instructions/InstructionSet.cpp
+        src/instructions/Instruction.cpp
+        src/instructions/InstructionId.cpp
+        src/instructions/Instructions.cpp
+        src/instructions/UnreachableValidator.cpp
 
-    src/types/Int32.cpp
-    src/types/Int64.cpp
-    src/types/Void.cpp
-    src/types/Float32.cpp
-    src/types/Float64.cpp
+        src/types/Int32.cpp
+        src/types/Int64.cpp
+        src/types/Void.cpp
+        src/types/Float32.cpp
+        src/types/Float64.cpp
 
-    src/binary_parsing/ByteStream.cpp
-    src/binary_parsing/GlobalTableParser.cpp
-    src/binary_parsing/FunctionParser.cpp
-    src/binary_parsing/FunctionTableParser.cpp
-    src/binary_parsing/TypeTableParser.cpp
-    src/binary_parsing/ModuleParser.cpp
-    src/binary_parsing/CodeSectionParser.cpp
-    src/binary_parsing/OpcodeTableParser.cpp
+        src/binary_parsing/ByteStream.cpp
+        src/binary_parsing/GlobalTableParser.cpp
+        src/binary_parsing/FunctionParser.cpp
+        src/binary_parsing/FunctionTableParser.cpp
+        src/binary_parsing/TypeTableParser.cpp
+        src/binary_parsing/ModuleParser.cpp
+        src/binary_parsing/CodeSectionParser.cpp
+        src/binary_parsing/OpcodeTableParser.cpp
 
-    src/sexpr_parsing/SExprParser.cpp
-    src/sexpr_parsing/CharacterStream.cpp
-    src/sexpr_parsing/SExpr.cpp
-    src/sexpr_parsing/ModuleParser.cpp
-    src/sexpr_parsing/FunctionParser.cpp
-    src/sexpr_parsing/Types.cpp
-    src/sexpr_parsing/InstructionParser.cpp
+        src/sexpr_parsing/SExprParser.cpp
+        src/sexpr_parsing/CharacterStream.cpp
+        src/sexpr_parsing/SExpr.cpp
+        src/sexpr_parsing/ModuleParser.cpp
+        src/sexpr_parsing/FunctionParser.cpp
+        src/sexpr_parsing/Types.cpp
+        src/sexpr_parsing/InstructionParser.cpp
 
-)
+        src/instructions/InstructionAddress.cpp src/instructions/InstructionAddress.h)
 
 
 ####################

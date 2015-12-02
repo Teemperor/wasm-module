@@ -23,7 +23,7 @@ public:
     std::map<std::string, std::string> exports;
 
     SExpr positiveExpr_;
-    std::vector<SExpr> negativeExprs_;
+    std::vector<SExpr> negativeTrapExprs_;
 
     ModuleWrapper(const SExpr& moduleExpr) {
         moduleExpr_ = moduleExpr;
@@ -49,8 +49,8 @@ public:
         positiveExpr_.addChild(expr);
     }
 
-    void addNegativeCheck(const SExpr& expr) {
-        negativeExprs_.push_back(expr);
+    void addNegativeTrapCheck(const SExpr& expr) {
+        negativeTrapExprs_.push_back(expr);
     }
 
     void addMain(SExpr& module, const SExpr& mainContent) {
@@ -69,11 +69,11 @@ public:
         return result;
     }
 
-    std::vector<SExpr> getNegativeSources() {
+    std::vector<SExpr> getNegativeTrapSources() {
         std::vector<SExpr> result;
-        result.reserve(negativeExprs_.size());
+        result.reserve(negativeTrapExprs_.size());
 
-        for (const SExpr& expr : negativeExprs_) {
+        for (const SExpr& expr : negativeTrapExprs_) {
             SExpr output = moduleExpr_;
             addMain(output, expr);
             result.push_back(output);
@@ -81,7 +81,6 @@ public:
 
         return result;
     }
-
 
     bool hasExport(std::string expo) {
         return exports.find(expo) != exports.end();
@@ -96,6 +95,9 @@ class WastTestTransformer {
     std::string baseName;
     std::vector<ModuleWrapper> modules;
     sexpr::SExpr mainExpr;
+    unsigned numberOfTrapTests = 0;
+    unsigned numberOfInvalidTests = 0;
+    std::vector<SExpr> invalidExprs_;
 
     void writeSExpr(std::string directoryPath, const SExpr& sexpr, std::string fileName) {
 
@@ -182,6 +184,15 @@ public:
         return wrapper;
     }
 
+    std::string createUniqueFileSuffix(int index, std::size_t totalTests) {
+        if (totalTests == 1) {
+            return "";
+        }
+        std::stringstream basenameSuffix;
+        basenameSuffix << "_" << std::setw((int) log10(modules.size()) + 1) << std::setfill('0') << std::to_string(index);
+        return basenameSuffix.str();
+    }
+
     void generateOutput() {
         int testNumber = 1;
         for (SExpr expr : mainExpr.children()) {
@@ -192,7 +203,6 @@ public:
                 wrapper.addPositiveCheck(expr);
             } else if (expr[0].value() == "assert_return") {
                 SExpr invokeExpr = expr[1];
-
 
                 std::string dataType;
 
@@ -248,17 +258,14 @@ public:
             } else if (expr[0].value() == "assert_return_nan") {
                 // TODO
             } else if (expr[0].value() == "assert_trap") {
-                SExpr invoke = expr[1];
-                ModuleWrapper& wrapper = getModule(invoke[1].value(), "");
+                numberOfTrapTests++;
 
-                std::string functionName = wrapper.getExport(invoke[1].value());
+                ModuleWrapper& wrapper = invokeToCall(expr[1]);
+                wrapper.addNegativeTrapCheck(expr);
 
-                invoke[0] = SExpr("call");
-                invoke[1] = SExpr(functionName);
-
-                //writeAST("negative/trap/", testNumber, expr, invoke[1].value(), wrapper);
             } else if (expr[0].value() == "assert_invalid") {
-                writeSExpr("negative/parse/", expr, baseName + std::to_string(testNumber));
+                numberOfInvalidTests++;
+                invalidExprs_.push_back(expr[1]);
             } else if (expr[0].value() == "module") {
                 // TODO
                 testNumber--;
@@ -270,21 +277,24 @@ public:
 
         int i = 1;
         for(ModuleWrapper& moduleWrapper : modules) {
-
             SExpr output = moduleWrapper.getPositiveTestSource();
-
-            std::stringstream basenameSuffix;
-            basenameSuffix << "";
-
-            if (modules.size() != 1) {
-                basenameSuffix << "_" << std::setw((int) log10(modules.size()) + 1) << std::setfill('0') << std::to_string(i);
-            }
-            std::string suffix = basenameSuffix.str();
-
-            writeSExpr("positive/", output, baseName + suffix);
+            writeSExpr("positive/", output, baseName + createUniqueFileSuffix(i, modules.size()));
             i++;
         }
 
+        i = 1;
+        for(ModuleWrapper& moduleWrapper : modules) {
+            for (const SExpr& trapSource : moduleWrapper.getNegativeTrapSources()) {
+                writeSExpr("negative/trap/", trapSource.toString(), baseName + createUniqueFileSuffix(i, numberOfTrapTests));
+                i++;
+            }
+        }
+
+        i = 1;
+        for (const SExpr& invalidExpr : invalidExprs_) {
+            writeSExpr("negative/invalid/", invalidExpr.toString(), baseName + createUniqueFileSuffix(i, numberOfInvalidTests));
+            i++;
+        }
     }
 
 };

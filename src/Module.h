@@ -42,7 +42,6 @@ namespace wasm_module {
         std::vector<Function*> functions_;
         std::vector<Function*> functionsToDelete_;
 
-        FunctionTypeTable functionTypeTable_;
 
         HeapData heapData_;
 
@@ -89,7 +88,7 @@ namespace wasm_module {
         }
 
         FunctionTypeTable& functionTypeTable() {
-            return functionTypeTable_;
+            return context().functionTypeTable();
         }
 
         ModuleContext& context() {
@@ -118,11 +117,11 @@ namespace wasm_module {
             return context_.name();
         }
 
-        OpcodeTable &opcodeTable() {
+        OpcodeTable& opcodeTable() {
             return context_.opcodeTable();
         }
 
-        TypeTable &typeTable() {
+        TypeTable& typeTable() {
             return context_.typeTable();
         }
 

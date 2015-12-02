@@ -103,7 +103,6 @@ namespace wasm_module {
     DeclInstruction(I64PopulationCount, "i64.popcnt", {Int64::instance()}, Int64::instance())};
 
     DeclInstruction(AddressOf, "address_of", {}, Void::instance())};
-    DeclInstruction(CallIndirect, "call_indirect", {}, Void::instance())};
 
     DeclInstruction(Return, "return", {Void::instance()}, Void::instance())};
 
@@ -893,9 +892,55 @@ namespace wasm_module {
             return false;
         }
 
-
         virtual std::string dataString() const {
             return name() + " " + functionName;
+        }
+    };
+
+    class CallIndirect : public Instruction {
+
+        std::vector<const Type*> childrenTypes_ = {Int32::instance()};
+        FunctionType functionType_;
+
+    public:
+
+        CallIndirect(const sexpr::SExpr& expr, ModuleContext &context) {
+            std::string typeValue = expr[1].value();
+
+            if (Utils::hasDollarPrefix(typeValue)) {
+                context.functionTypeTable().getType(typeValue);
+            } else {
+                context.functionTypeTable().getType(Utils::strToSizeT(typeValue));
+            }
+            for (const Type* parameter : functionType_.parameters()) {
+                childrenTypes_.push_back(parameter);
+            }
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::CallIndirect;
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "call_indirect";
+            return name_;
+        }
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            return childrenTypes_;
+        }
+
+        virtual const Type* returnType() const override {
+            return functionType_.returnType();
+        }
+
+        virtual bool typeCheckChildren() const override {
+            return false;
+        }
+
+
+        virtual std::string dataString() const {
+            return name();
         }
     };
 

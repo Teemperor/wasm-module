@@ -37,6 +37,7 @@ namespace wasm_module {
     ExceptionMessage(InstructionHasNoParent)
 
     class InstructionState;
+    class InstructionAddress;
 
     class Instruction {
 
@@ -76,12 +77,14 @@ namespace wasm_module {
         }
 
         void foreachParent(const std::function<bool(const Instruction* instruction)>& lambda) const {
-            if (lambda(this)) {
-                if (hasParent()) {
+            if (hasParent()) {
+                if (lambda(parent())) {
                     parent()->foreachParent(lambda);
                 }
             }
         }
+
+        std::size_t getChildIndex(const Instruction* instruction) const;
 
         const std::vector<Instruction *>& children() const {
             return children_;
@@ -146,6 +149,8 @@ namespace wasm_module {
         bool hasParent() const {
             return parent_ != nullptr;
         }
+
+        InstructionAddress getAddress(const std::string& moduleName, const std::string& functionName) const;
     };
 }
 
