@@ -23,6 +23,26 @@ namespace wasm_module {
 
         static std::size_t strToSizeT(const std::string& str);
 
+        static uint32_t reinterpretFloatAsInt(float value) {
+            uint32_t* result = (uint32_t *) &value;
+            return *result;
+        }
+
+        static uint64_t reinterpretDoubleAsInt(double value) {
+            uint64_t* result = (uint64_t *) &value;
+            return *result;
+        }
+
+        static float reinterpretIntAsFloat(uint32_t value) {
+            float* result = (float *) &value;
+            return *result;
+        }
+
+        static double reinterpretIntAsDouble(uint64_t value) {
+            double* result = (double *) &value;
+            return *result;
+
+        }
     };
 }
 
