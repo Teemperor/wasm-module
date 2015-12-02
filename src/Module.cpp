@@ -43,7 +43,7 @@ namespace wasm_module {
     void Module::addVariadicFunction(std::string functionName, const Type *returnType,
                                      std::function<Variable(std::vector<Variable>)> givenFunction) {
         FunctionContext context(name(), functionName, returnType, {});
-        Function* function = new Function(context, new NativeInstruction(givenFunction, returnType, {}), true);
+        Function* function = new Function(context, new NativeInstruction(givenFunction, returnType, {}));
         function->module(this);
         functions_.push_back(function);
         functionsToDelete_.push_back(function);

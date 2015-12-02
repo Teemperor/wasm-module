@@ -179,8 +179,10 @@ namespace wasm_module { namespace sexpr {
                     continue;
                 }
 
-                if (expr.children().size() == 0 || !expr[0].hasValue())
+                if (expr.children().size() == 0 || !expr[0].hasValue()) {
+                    instructionExprs.push_back(i);
                     continue;
+                }
 
                 const std::string& typeName = expr[0].value();
 

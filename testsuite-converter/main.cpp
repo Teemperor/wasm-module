@@ -189,7 +189,7 @@ public:
             return "";
         }
         std::stringstream basenameSuffix;
-        basenameSuffix << "_" << std::setw((int) log10(modules.size()) + 1) << std::setfill('0') << std::to_string(index);
+        basenameSuffix << "_" << std::setw((int) log10(totalTests) + 1) << std::setfill('0') << std::to_string(index);
         return basenameSuffix.str();
     }
 

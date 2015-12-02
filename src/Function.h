@@ -43,7 +43,7 @@ namespace wasm_module {
         Module* module_ = nullptr;
 
     public:
-        Function(FunctionContext &context, Instruction *mainInstruction, bool variadic = false);
+        Function(FunctionContext &context, Instruction *mainInstruction);
 
         virtual ~Function();
 
