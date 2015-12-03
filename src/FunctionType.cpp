@@ -34,3 +34,7 @@ std::string wasm_module::FunctionType::toString() const {
     result += ")";
     return result;
 }
+
+wasm_module::FunctionType::FunctionType() {
+    returnType_ = Void::instance();
+}

@@ -43,7 +43,7 @@ namespace wasm_module { namespace sexpr {
         std::vector<uint8_t> decodeEscapedString(const std::string& str) const;
 
         void parseFunctionType(const SExpr& functionTypeExpr);
-        void parseFunctionTypeTable(const SExpr& functionTypeTableExpr);
+        void parseIndirectCallTable(const SExpr &functionTypeTableExpr);
 
         void parseImport(const SExpr& importExpr);
 

@@ -903,14 +903,15 @@ namespace wasm_module {
         FunctionType functionType_;
 
     public:
+        ModuleContext* context_;
 
-        CallIndirect(const sexpr::SExpr& expr, ModuleContext &context) {
+        CallIndirect(const sexpr::SExpr& expr, ModuleContext &context) : context_(&context) {
             std::string typeValue = expr[1].value();
 
             if (Utils::hasDollarPrefix(typeValue)) {
-                context.functionTypeTable().getType(typeValue);
+                functionType_ = context.functionTypeTable().getType(typeValue);
             } else {
-                context.functionTypeTable().getType(Utils::strToSizeT(typeValue));
+                functionType_ = context.functionTypeTable().getType(Utils::strToSizeT(typeValue));
             }
             for (const Type* parameter : functionType_.parameters()) {
                 childrenTypes_.push_back(parameter);

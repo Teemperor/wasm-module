@@ -23,13 +23,12 @@
 namespace wasm_module {
 
     class FunctionType {
-        const Type* returnType_ = nullptr;
+        const Type* returnType_;
         std::vector<const Type*> parameters_;
         bool variadic_ = true;
 
     public:
-        FunctionType() {
-        }
+        FunctionType();
         FunctionType(const Type* returnType, const std::vector<const Type*>& parameters) : returnType_(returnType), parameters_(parameters), variadic_(false) {
         }
         FunctionType(const Type* returnType) : returnType_(returnType), variadic_(true) {

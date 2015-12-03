@@ -35,6 +35,7 @@ namespace wasm_module {
         TypeTable typeTable_;
         FunctionTable mainFunctionTable_;
         FunctionTable importedFunctionTable_;
+        FunctionTable indirectCallTable_;
         FunctionTypeTable functionTypeTable_;
 
         GlobalTable globalTable_;
@@ -76,6 +77,10 @@ namespace wasm_module {
 
         FunctionTable& importedFunctionTable() {
             return importedFunctionTable_;
+        }
+
+        FunctionTable& indirectCallTable() {
+            return indirectCallTable_;
         }
 
         FunctionTypeTable& functionTypeTable() {

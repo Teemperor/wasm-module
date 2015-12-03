@@ -45,6 +45,9 @@ namespace wasm_module {
             functions_.push_back(signature);
         }
 
+        void addFunctionSignature(FunctionSignature signature) {
+            functions_.push_back(signature);
+        }
 
         bool hasFunctionSignature(const std::string& alias) const {
             auto iter = functionsByAlias_.find(alias);

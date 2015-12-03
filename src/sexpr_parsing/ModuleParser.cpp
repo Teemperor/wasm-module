@@ -34,7 +34,7 @@ namespace wasm_module { namespace sexpr {
             } else if (typeName == "memory") {
                 parseMemory(expr);
             } else if (typeName == "table") {
-                parseFunctionTypeTable(expr);
+                // we will handle indirect call tables later
             } else if (typeName == "type") {
                 parseFunctionType(expr);
             } else if (typeName == "func") {
@@ -45,6 +45,15 @@ namespace wasm_module { namespace sexpr {
                 throw UnknownModuleChild(typeName);
             }
         }
+
+        for(unsigned i = 1; i < moduleExpr.children().size(); i++) {
+            const SExpr& expr = moduleExpr[i];
+            const std::string& typeName = expr[0].value();
+            if (typeName == "table") {
+                parseIndirectCallTable(expr);
+            }
+        }
+
         for (Function* function : module_->functions()) {
             function->mainInstruction()->triggerSecondStepEvaluate(module_->context(), *function);
         }
@@ -217,11 +226,12 @@ namespace wasm_module { namespace sexpr {
 
     }
 
-    void ModuleParser::parseFunctionTypeTable(const SExpr& functionTypeTableExpr) {
+    void ModuleParser::parseIndirectCallTable(const SExpr &functionTypeTableExpr) {
         for (std::size_t i = 1; i < functionTypeTableExpr.children().size(); i++) {
             std::string aliasName = functionTypeTableExpr[i].value();
             if (Utils::hasDollarPrefix(aliasName)) {
-                module_->functionTypeTable().addAlias(aliasName, i - 1);
+                FunctionSignature signature = module_->mainFunctionTable().getFunctionSignature(aliasName);
+                module_->context().indirectCallTable().addFunctionSignature(signature);
             } else {
                 throw std::domain_error("Malformed function type alias: " + aliasName);
             }
