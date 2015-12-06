@@ -23,6 +23,7 @@
 #include <ModuleContext.h>
 #include <sexpr_parsing/SExpr.h>
 #include "Instruction.h"
+#include <set>
 
 namespace wasm_module {
 
@@ -39,7 +40,7 @@ namespace wasm_module {
 
 
         static Instruction* getInstruction(std::string name, const sexpr::SExpr& expr, ModuleContext &context,
-                                                   FunctionContext &functionContext);
+                                                   FunctionContext &functionContext, std::set<std::size_t>& subExprsToIgnore);
     };
 }
 

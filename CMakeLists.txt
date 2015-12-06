@@ -61,7 +61,7 @@ add_library(wasm-module
         src/sexpr_parsing/Types.cpp
         src/sexpr_parsing/InstructionParser.cpp
 
-        src/instructions/InstructionAddress.cpp src/instructions/InstructionAddress.h)
+        src/instructions/InstructionAddress.cpp src/instructions/InstructionAddress.h src/instructions/BranchDistanceCalculator.cpp src/instructions/BranchDistanceCalculator.h)
 
 
 ####################
@@ -72,7 +72,7 @@ enable_testing()
 file(GLOB TEST_FILES "tests/*Test.cpp")
 foreach(TEST_FILE ${TEST_FILES})
   get_filename_component(BASENAME ${TEST_FILE} NAME_WE)
-  add_executable(${BASENAME} ${TEST_FILE})
+  add_executable(${BASENAME} ${TEST_FILE} src/branching/BranchInformation.cpp src/branching/BranchInformation.h)
   target_link_libraries(${BASENAME} wasm-module)
   add_test(${BASENAME} ${BASENAME})
 endforeach()

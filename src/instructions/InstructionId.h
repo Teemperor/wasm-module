@@ -155,6 +155,7 @@ namespace InstructionId {
         F64Select,
 
         TableSwitch,
+        Case,
 
         F32Add,
         F32Sub,

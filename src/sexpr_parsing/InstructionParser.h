@@ -38,13 +38,18 @@ namespace wasm_module { namespace sexpr {
         Instruction* parse(const SExpr& expr) {
             if (expr.children().size() != 0) {
                 if (expr[0].hasValue()) {
-                    Instruction* result = InstructionSet::getInstruction(expr[0].value(), expr, moduleContext_, functionContext_);
+                    std::set<std::size_t> subExprToIgnore;
+                    Instruction* result = InstructionSet::getInstruction(expr[0].value(), expr, moduleContext_, functionContext_, subExprToIgnore);
 
                     std::vector<Instruction*> children;
 
+                    std::size_t index = 0;
                     for (const SExpr& child : expr.children()) {
-                        if (!child.hasValue())
-                            children.push_back(parse(child));
+                        if (subExprToIgnore.find(index) == subExprToIgnore.end()) {
+                            if (!child.hasValue())
+                                children.push_back(parse(child));
+                        }
+                        index++;
                     }
 
                     result->children(children);

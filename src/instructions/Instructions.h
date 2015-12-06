@@ -29,6 +29,7 @@
 #include <Utils.h>
 #include "Instruction.h"
 #include "InstructionId.h"
+#include <set>
 
 namespace wasm_module {
 
@@ -287,6 +288,7 @@ namespace wasm_module {
     class SetLocal : public Instruction {
 
         std::vector<const Type*> expectedType;
+        std::string localName_;
 
     public:
         uint32_t localIndex;
@@ -317,11 +319,19 @@ namespace wasm_module {
         virtual InstructionId::Value id() const {
             return InstructionId::SetLocal;
         }
+
+        virtual std::string dataString() const override {
+            std::string result = name();
+            if (!localName_.empty())
+                result += " " + localName_;
+            return result;
+        }
     };
 
     class GetLocal : public Instruction {
 
         const Type* returnType_;
+        std::string localName_;
 
     public:
         uint32_t localIndex;
@@ -332,12 +342,12 @@ namespace wasm_module {
         }
 
         GetLocal(const sexpr::SExpr& expr, FunctionContext &context) {
-            std::string localIdentifier = expr[1].value();
+            localName_ = expr[1].value();
 
-            if (Utils::hasDollarPrefix(localIdentifier)) {
-                localIndex = context.variableNameToIndex(localIdentifier);
+            if (Utils::hasDollarPrefix(localName_)) {
+                localIndex = context.variableNameToIndex(localName_);
             } else {
-                localIndex = (uint32_t) Utils::strToSizeT(localIdentifier);
+                localIndex = (uint32_t) Utils::strToSizeT(localName_);
             }
             returnType_ = context.locals().at(localIndex);
         }
@@ -350,6 +360,13 @@ namespace wasm_module {
         virtual const std::vector<const Type*>& childrenTypes() const override {
             static std::vector<const Type*> chTypes_;
             return chTypes_;
+        }
+
+        virtual std::string dataString() const override {
+            std::string result = name();
+            if (!localName_.empty())
+                result += " " + localName_;
+            return result;
         }
 
         virtual const Type* returnType() const override {
@@ -498,6 +515,12 @@ namespace wasm_module {
         const Type* returnType_ = Void::instance();
         std::string labelName_;
 
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) override {
+            returnType_ = children().front()->returnType();
+        }
+
     public:
 
         Label(const sexpr::SExpr& expr, FunctionContext &context) {
@@ -539,6 +562,7 @@ namespace wasm_module {
 
         std::string labelName_;
         uint32_t branchLabel_ = 0;
+        std::size_t parentDistance_ = 0;
 
     protected:
 
@@ -572,6 +596,8 @@ namespace wasm_module {
             return InstructionId::Branch;
         }
 
+        using Instruction::children;
+
         virtual void children(const std::vector<Instruction*>& newChildren) override {
             if (newChildren.empty()) {
                 Instruction::children({new Nop()});
@@ -590,10 +616,12 @@ namespace wasm_module {
             return result;
         }
 
-        using Instruction::children;
-
         uint32_t branchLabel() const {
             return branchLabel_;
+        }
+
+        const Instruction& getBranchTarget() const {
+            return getNthParent(parentDistance_);
         }
     };
 
@@ -602,6 +630,7 @@ namespace wasm_module {
 
         uint32_t branchLabel_ = 0;
         std::string labelName_;
+        std::size_t parentDistance_ = 0;
 
     protected:
 
@@ -657,6 +686,10 @@ namespace wasm_module {
 
         uint32_t branchLabel() const {
             return branchLabel_;
+        }
+
+        const Instruction& getBranchTarget() const {
+            return getNthParent(parentDistance_);
         }
     };
 
@@ -774,24 +807,136 @@ namespace wasm_module {
         }
     };
 
-    class TableSwitch : public Instruction {
+    ExceptionMessage(CaseStatementIsNotDirectChildOfTableswitch)
 
+    class Case : public Instruction {
+
+        std::vector<const Type*> caseChildren_;
         const Type* returnType_ = Void::instance();
+        std::string labelName_;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) override {
+            returnType_ = children().back()->returnType();
+            if (hasParent()) {
+                if (parent()->id() != InstructionId::TableSwitch) {
+                    throw CaseStatementIsNotDirectChildOfTableswitch("case statement parent is " + parent()->dataString()
+                                                                     + " but needs to be direct child of tableswitch");
+                }
+            } else {
+                throw CaseStatementIsNotDirectChildOfTableswitch("case statement has no parent but needs to be direct "
+                                                                         "child of tableswitch");
+            }
+        }
 
     public:
-        TableSwitch() {
+
+        Case(const sexpr::SExpr& expr, FunctionContext &context) {
+            if (expr.children().size() >= 2 && expr[1].hasValue()) {
+                labelName_ = expr[1].value();
+            }
+            for (const sexpr::SExpr& subExpr : expr.children()) {
+                if (subExpr.hasChildren())
+                    caseChildren_.push_back(Void::instance());
+            }
+            if (caseChildren_.empty()) {
+                caseChildren_.push_back(Void::instance());
+            }
+        }
+
+        virtual const std::string& name() const override {
+            static std::string name_ = "case";
+            return name_;
+        }
+
+        using Instruction::children;
+
+        virtual void children(const std::vector<Instruction*>& newChildren) override {
+            if (newChildren.empty()) {
+                Instruction::children({new Nop()});
+            } else {
+                Instruction::children(newChildren);
+            }
         }
 
         virtual const std::vector<const Type*>& childrenTypes() const override {
-            static std::vector<const Type*> chTypes_;
-            return chTypes_;
+            return caseChildren_;
+        }
+
+        virtual std::string dataString() const override {
+            std::string result = name();
+            if (!labelName_.empty())
+                result += " " + labelName_;
+            return result;
+        }
+
+        virtual const Type* returnType() const override {
+            return returnType_;
+        }
+
+        virtual InstructionId::Value id() const {
+            return InstructionId::Case;
+        }
+
+        const std::string& labelName() const {
+            return labelName_;
+        }
+    };
+
+    ExceptionMessage(MultipleTableExprsInTableSwitch)
+    ExceptionMessage(NoTableExprInTableSwitch)
+    ExceptionMessage(MalformedTargetExpr)
+    ExceptionMessage(IllegalNonCaseExpression)
+
+    class TableSwitchTarget {
+        bool isCase_ = 0;
+        std::string targetName_;
+        std::size_t index_ = 0;
+
+    public:
+        TableSwitchTarget() {
+        }
+        TableSwitchTarget(bool isCase, const std::string& targetName) : isCase_(isCase), targetName_(targetName) {
+        }
+
+        static TableSwitchTarget parse(const sexpr::SExpr& expr);
+        static TableSwitchTarget makeNormalBranch(const std::string& targetName);
+        static TableSwitchTarget makeCaseBranch(const std::string& targetName);
+
+        bool isCase() const;
+        bool isBranch() const;
+        const std::string & targetName() const;
+        std::size_t index() const;
+        void index(std::size_t index);
+    };
+
+    ExceptionMessage(CantFindFittingCaseLabel)
+
+    class TableSwitch : public Instruction {
+
+        const Type* returnType_ = Void::instance();
+        TableSwitchTarget defaultTarget_;
+        std::vector<TableSwitchTarget> targets_;
+        std::vector<const Type*> childrenTypes_;
+        std::string labelName_;
+
+    protected:
+
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);
+
+    public:
+
+        TableSwitch(const sexpr::SExpr& expr, std::set<std::size_t>& subExprsToIgnore);
+
+        virtual const std::vector<const Type*>& childrenTypes() const override {
+            return childrenTypes_;
         }
 
         virtual const std::string& name() const override {
             static std::string name_ = "tableswitch";
             return name_;
         }
-
 
         virtual std::string dataString() const override {
             std::string result = name();
@@ -804,6 +949,22 @@ namespace wasm_module {
 
         virtual InstructionId::Value id() const {
             return InstructionId::TableSwitch;
+        }
+
+        const std::vector<TableSwitchTarget>& targets() const {
+            return targets_;
+        }
+
+        virtual uint32_t labelCount() const override {
+            return 1;
+        }
+
+        virtual bool hasLabelName(const std::string& str) const override {
+            return str == labelName_;
+        }
+
+        const TableSwitchTarget& defaultTarget() const {
+            return defaultTarget_;
         }
     };
 

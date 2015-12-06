@@ -26,6 +26,7 @@
 #include "types/Type.h"
 #include "Variable.h"
 #include "InstructionId.h"
+#include "InstructionAddress.h"
 
 namespace wasm_module {
 
@@ -65,6 +66,14 @@ namespace wasm_module {
             for (Instruction* instruction : children_) {
                 instruction->parent(this);
             }
+        }
+
+        const Instruction& getNthParent(std::size_t n) const {
+            const Instruction* result = this;
+            for (std::size_t i = 0; i < n; i++) {
+                result = result->parent();
+            }
+            return *result;
         }
 
         void triggerSecondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);

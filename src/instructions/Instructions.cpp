@@ -58,6 +58,7 @@ namespace wasm_module {
         if (!labelName_.empty()) {
             bool foundTarget = false;
             foreachParent([&](const Instruction *instruction) {
+                parentDistance_++;
                 if (instruction->hasLabelName(labelName_)) {
                     branchLabel_ += instruction->labelIndex(labelName_);
                     foundTarget = true;
@@ -74,9 +75,11 @@ namespace wasm_module {
     }
 
     void Branch::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+
         if (!labelName_.empty()) {
             bool foundTarget = false;
             foreachParent([&](const Instruction *instruction) {
+                parentDistance_++;
                 if (instruction->hasLabelName(labelName_)) {
                     branchLabel_ += instruction->labelIndex(labelName_);
                     foundTarget = true;
@@ -88,6 +91,156 @@ namespace wasm_module {
             });
             if (!foundTarget) {
                 throw CantFindBranchTarget("Can't find branch target: " + labelName_);
+            }
+        }
+    }
+
+    TableSwitch::TableSwitch(const sexpr::SExpr& expr, std::set<std::size_t>& subExprsToIgnore) {
+        std::size_t index = 0;
+        const sexpr::SExpr* tableExpr = nullptr;
+        bool foundDefaultTarget = false;
+
+        for (const sexpr::SExpr& subExpr : expr.children()) {
+            if (subExpr.hasChildren()) {
+                if (subExpr[0].value() == "table") {
+                    if (tableExpr != nullptr)
+                        throw MultipleTableExprsInTableSwitch(expr.toString());
+                    tableExpr = &subExpr;
+                    subExprsToIgnore.insert(index);
+                } else {
+                    if (tableExpr != nullptr && !foundDefaultTarget) {
+                        defaultTarget_ = TableSwitchTarget::parse(subExpr);
+                        subExprsToIgnore.insert(index);
+                        foundDefaultTarget = true;
+                    }
+                }
+            }
+            index++;
+        }
+        if (tableExpr == nullptr)
+            throw NoTableExprInTableSwitch(expr.toString());
+
+
+        for (std::size_t i = 1; i < tableExpr->children().size(); i++) {
+            TableSwitchTarget target = TableSwitchTarget::parse(tableExpr->children().at(i));
+            targets_.push_back(target);
+        }
+
+        childrenTypes_.push_back(Int32::instance());
+
+        index = 0;
+        for (const sexpr::SExpr& subExpr : expr.children()) {
+            if (subExpr.hasChildren()) {
+                if (subExpr[0].value() != "table") {
+                    childrenTypes_.push_back(Void::instance());
+                }
+            }
+            index++;
+        }
+        childrenTypes_.resize(childrenTypes_.size() - 2);
+
+        if (expr[1].hasValue()) {
+            labelName_ = expr[1].value();
+        }
+    }
+
+    bool TableSwitchTarget::isCase() const {
+        return isCase_;
+    }
+
+    bool TableSwitchTarget::isBranch() const {
+        return !isCase_;
+    }
+
+    const std::string &TableSwitchTarget::targetName() const {
+        return targetName_;
+    }
+
+    TableSwitchTarget TableSwitchTarget::parse(const sexpr::SExpr& expr) {
+        if (expr.hasChildren() && expr.children().size() == 2) {
+            const std::string& target = expr[1].value();
+            if (!Utils::hasDollarPrefix(target)) {
+                throw MalformedTargetExpr(expr.toString());
+            }
+
+            const std::string& value = expr[0].value();
+            if (value == "br") {
+                return makeNormalBranch(target);
+            } else if (value == "case") {
+                return makeCaseBranch(target);
+            } else {
+                throw MalformedTargetExpr(expr.toString());
+            }
+        } else {
+            throw MalformedTargetExpr(expr.toString());
+        }
+    }
+
+    TableSwitchTarget TableSwitchTarget::makeNormalBranch(const std::string& targetName) {
+        TableSwitchTarget result(false, targetName);
+        return result;
+    }
+
+    TableSwitchTarget TableSwitchTarget::makeCaseBranch(const std::string& targetName) {
+        TableSwitchTarget result(true, targetName);
+        return result;
+    }
+
+    std::size_t TableSwitchTarget::index() const {
+        return index_;
+    }
+
+    void TableSwitchTarget::index(std::size_t index) {
+        index_ = index;
+    }
+
+    void TableSwitch::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+        std::size_t index = 0;
+        for (const Instruction* child : children()) {
+            if (index != 0){
+                if (child->id() != InstructionId::Case) {
+                    throw IllegalNonCaseExpression(child->toSExprString() + " in tableswitch " + toSExprString());
+                }
+            }
+            index++;
+        }
+
+        for (TableSwitchTarget& target : targets_) {
+            if (target.isCase()) {
+                index = 0;
+                bool foundFittingChild = false;
+                for (const Instruction* child : children()) {
+                    if (index != 0) {
+                        const Case &caseExpr = dynamic_cast<const Case &>(*child);
+
+                        if (target.targetName() == caseExpr.labelName()) {
+                            target.index(index);
+                            foundFittingChild = true;
+                        }
+                    }
+                    index++;
+                }
+                if (!foundFittingChild) {
+                    throw CantFindFittingCaseLabel(target.targetName());
+                }
+            }
+        }
+        if (defaultTarget_.isCase()) {
+            index = 0;
+            bool foundFittingChild = false;
+            for (const Instruction* child : children()) {
+                if (index != 0) {
+                    const Case &caseExpr = dynamic_cast<const Case &>(*child);
+
+                    if (defaultTarget_.targetName() == caseExpr.labelName()) {
+                        defaultTarget_.index(index);
+                        foundFittingChild = true;
+                    }
+                }
+                index++;
+            }
+            if (!foundFittingChild) {
+                throw CantFindFittingCaseLabel(defaultTarget_.targetName());
             }
         }
     }

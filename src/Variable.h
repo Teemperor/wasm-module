@@ -32,7 +32,7 @@ namespace wasm_module {
         static const std::size_t size_ = 8;
 
         const wasm_module::Type *type_;
-        uint8_t value_[size_];
+        uint8_t value_[size_] = {0, 0, 0, 0, 0, 0, 0, 0};
 
         void setType(const wasm_module::Type* type);
 
@@ -115,6 +115,8 @@ namespace wasm_module {
         void float64(double value);
 
         bool isVoid() const;
+
+        std::string toString() const;
     };
 }
 

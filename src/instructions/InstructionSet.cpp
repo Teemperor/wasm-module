@@ -55,7 +55,7 @@ namespace wasm_module {
 #define SExprLoadStoreInstruction(CLASSNAME, INSTRNAME) if(name==INSTRNAME){return new CLASSNAME(expr);}
 
     Instruction *InstructionSet::getInstruction(std::string name, const sexpr::SExpr& expr, ModuleContext &context,
-                                                       FunctionContext &functionContext) {
+                                                       FunctionContext &functionContext, std::set<std::size_t>& subExprsToIgnore) {
 
         Instruction* instruction = getInstruction(name, context, functionContext);
 
@@ -80,6 +80,10 @@ namespace wasm_module {
                 return new Loop(expr, functionContext);
             } else if (name == "block") {
                 return new Block(expr, functionContext);
+            } else if (name == "tableswitch") {
+                return new TableSwitch(expr, subExprsToIgnore);
+            } else if (name == "case") {
+                return new Case(expr, functionContext);
             } else if (name == "br") {
                 return new Branch(expr, functionContext);
             } else if (name == "br_if") {
@@ -219,8 +223,6 @@ namespace wasm_module {
         else INSTRUCTION(F32Select, "f32.select")
         else INSTRUCTION(F64Select, "f64.select")
 
-        else INSTRUCTION(TableSwitch, "tableswitch")
-
         else INSTRUCTION(F32Add, "f32.add")
         else INSTRUCTION(F32Sub, "f32.sub")
         else INSTRUCTION(F32Mul, "f32.mul")
@@ -263,6 +265,7 @@ namespace wasm_module {
         else INSTRUCTION(F64Min, "f64.min")
         else INSTRUCTION(F64Max, "f64.max")
         else INSTRUCTION(Unreachable, "unreachable")
+        else INSTRUCTION(Nop, "nop")
         else {
             return nullptr;
         }

@@ -126,4 +126,23 @@ namespace wasm_module {
     uint64_t Variable::uint64() const {
         return Int64::getUnsignedValue(*this);
     }
+
+    std::string Variable::toString() const {
+        if (type_ == Void::instance()) {
+            return "void";
+        }
+        if (type_ == Int32::instance()) {
+            return std::to_string(int32()) + " (" + std::to_string(uint32()) + "u)";
+        }
+        if (type_ == Int64::instance()) {
+            return std::to_string(int64()) + " (" + std::to_string(uint64()) + "u)";
+        }
+        if (type_ == Float32::instance()) {
+            return std::to_string(float32());
+        }
+        if (type_ == Float64::instance()) {
+            return std::to_string(float64());
+        }
+        throw std::domain_error("Unknown variable type. Can't execute toString()");
+    }
 }
