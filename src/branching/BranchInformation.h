@@ -19,10 +19,14 @@
 #define WASMINT_BRANCHINFORMATION_H
 
 #include <cstdint>
-#include <instructions/Instruction.h>
 #include <types/Void.h>
+#include <ExceptionWithMessage.h>
 
 namespace wasm_module {
+    ExceptionMessage(CantFindBranchTarget);
+
+    class Instruction;
+
     class BranchInformation {
 
         // the specific label index at the target instruction
@@ -54,6 +58,10 @@ namespace wasm_module {
             return valueType_;
         }
 
+        static BranchInformation getBranchInformation(const Instruction& start, std::string& labelName, const Type* valueType);
+
+        static BranchInformation getBranchInformation(const Instruction &start, uint32_t label,
+                                                      const Type *valueType);
     };
 }
 

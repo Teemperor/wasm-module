@@ -30,6 +30,7 @@
 #include "Instruction.h"
 #include "InstructionId.h"
 #include <set>
+#include <branching/BranchInformation.h>
 
 namespace wasm_module {
 
@@ -556,13 +557,12 @@ namespace wasm_module {
         }
     };
 
-    ExceptionMessage(CantFindBranchTarget);
 
     class Branch : public Instruction {
 
         std::string labelName_;
-        uint32_t branchLabel_ = 0;
-        std::size_t parentDistance_ = 0;
+        uint32_t branchLabel_;
+        BranchInformation branchInformation;
 
     protected:
 
@@ -610,18 +610,18 @@ namespace wasm_module {
             std::string result = name();
             result += " ";
             if (labelName_.empty())
-                result += std::to_string(branchLabel_);
+                result += std::to_string(branchInformation.label());
             else
                 result += labelName_;
             return result;
         }
 
         uint32_t branchLabel() const {
-            return branchLabel_;
+            return branchInformation.label();
         }
 
         const Instruction& getBranchTarget() const {
-            return getNthParent(parentDistance_);
+            return *branchInformation.target();
         }
     };
 

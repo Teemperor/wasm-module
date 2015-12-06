@@ -75,23 +75,10 @@ namespace wasm_module {
     }
 
     void Branch::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
-
         if (!labelName_.empty()) {
-            bool foundTarget = false;
-            foreachParent([&](const Instruction *instruction) {
-                parentDistance_++;
-                if (instruction->hasLabelName(labelName_)) {
-                    branchLabel_ += instruction->labelIndex(labelName_);
-                    foundTarget = true;
-                    return false;
-                } else {
-                    branchLabel_ += instruction->labelCount();
-                    return true;
-                }
-            });
-            if (!foundTarget) {
-                throw CantFindBranchTarget("Can't find branch target: " + labelName_);
-            }
+            branchInformation = BranchInformation::getBranchInformation(*this, labelName_, Void::instance());
+        } else {
+            branchInformation = BranchInformation::getBranchInformation(*this, branchLabel_, Void::instance());
         }
     }
 
