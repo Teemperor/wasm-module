@@ -22,6 +22,7 @@
 #include <vector>
 #include <ExceptionWithMessage.h>
 #include <functional>
+#include <branching/BranchInformation.h>
 
 #include "types/Type.h"
 #include "Variable.h"
@@ -80,6 +81,13 @@ namespace wasm_module {
 
         void foreachChild(const std::function<void(Instruction* instruction)>& lambda) {
             for (Instruction* child : children()) {
+                child->foreachChild(lambda);
+            }
+            lambda(this);
+        }
+
+        void foreachChild(const std::function<void(const Instruction* instruction)>& lambda) const {
+            for (const Instruction* child : children()) {
                 child->foreachChild(lambda);
             }
             lambda(this);
@@ -160,6 +168,10 @@ namespace wasm_module {
         }
 
         InstructionAddress getAddress(const std::string& moduleName, const std::string& functionName) const;
+
+        const BranchInformation* branchInformation() const {
+            return nullptr;
+        }
     };
 }
 

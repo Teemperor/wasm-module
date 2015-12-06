@@ -300,7 +300,7 @@ namespace wasm_module {
         }
 
         SetLocal(const sexpr::SExpr& expr, FunctionContext &context) {
-            localIndex = context.variableNameToIndex(expr[1].value());
+            localIndex = context.variableNameToIndex(localName_ = expr[1].value());
             expectedType = {context.locals().at(localIndex)};
         }
 
@@ -468,6 +468,10 @@ namespace wasm_module {
             if (expr.children().size() >= 3 && expr[2].hasValue()) {
                 endLabelName_ = expr[2].value();
             }
+            if (endLabelName_.empty() && !startLabelName_.empty()) {
+                endLabelName_ = startLabelName_;
+                startLabelName_.clear();
+            }
 
             for (const sexpr::SExpr& subexpr : expr.children()) {
                 if (subexpr.hasChildren()) {
@@ -494,7 +498,7 @@ namespace wasm_module {
         }
 
         virtual uint32_t labelCount() const override {
-            return 1; // TODO this is just for ml-proto compat, increase to two somewhen
+            return 2; // TODO this is just for ml-proto compat, increase to two somewhen
         }
 
         virtual bool hasLabelName(const std::string& str) const {
@@ -503,9 +507,9 @@ namespace wasm_module {
 
         virtual uint32_t labelIndex(const std::string& str) const {
             if (str == startLabelName_)
-                return 0;
-            if (str == endLabelName_)
                 return 1;
+            if (str == endLabelName_)
+                return 0;
             throw std::domain_error("labelIndex(\"" + str + "\") can't be executed on this loop instruction.");
         }
     };
@@ -518,9 +522,7 @@ namespace wasm_module {
 
     protected:
 
-        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) override {
-            returnType_ = children().front()->returnType();
-        }
+        virtual void secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext);
 
     public:
 
@@ -562,7 +564,7 @@ namespace wasm_module {
 
         std::string labelName_;
         uint32_t branchLabel_;
-        BranchInformation branchInformation;
+        BranchInformation branchInformation_;
 
     protected:
 
@@ -610,18 +612,18 @@ namespace wasm_module {
             std::string result = name();
             result += " ";
             if (labelName_.empty())
-                result += std::to_string(branchInformation.label());
+                result += std::to_string(branchInformation_.label());
             else
                 result += labelName_;
             return result;
         }
 
         uint32_t branchLabel() const {
-            return branchInformation.label();
+            return branchInformation_.label();
         }
 
         const Instruction& getBranchTarget() const {
-            return *branchInformation.target();
+            return *branchInformation_.target();
         }
     };
 
@@ -630,7 +632,7 @@ namespace wasm_module {
 
         uint32_t branchLabel_ = 0;
         std::string labelName_;
-        std::size_t parentDistance_ = 0;
+        BranchInformation branchInformation_;
 
     protected:
 
@@ -668,7 +670,7 @@ namespace wasm_module {
             std::string result = name();
             result += " ";
             if (labelName_.empty())
-                result += std::to_string(branchLabel_);
+                result += std::to_string(branchInformation_.label());
             else
                 result += labelName_;
             return result;
@@ -685,11 +687,7 @@ namespace wasm_module {
         using Instruction::children;
 
         uint32_t branchLabel() const {
-            return branchLabel_;
-        }
-
-        const Instruction& getBranchTarget() const {
-            return getNthParent(parentDistance_);
+            return branchInformation_.label();
         }
     };
 

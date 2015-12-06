@@ -15,6 +15,7 @@
  */
 
 #include <sexpr_parsing/Types.h>
+#include <branching/BranchTypeValidator.h>
 #include "Instructions.h"
 
 
@@ -46,39 +47,39 @@ namespace wasm_module {
         if (!children().empty()) {
             returnType_ = children().back()->returnType();
         }
+        const Type* branchType = BranchTypeValidator::checkBranchType(*this, 1);
+        if (branchType) {
+            if (returnType_ != branchType) {
+                returnType_ = Void::instance();
+            }
+        }
     }
 
     void Block::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
         if (!children().empty()) {
             returnType_ = children().back()->returnType();
         }
+        const Type* branchType = BranchTypeValidator::checkBranchType(*this);
+        if (branchType) {
+            if (returnType_ != branchType) {
+                returnType_ = Void::instance();
+            }
+        }
     }
 
     void BranchIf::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
         if (!labelName_.empty()) {
-            bool foundTarget = false;
-            foreachParent([&](const Instruction *instruction) {
-                parentDistance_++;
-                if (instruction->hasLabelName(labelName_)) {
-                    branchLabel_ += instruction->labelIndex(labelName_);
-                    foundTarget = true;
-                    return false;
-                } else {
-                    branchLabel_ += instruction->labelCount();
-                    return true;
-                }
-            });
-            if (!foundTarget) {
-                throw CantFindBranchTarget("Can't find branch target: " + labelName_);
-            }
+            branchInformation_ = BranchInformation::getBranchInformation(*this, labelName_, children().at(1)->returnType());
+        } else {
+            branchInformation_ = BranchInformation::getBranchInformation(*this, branchLabel_, children().at(1)->returnType());
         }
     }
 
     void Branch::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
         if (!labelName_.empty()) {
-            branchInformation = BranchInformation::getBranchInformation(*this, labelName_, Void::instance());
+            branchInformation_ = BranchInformation::getBranchInformation(*this, labelName_, Void::instance());
         } else {
-            branchInformation = BranchInformation::getBranchInformation(*this, branchLabel_, Void::instance());
+            branchInformation_ = BranchInformation::getBranchInformation(*this, branchLabel_, Void::instance());
         }
     }
 
@@ -192,6 +193,8 @@ namespace wasm_module {
             index++;
         }
 
+        bool hasBranchTarget = false;
+
         for (TableSwitchTarget& target : targets_) {
             if (target.isCase()) {
                 index = 0;
@@ -210,6 +213,10 @@ namespace wasm_module {
                 if (!foundFittingChild) {
                     throw CantFindFittingCaseLabel(target.targetName());
                 }
+            } else if (target.isBranch()) {
+                hasBranchTarget = true;
+            } else {
+                throw std::domain_error("Only branch and case targets are supported");
             }
         }
         if (defaultTarget_.isCase()) {
@@ -228,6 +235,35 @@ namespace wasm_module {
             }
             if (!foundFittingChild) {
                 throw CantFindFittingCaseLabel(defaultTarget_.targetName());
+            }
+        } else if (defaultTarget_.isBranch()) {
+            hasBranchTarget = true;
+        } else {
+            throw std::domain_error("Only branch and case targets are supported");
+        }
+
+
+        if (children().size() != 1)
+            returnType_ = children().back()->returnType();
+
+        const Type* branchType = BranchTypeValidator::checkBranchType(*this);
+        if (branchType) {
+            if (returnType_ != branchType) {
+                returnType_ = Void::instance();
+            }
+        }
+
+        if (hasBranchTarget) {
+            returnType_ = Void::instance();
+        }
+    }
+
+    void Label::secondStepEvaluate(ModuleContext& context, FunctionContext& functionContext) {
+        returnType_ = children().front()->returnType();
+        const Type* branchType = BranchTypeValidator::checkBranchType(*this);
+        if (branchType) {
+            if (returnType_ != branchType) {
+                returnType_ = Void::instance();
             }
         }
     }
