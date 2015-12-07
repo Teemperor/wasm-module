@@ -35,7 +35,7 @@ namespace wasm_module {
     void Variable::setValue(std::vector<uint8_t> newData) {
         if (newData.size() != type_->size())
             throw InvalidDataSize();
-        memcpy(value_, newData.data(), size_);
+        memcpy(value_, newData.data(), newData.size());
     }
 
     uint32_t Variable::uint32() const {
