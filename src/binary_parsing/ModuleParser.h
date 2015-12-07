@@ -21,13 +21,11 @@
 #include "../Module.h"
 #include <map>
 #include <OpcodeTable.h>
-#include <GlobalTable.h>
 #include "ByteStream.h"
 #include "CodeSectionParser.h"
 #include "OpcodeTableParser.h"
 #include "TypeTableParser.h"
 #include "FunctionTableParser.h"
-#include "GlobalTableParser.h"
 
 namespace wasm_module { namespace binary {
 
@@ -78,10 +76,8 @@ namespace wasm_module { namespace binary {
 
             FunctionTable functionTable = FunctionTableParser::parse(stream);
 
-            GlobalTable globalTable = GlobalTableParser::parse(stream, typeTable);
-
             // Put everything into the context
-            context = ModuleContext(opcodeTable, typeTable, functionTable, globalTable);
+            context = ModuleContext(opcodeTable, typeTable, functionTable);
 
             // Section header
             uint32_t numberOfSections = stream.popULEB128();
@@ -96,6 +92,8 @@ namespace wasm_module { namespace binary {
                     case 1:
                         type = SectionType::CODE;
                         break;
+                    default:
+                        throw std::domain_error("Unknown section type");
                 }
                 uint32_t offset = stream.popULEB128();
 

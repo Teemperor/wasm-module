@@ -125,10 +125,6 @@ namespace wasm_module {
             return context_.typeTable();
         }
 
-        std::vector<Global> globals() {
-            return context_.globalTable().internalGlobals();
-        }
-
         std::vector<std::string> requiredModules() {
             return requiredModules_;
         }

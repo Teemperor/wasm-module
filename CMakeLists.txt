@@ -18,8 +18,6 @@ add_library(wasm-module
         src/FunctionTable.cpp
         src/OpcodeTable.cpp
         src/Variable.cpp
-        src/Global.cpp
-        src/GlobalTable.cpp
         src/Function.cpp
         src/types/Type.cpp
         src/TypeTable.cpp
@@ -46,7 +44,6 @@ add_library(wasm-module
         src/types/Float64.cpp
 
         src/binary_parsing/ByteStream.cpp
-        src/binary_parsing/GlobalTableParser.cpp
         src/binary_parsing/FunctionParser.cpp
         src/binary_parsing/FunctionTableParser.cpp
         src/binary_parsing/TypeTableParser.cpp

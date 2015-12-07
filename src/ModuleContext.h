@@ -21,7 +21,6 @@
 #include "TypeTable.h"
 #include "OpcodeTable.h"
 #include "FunctionTable.h"
-#include "GlobalTable.h"
 #include "FunctionTypeTable.h"
 
 namespace wasm_module {
@@ -38,7 +37,6 @@ namespace wasm_module {
         FunctionTable indirectCallTable_;
         FunctionTypeTable functionTypeTable_;
 
-        GlobalTable globalTable_;
         std::string name_;
 
     public:
@@ -46,10 +44,8 @@ namespace wasm_module {
             name_ = "UnknownModule" + std::to_string(rand());
         }
 
-        ModuleContext(OpcodeTable &opcodeTable, TypeTable &typeTable, FunctionTable &functionTable,
-                      GlobalTable &globalTable)
-                : opcodeTable_(opcodeTable), typeTable_(typeTable), mainFunctionTable_(functionTable),
-                  globalTable_(globalTable) {
+        ModuleContext(OpcodeTable &opcodeTable, TypeTable &typeTable, FunctionTable &functionTable)
+                : opcodeTable_(opcodeTable), typeTable_(typeTable), mainFunctionTable_(functionTable) {
             name_ = "UnknownModule" + std::to_string(rand());
 
         }
@@ -85,10 +81,6 @@ namespace wasm_module {
 
         FunctionTypeTable& functionTypeTable() {
             return functionTypeTable_;
-        }
-
-        GlobalTable &globalTable() {
-            return globalTable_;
         }
 
     };
