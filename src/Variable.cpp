@@ -145,4 +145,12 @@ namespace wasm_module {
         }
         throw std::domain_error("Unknown variable type. Can't execute toString()");
     }
+
+    bool Variable::operator==(const Variable& variable) const {
+        if (type_ != variable.type_)
+            return false;
+        if (memcmp(value_, variable.value_, type().size()) != 0)
+            return false;
+        return true;
+    }
 }

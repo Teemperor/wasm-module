@@ -117,6 +117,8 @@ namespace wasm_module {
         bool isVoid() const;
 
         std::string toString() const;
+
+        bool operator==(const Variable& variable) const;
     };
 }
 
