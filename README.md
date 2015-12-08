@@ -1,3 +1,5 @@
+# This is project has moved to WebAssembly/wasmint
+
 # wasm-module
 [![Build Status](https://travis-ci.org/Teemperor/wasm-module.svg?branch=master)](https://travis-ci.org/Teemperor/wasm-module)
 
